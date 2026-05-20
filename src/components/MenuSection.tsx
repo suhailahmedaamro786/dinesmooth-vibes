@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from "motion/react";
 import { useState, useMemo } from "react";
 import { Plus } from "lucide-react";
-import { burgers, rolls, broast, pizzas, deals, type PizzaSize, type PizzaItem } from "@/data/menu";
+import { burgers, rolls, broast, pizzas, deals, type PizzaSize, type PizzaItem, type SimpleItem, type DealItem } from "@/data/menu";
 import { useCartStore } from "@/store/useCartStore";
 import { formatRs } from "@/lib/format";
 
@@ -27,7 +27,6 @@ export function MenuSection() {
         </p>
       </div>
 
-      {/* Tabs with sliding indicator */}
       <div id="deals" className="mt-10 flex gap-1 overflow-x-auto rounded-full border border-border bg-surface/60 p-1 backdrop-blur scrollbar-none">
         {TABS.map((t) => {
           const active = tab === t;
@@ -65,17 +64,17 @@ export function MenuSection() {
           {tab === "Rolls" && <SimpleGrid items={rolls} />}
           {tab === "Broast" && <SimpleGrid items={broast} />}
           {tab === "Pizzas" && <PizzaGrid items={pizzas} />}
-          {tab === "Deals" && <DealsGrid />}
+          {tab === "Deals" && <DealsGrid items={deals} />}
         </motion.div>
       </AnimatePresence>
     </section>
   );
 }
 
-function SimpleGrid({ items }: { items: { id: string; name: string; price: number; description?: string }[] }) {
+function SimpleGrid({ items }: { items: SimpleItem[] }) {
   const addLine = useCartStore((s) => s.addLine);
   return (
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
       {items.map((it, idx) => (
         <motion.article
           key={it.id}
@@ -84,30 +83,41 @@ function SimpleGrid({ items }: { items: { id: string; name: string; price: numbe
           viewport={{ once: true, margin: "-60px" }}
           transition={{ duration: 0.45, delay: idx * 0.04 }}
           whileHover={{ scale: 1.02, y: -2 }}
-          className="group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-card p-5 transition-colors hover:border-amber-brand/50"
+          className="group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-card transition-colors hover:border-amber-brand/50"
         >
-          <div className="flex items-start justify-between gap-3">
-            <h3 className="text-lg font-bold leading-tight">{it.name}</h3>
-            <span className="shrink-0 text-base font-black text-amber-brand">{formatRs(it.price)}</span>
+          <div className="relative aspect-[5/4] overflow-hidden bg-surface">
+            <motion.img
+              src={it.image}
+              alt={it.name}
+              loading="lazy"
+              width={768}
+              height={768}
+              className="h-full w-full object-cover"
+              whileHover={{ scale: 1.06 }}
+              transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+            />
+            <div aria-hidden className="pointer-events-none absolute inset-0 bg-gradient-to-t from-card via-card/20 to-transparent" />
+            <span className="absolute right-3 top-3 rounded-full bg-background/85 px-2.5 py-1 text-xs font-black text-amber-brand backdrop-blur">
+              {formatRs(it.price)}
+            </span>
           </div>
-          {it.description && (
-            <p className="mt-2 text-sm text-muted-foreground">{it.description}</p>
-          )}
-          <motion.button
-            whileTap={{ scale: 0.95 }}
-            whileHover={{ scale: 1.02 }}
-            onClick={() =>
-              addLine({
-                key: it.id,
-                itemId: it.id,
-                name: it.name,
-                unitPrice: it.price,
-              })
-            }
-            className="mt-5 inline-flex items-center justify-center gap-1.5 self-start rounded-full bg-amber-brand px-4 py-2 text-xs font-bold text-primary-foreground"
-          >
-            <Plus className="h-3.5 w-3.5" strokeWidth={3} /> Add to cart
-          </motion.button>
+
+          <div className="flex flex-1 flex-col p-5">
+            <h3 className="text-lg font-bold leading-tight">{it.name}</h3>
+            {it.description && (
+              <p className="mt-1.5 text-sm text-muted-foreground">{it.description}</p>
+            )}
+            <motion.button
+              whileTap={{ scale: 0.95 }}
+              whileHover={{ scale: 1.02 }}
+              onClick={() =>
+                addLine({ key: it.id, itemId: it.id, name: it.name, unitPrice: it.price })
+              }
+              className="mt-4 inline-flex items-center justify-center gap-1.5 self-start rounded-full bg-amber-brand px-4 py-2 text-xs font-bold text-primary-foreground"
+            >
+              <Plus className="h-3.5 w-3.5" strokeWidth={3} /> Add to cart
+            </motion.button>
+          </div>
         </motion.article>
       ))}
     </div>
@@ -116,7 +126,7 @@ function SimpleGrid({ items }: { items: { id: string; name: string; price: numbe
 
 function PizzaGrid({ items }: { items: PizzaItem[] }) {
   return (
-    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+    <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
       {items.map((p, idx) => (
         <motion.div
           key={p.id}
@@ -142,62 +152,80 @@ function PizzaCard({ pizza }: { pizza: PizzaItem }) {
     <motion.article
       whileHover={{ scale: 1.015, y: -2 }}
       transition={{ type: "spring", stiffness: 280, damping: 24 }}
-      className="relative overflow-hidden rounded-2xl border border-border bg-card p-5 transition-colors hover:border-amber-brand/50"
+      className="relative overflow-hidden rounded-2xl border border-border bg-card transition-colors hover:border-amber-brand/50"
     >
-      <div className="flex items-start justify-between gap-3">
-        <div>
-          <h3 className="text-lg font-bold leading-tight">{pizza.name}</h3>
-          {pizza.description && (
-            <p className="mt-1 text-sm text-muted-foreground">{pizza.description}</p>
-          )}
-        </div>
-        <div className="text-right">
-          <div className="text-[10px] uppercase tracking-widest text-muted-foreground">{sizeLabel(size)}</div>
-          <AnimatedPrice value={price} />
-        </div>
-      </div>
-
-      <div className="mt-5 flex flex-wrap items-center gap-2">
-        <div className="relative flex rounded-full border border-border bg-surface/60 p-1">
-          {sizes.map((s) => {
-            const active = s === size;
-            return (
-              <button
-                key={s}
-                onClick={() => setSize(s)}
-                className={`relative rounded-full px-3.5 py-1.5 text-xs font-bold transition-colors ${
-                  active ? "text-primary-foreground" : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                {active && (
-                  <motion.span
-                    layoutId={`pizza-size-${pizza.id}`}
-                    className="absolute inset-0 -z-10 rounded-full bg-amber-brand"
-                    transition={{ type: "spring", stiffness: 420, damping: 32 }}
-                  />
-                )}
-                {s}
-              </button>
-            );
-          })}
+      <div className="flex flex-col sm:flex-row">
+        <div className="relative aspect-square w-full shrink-0 overflow-hidden sm:w-44 md:w-52">
+          <motion.img
+            src={pizza.image}
+            alt={pizza.name}
+            loading="lazy"
+            width={768}
+            height={768}
+            className="h-full w-full object-cover"
+            whileHover={{ scale: 1.08, rotate: 1 }}
+            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+          />
+          <div aria-hidden className="pointer-events-none absolute inset-0 bg-gradient-to-t from-card/80 via-transparent to-transparent sm:bg-gradient-to-r" />
         </div>
 
-        <motion.button
-          whileTap={{ scale: 0.95 }}
-          whileHover={{ scale: 1.03 }}
-          onClick={() =>
-            addLine({
-              key: `${pizza.id}-${size}`,
-              itemId: pizza.id,
-              name: pizza.name,
-              variant: sizeLabel(size),
-              unitPrice: price,
-            })
-          }
-          className="ml-auto inline-flex items-center gap-1.5 rounded-full bg-amber-brand px-4 py-2 text-xs font-bold text-primary-foreground"
-        >
-          <Plus className="h-3.5 w-3.5" strokeWidth={3} /> Add
-        </motion.button>
+        <div className="flex flex-1 flex-col p-5">
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <h3 className="text-lg font-bold leading-tight">{pizza.name}</h3>
+              {pizza.description && (
+                <p className="mt-1 text-sm text-muted-foreground">{pizza.description}</p>
+              )}
+            </div>
+            <div className="text-right">
+              <div className="text-[10px] uppercase tracking-widest text-muted-foreground">{sizeLabel(size)}</div>
+              <AnimatedPrice value={price} />
+            </div>
+          </div>
+
+          <div className="mt-auto pt-4 flex flex-wrap items-center gap-2">
+            <div className="relative flex rounded-full border border-border bg-surface/60 p-1">
+              {sizes.map((s) => {
+                const active = s === size;
+                return (
+                  <button
+                    key={s}
+                    onClick={() => setSize(s)}
+                    className={`relative rounded-full px-3.5 py-1.5 text-xs font-bold transition-colors ${
+                      active ? "text-primary-foreground" : "text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    {active && (
+                      <motion.span
+                        layoutId={`pizza-size-${pizza.id}`}
+                        className="absolute inset-0 -z-10 rounded-full bg-amber-brand"
+                        transition={{ type: "spring", stiffness: 420, damping: 32 }}
+                      />
+                    )}
+                    {s}
+                  </button>
+                );
+              })}
+            </div>
+
+            <motion.button
+              whileTap={{ scale: 0.95 }}
+              whileHover={{ scale: 1.03 }}
+              onClick={() =>
+                addLine({
+                  key: `${pizza.id}-${size}`,
+                  itemId: pizza.id,
+                  name: pizza.name,
+                  variant: sizeLabel(size),
+                  unitPrice: price,
+                })
+              }
+              className="ml-auto inline-flex items-center gap-1.5 rounded-full bg-amber-brand px-4 py-2 text-xs font-bold text-primary-foreground"
+            >
+              <Plus className="h-3.5 w-3.5" strokeWidth={3} /> Add
+            </motion.button>
+          </div>
+        </div>
       </div>
     </motion.article>
   );
@@ -226,11 +254,11 @@ function AnimatedPrice({ value }: { value: number }) {
   );
 }
 
-function DealsGrid() {
+function DealsGrid({ items }: { items: DealItem[] }) {
   const addLine = useCartStore((s) => s.addLine);
   return (
     <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
-      {deals.map((d, idx) => (
+      {items.map((d, idx) => (
         <motion.article
           key={d.id}
           initial={{ opacity: 0, y: 20 }}
@@ -238,40 +266,61 @@ function DealsGrid() {
           viewport={{ once: true, margin: "-60px" }}
           transition={{ duration: 0.5, delay: idx * 0.05 }}
           whileHover={{ scale: 1.015, y: -3 }}
-          className={`relative overflow-hidden rounded-2xl border-2 p-6 ${
+          className={`group relative overflow-hidden rounded-2xl border-2 ${
             d.highlight
-              ? "border-amber-brand bg-gradient-to-br from-amber-brand/15 via-card to-card glow-amber-strong"
-              : "border-amber-brand/40 bg-card hover:border-amber-brand"
+              ? "border-amber-brand glow-amber-strong"
+              : "border-amber-brand/40 hover:border-amber-brand"
           }`}
         >
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              <div className="text-[10px] font-bold uppercase tracking-[0.22em] text-amber-brand">
-                Bundle Deal
-              </div>
-              <h3 className="mt-1 text-2xl font-black tracking-tight">{d.name}</h3>
-            </div>
-            <div className="text-right">
-              <div className="text-[10px] uppercase tracking-widest text-muted-foreground">Only</div>
-              <div className="text-3xl font-black text-amber-brand">{formatRs(d.price)}</div>
-            </div>
+          <div className="relative aspect-[16/9] w-full overflow-hidden bg-surface">
+            <motion.img
+              src={d.image}
+              alt={d.name}
+              loading="lazy"
+              width={1024}
+              height={768}
+              className="h-full w-full object-cover"
+              whileHover={{ scale: 1.06 }}
+              transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+            />
+            <div aria-hidden className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
+            {d.highlight && (
+              <span className="absolute left-3 top-3 rounded-full bg-amber-brand px-3 py-1 text-[10px] font-black uppercase tracking-widest text-primary-foreground">
+                Best value
+              </span>
+            )}
           </div>
-          <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{d.description}</p>
-          <motion.button
-            whileTap={{ scale: 0.95 }}
-            whileHover={{ scale: 1.02 }}
-            onClick={() =>
-              addLine({
-                key: d.id,
-                itemId: d.id,
-                name: `${d.name} (Deal)`,
-                unitPrice: d.price,
-              })
-            }
-            className="mt-5 inline-flex items-center gap-1.5 rounded-full bg-amber-brand px-5 py-2.5 text-sm font-bold text-primary-foreground"
-          >
-            <Plus className="h-4 w-4" strokeWidth={3} /> Add deal
-          </motion.button>
+
+          <div className={`relative -mt-6 p-6 ${d.highlight ? "bg-gradient-to-br from-amber-brand/10 via-card to-card" : "bg-card"}`}>
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <div className="text-[10px] font-bold uppercase tracking-[0.22em] text-amber-brand">
+                  Bundle Deal
+                </div>
+                <h3 className="mt-1 text-2xl font-black tracking-tight">{d.name}</h3>
+              </div>
+              <div className="text-right">
+                <div className="text-[10px] uppercase tracking-widest text-muted-foreground">Only</div>
+                <div className="text-3xl font-black text-amber-brand">{formatRs(d.price)}</div>
+              </div>
+            </div>
+            <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{d.description}</p>
+            <motion.button
+              whileTap={{ scale: 0.95 }}
+              whileHover={{ scale: 1.02 }}
+              onClick={() =>
+                addLine({
+                  key: d.id,
+                  itemId: d.id,
+                  name: `${d.name} (Deal)`,
+                  unitPrice: d.price,
+                })
+              }
+              className="mt-5 inline-flex items-center gap-1.5 rounded-full bg-amber-brand px-5 py-2.5 text-sm font-bold text-primary-foreground"
+            >
+              <Plus className="h-4 w-4" strokeWidth={3} /> Add deal
+            </motion.button>
+          </div>
         </motion.article>
       ))}
     </div>
