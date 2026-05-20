@@ -72,14 +72,18 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
+      { title: "DADU FOOD CORNER WEBSITE" },
+      { name: "description", content: "DFC Taste Hub is a fast-food restaurant web app for DADU FOOD CORNER." },
       { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { property: "og:title", content: "DADU FOOD CORNER WEBSITE" },
+      { property: "og:description", content: "DFC Taste Hub is a fast-food restaurant web app for DADU FOOD CORNER." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:title", content: "DADU FOOD CORNER WEBSITE" },
+      { name: "twitter:description", content: "DFC Taste Hub is a fast-food restaurant web app for DADU FOOD CORNER." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/aef92ba9-8fcf-4ed8-b4dd-8b6874f788c2/id-preview-bfce469f--d4dad2a2-3087-4532-ae5b-af224d194cab.lovable.app-1779274264808.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/aef92ba9-8fcf-4ed8-b4dd-8b6874f788c2/id-preview-bfce469f--d4dad2a2-3087-4532-ae5b-af224d194cab.lovable.app-1779274264808.png" },
     ],
     links: [
       {
