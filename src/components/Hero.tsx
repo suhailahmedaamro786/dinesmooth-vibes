@@ -2,12 +2,24 @@ import { motion } from "motion/react";
 import { Train, Sparkles } from "lucide-react";
 import { SPECIAL_TRAIN_PIZZA_PRICE } from "@/data/menu";
 import { formatRs } from "@/lib/format";
+import heroSpread from "@/assets/hero-spread.jpg";
 
 export function Hero() {
   return (
     <section className="relative isolate overflow-hidden pt-32 pb-20 sm:pt-40 sm:pb-28">
-      <div aria-hidden className="absolute inset-0 -z-10 bg-radial-amber" />
-      <div aria-hidden className="absolute inset-0 -z-10 bg-grid opacity-60" />
+      {/* Background photo + overlays */}
+      <motion.img
+        src={heroSpread}
+        alt=""
+        aria-hidden
+        initial={{ scale: 1.08, opacity: 0 }}
+        animate={{ scale: 1, opacity: 0.55 }}
+        transition={{ duration: 1.6, ease: [0.22, 1, 0.36, 1] }}
+        className="absolute inset-0 -z-20 h-full w-full object-cover"
+      />
+      <div aria-hidden className="absolute inset-0 -z-10 bg-gradient-to-b from-background/60 via-background/85 to-background" />
+      <div aria-hidden className="absolute inset-0 -z-10 bg-radial-amber opacity-80" />
+      <div aria-hidden className="absolute inset-0 -z-10 bg-grid opacity-40" />
       <motion.div
         aria-hidden
         initial={{ opacity: 0 }}
@@ -23,7 +35,7 @@ export function Hero() {
           transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
           className="mx-auto max-w-3xl text-center"
         >
-          <span className="inline-flex items-center gap-2 rounded-full border border-border bg-surface/60 px-3 py-1.5 text-[11px] uppercase tracking-[0.22em] text-muted-foreground backdrop-blur">
+          <span className="inline-flex items-center gap-2 rounded-full border border-border bg-surface/70 px-3 py-1.5 text-[11px] uppercase tracking-[0.22em] text-muted-foreground backdrop-blur">
             <Sparkles className="h-3.5 w-3.5 text-amber-brand" />
             Freshly fired · Hand-tossed · Served hot
           </span>
@@ -47,7 +59,6 @@ export function Hero() {
           </motion.p>
         </motion.div>
 
-        {/* Special highlight banner */}
         <motion.a
           href="#menu"
           initial={{ opacity: 0, y: 24 }}
@@ -55,7 +66,7 @@ export function Hero() {
           transition={{ delay: 0.4, duration: 0.6 }}
           whileHover={{ scale: 1.015 }}
           whileTap={{ scale: 0.99 }}
-          className="mx-auto mt-12 flex max-w-3xl items-center gap-4 rounded-2xl border border-amber-brand/60 bg-gradient-to-r from-amber-brand/10 via-amber-brand/5 to-transparent p-4 sm:p-5 glow-amber"
+          className="mx-auto mt-12 flex max-w-3xl items-center gap-4 rounded-2xl border border-amber-brand/60 bg-gradient-to-r from-amber-brand/15 via-amber-brand/5 to-transparent p-4 backdrop-blur sm:p-5 glow-amber"
         >
           <span className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-amber-brand text-primary-foreground">
             <Train className="h-6 w-6" strokeWidth={2.5} />
