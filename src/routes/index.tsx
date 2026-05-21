@@ -4,17 +4,14 @@ import { Hero } from "@/components/Hero";
 import { MenuSection } from "@/components/MenuSection";
 import { CartDrawer } from "@/components/CartDrawer";
 import { Footer } from "@/components/Footer";
+import { WhatsAppButton } from "@/components/WhatsAppButton";
 
 export const Route = createFileRoute("/")({
   component: Index,
   head: () => ({
     meta: [
       { title: "DFC · Dadu Food Corner — The Taste Hub" },
-      {
-        name: "description",
-        content:
-          "DADU FOOD CORNER (DFC) — The Taste Hub. Order zingers, broasts, hand-tossed pizzas, rolls and bundle deals online.",
-      },
+      { name: "description", content: "DADU FOOD CORNER (DFC) — order zingers, broasts, hand-tossed pizzas, rolls and bundle deals online with live order tracking." },
       { property: "og:title", content: "DFC · Dadu Food Corner — The Taste Hub" },
       { property: "og:description", content: "Zingers, broasts, pizzas & exclusive bundle deals." },
     ],
@@ -31,6 +28,7 @@ function Index() {
       </main>
       <Footer />
       <CartDrawer />
+      <WhatsAppButton />
     </div>
   );
 }

@@ -9,6 +9,9 @@ import {
 } from "@tanstack/react-router";
 
 import appCss from "../styles.css?url";
+import { Toaster } from "@/components/ui/sonner";
+import { AuthProvider } from "@/hooks/useAuth";
+import { ThemeProvider } from "@/hooks/useTheme";
 
 function NotFoundComponent() {
   return (
@@ -82,8 +85,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "twitter:site", content: "@Lovable" },
       { name: "twitter:title", content: "DADU FOOD CORNER WEBSITE" },
       { name: "twitter:description", content: "DFC Taste Hub is a fast-food restaurant web app for DADU FOOD CORNER." },
-      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/aef92ba9-8fcf-4ed8-b4dd-8b6874f788c2/id-preview-bfce469f--d4dad2a2-3087-4532-ae5b-af224d194cab.lovable.app-1779274264808.png" },
-      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/aef92ba9-8fcf-4ed8-b4dd-8b6874f788c2/id-preview-bfce469f--d4dad2a2-3087-4532-ae5b-af224d194cab.lovable.app-1779274264808.png" },
     ],
     links: [
       {
@@ -100,7 +101,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootShell({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" className="dark">
       <head>
         <HeadContent />
       </head>
@@ -117,7 +118,12 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <Outlet />
+      <ThemeProvider>
+        <AuthProvider>
+          <Outlet />
+          <Toaster position="top-center" richColors />
+        </AuthProvider>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 }

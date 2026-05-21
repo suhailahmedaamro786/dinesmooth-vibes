@@ -9,10 +9,17 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as TrackOrderIdRouteImport } from './routes/track.$orderId'
 import { Route as ApiOrdersRouteImport } from './routes/api/orders'
 
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminRoute = AdminRouteImport.update({
   id: '/admin',
   path: '/admin',
@@ -21,6 +28,11 @@ const AdminRoute = AdminRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TrackOrderIdRoute = TrackOrderIdRouteImport.update({
+  id: '/track/$orderId',
+  path: '/track/$orderId',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiOrdersRoute = ApiOrdersRouteImport.update({
@@ -32,35 +44,50 @@ const ApiOrdersRoute = ApiOrdersRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
+  '/auth': typeof AuthRoute
   '/api/orders': typeof ApiOrdersRoute
+  '/track/$orderId': typeof TrackOrderIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
+  '/auth': typeof AuthRoute
   '/api/orders': typeof ApiOrdersRoute
+  '/track/$orderId': typeof TrackOrderIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
+  '/auth': typeof AuthRoute
   '/api/orders': typeof ApiOrdersRoute
+  '/track/$orderId': typeof TrackOrderIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/admin' | '/api/orders'
+  fullPaths: '/' | '/admin' | '/auth' | '/api/orders' | '/track/$orderId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/admin' | '/api/orders'
-  id: '__root__' | '/' | '/admin' | '/api/orders'
+  to: '/' | '/admin' | '/auth' | '/api/orders' | '/track/$orderId'
+  id: '__root__' | '/' | '/admin' | '/auth' | '/api/orders' | '/track/$orderId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRoute
+  AuthRoute: typeof AuthRoute
   ApiOrdersRoute: typeof ApiOrdersRoute
+  TrackOrderIdRoute: typeof TrackOrderIdRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin': {
       id: '/admin'
       path: '/admin'
@@ -73,6 +100,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/track/$orderId': {
+      id: '/track/$orderId'
+      path: '/track/$orderId'
+      fullPath: '/track/$orderId'
+      preLoaderRoute: typeof TrackOrderIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/orders': {
@@ -88,18 +122,10 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRoute,
+  AuthRoute: AuthRoute,
   ApiOrdersRoute: ApiOrdersRoute,
+  TrackOrderIdRoute: TrackOrderIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

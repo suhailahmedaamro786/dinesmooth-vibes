@@ -1,9 +1,12 @@
 import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
-import { X, Minus, Plus, Trash2, Loader2, CheckCircle2, ShoppingBag } from "lucide-react";
+import { X, Minus, Plus, Trash2, Loader2, CheckCircle2, ShoppingBag, Truck } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 import { useCartStore } from "@/store/useCartStore";
-import { useOrdersStore, type Order } from "@/store/useOrdersStore";
 import { formatRs } from "@/lib/format";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
+import { toast } from "sonner";
 
 export function CartDrawer() {
   const isOpen = useCartStore((s) => s.isOpen);
@@ -14,12 +17,11 @@ export function CartDrawer() {
   const remove = useCartStore((s) => s.remove);
   const clear = useCartStore((s) => s.clear);
   const subtotal = useCartStore((s) => s.subtotal());
-
-  const addOrder = useOrdersStore((s) => s.addOrder);
+  const { user } = useAuth();
 
   const [showCheckout, setShowCheckout] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const [success, setSuccess] = useState<Order | null>(null);
+  const [success, setSuccess] = useState<{ id: string; total: number; address: string } | null>(null);
   const [form, setForm] = useState({ name: "", phone: "", address: "", notes: "" });
 
   const close = () => {
@@ -32,31 +34,35 @@ export function CartDrawer() {
 
   const placeOrder = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.name.trim() || !form.phone.trim() || !form.address.trim()) return;
+    if (!form.name.trim() || !form.phone.trim() || !form.address.trim()) {
+      toast.error("Please fill name, phone and address");
+      return;
+    }
     setSubmitting(true);
 
-    const order: Order = {
-      id: `DFC-${Date.now().toString(36).toUpperCase()}`,
-      createdAt: Date.now(),
-      status: "Pending",
-      customer: { ...form },
-      items: lines,
+    const orderId = `DFC-${Date.now().toString(36).toUpperCase()}`;
+    const { error } = await supabase.from("orders").insert({
+      id: orderId,
+      user_id: user?.id ?? null,
+      customer_name: form.name,
+      phone: form.phone,
+      address: form.address,
+      notes: form.notes || null,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      items: lines as any,
       total: subtotal,
-    };
+      status: "received",
+    });
 
-    try {
-      await fetch("/api/orders", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(order),
-      });
-    } catch {
-      /* offline fallback — still record locally */
+    setSubmitting(false);
+
+    if (error) {
+      toast.error(`Could not place order: ${error.message}`);
+      return;
     }
 
-    addOrder(order);
-    setSubmitting(false);
-    setSuccess(order);
+    toast.success(`Order ${orderId} placed!`);
+    setSuccess({ id: orderId, total: subtotal, address: form.address });
     clear();
     setForm({ name: "", phone: "", address: "", notes: "" });
   };
@@ -65,7 +71,6 @@ export function CartDrawer() {
     <AnimatePresence>
       {isOpen && (
         <>
-          {/* Overlay */}
           <motion.div
             key="overlay"
             initial={{ opacity: 0 }}
@@ -76,7 +81,6 @@ export function CartDrawer() {
             className="fixed inset-0 z-[60] bg-background/70 backdrop-blur-sm"
           />
 
-          {/* Drawer */}
           <motion.aside
             key="drawer"
             initial={{ x: "100%" }}
@@ -129,34 +133,17 @@ export function CartDrawer() {
                           <div className="mt-1 text-xs text-muted-foreground">
                             {formatRs(l.unitPrice)} each
                           </div>
-
                           <div className="mt-3 flex items-center gap-2">
                             <div className="inline-flex items-center rounded-full border border-border">
-                              <motion.button
-                                whileTap={{ scale: 0.9 }}
-                                onClick={() => dec(l.key)}
-                                className="grid h-8 w-8 place-items-center text-muted-foreground hover:text-foreground"
-                                aria-label="Decrease"
-                              >
+                              <motion.button whileTap={{ scale: 0.9 }} onClick={() => dec(l.key)} className="grid h-8 w-8 place-items-center text-muted-foreground hover:text-foreground" aria-label="Decrease">
                                 <Minus className="h-3.5 w-3.5" />
                               </motion.button>
-                              <span className="w-7 text-center text-sm font-bold tabular-nums">
-                                {l.qty}
-                              </span>
-                              <motion.button
-                                whileTap={{ scale: 0.9 }}
-                                onClick={() => inc(l.key)}
-                                className="grid h-8 w-8 place-items-center text-amber-brand"
-                                aria-label="Increase"
-                              >
+                              <span className="w-7 text-center text-sm font-bold tabular-nums">{l.qty}</span>
+                              <motion.button whileTap={{ scale: 0.9 }} onClick={() => inc(l.key)} className="grid h-8 w-8 place-items-center text-amber-brand" aria-label="Increase">
                                 <Plus className="h-3.5 w-3.5" />
                               </motion.button>
                             </div>
-                            <button
-                              onClick={() => remove(l.key)}
-                              className="grid h-8 w-8 place-items-center rounded-full text-muted-foreground hover:text-destructive"
-                              aria-label="Remove"
-                            >
+                            <button onClick={() => remove(l.key)} className="grid h-8 w-8 place-items-center rounded-full text-muted-foreground hover:text-destructive" aria-label="Remove">
                               <Trash2 className="h-3.5 w-3.5" />
                             </button>
                           </div>
@@ -182,6 +169,13 @@ export function CartDrawer() {
                   <Field label="Mobile number" type="tel" inputMode="tel" value={form.phone} onChange={(v) => setForm({ ...form, phone: v })} required />
                   <Field label="Delivery address" value={form.address} onChange={(v) => setForm({ ...form, address: v })} required textarea />
                   <Field label="Cooking / delivery notes (optional)" value={form.notes} onChange={(v) => setForm({ ...form, notes: v })} textarea />
+
+                  <div className="rounded-xl border border-amber-brand/30 bg-amber-brand/5 p-3 text-xs">
+                    <div className="font-bold text-amber-brand">Payment on delivery</div>
+                    <div className="mt-1 text-muted-foreground">
+                      Pay cash, or send to JazzCash/EasyPaisa: <span className="font-semibold text-foreground">0314 5327444</span> and share the TxID with the rider.
+                    </div>
+                  </div>
                 </motion.form>
               )}
             </div>
@@ -199,18 +193,13 @@ export function CartDrawer() {
                   whileHover={{ scale: 1.01 }}
                   disabled={submitting}
                   onClick={(e) => {
-                    if (!showCheckout) {
-                      setShowCheckout(true);
-                    } else {
-                      placeOrder(e as unknown as React.FormEvent);
-                    }
+                    if (!showCheckout) setShowCheckout(true);
+                    else placeOrder(e as unknown as React.FormEvent);
                   }}
                   className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-full bg-amber-brand px-5 py-3.5 text-sm font-bold text-primary-foreground glow-amber disabled:opacity-70"
                 >
                   {submitting ? (
-                    <>
-                      <Loader2 className="h-4 w-4 animate-spin" /> Placing order...
-                    </>
+                    <><Loader2 className="h-4 w-4 animate-spin" /> Placing order...</>
                   ) : showCheckout ? (
                     <>Place order · {formatRs(subtotal)}</>
                   ) : (
@@ -229,38 +218,17 @@ export function CartDrawer() {
 function Field({
   label, value, onChange, type = "text", required, textarea, inputMode,
 }: {
-  label: string;
-  value: string;
-  onChange: (v: string) => void;
-  type?: string;
-  required?: boolean;
-  textarea?: boolean;
+  label: string; value: string; onChange: (v: string) => void; type?: string; required?: boolean; textarea?: boolean;
   inputMode?: React.HTMLAttributes<HTMLInputElement>["inputMode"];
 }) {
-  const base =
-    "w-full rounded-xl border border-border bg-surface/60 px-3.5 py-2.5 text-sm placeholder:text-muted-foreground/70 outline-none transition focus:border-amber-brand focus:ring-2 focus:ring-amber-brand/30";
+  const base = "w-full rounded-xl border border-border bg-surface/60 px-3.5 py-2.5 text-sm placeholder:text-muted-foreground/70 outline-none transition focus:border-amber-brand focus:ring-2 focus:ring-amber-brand/30";
   return (
     <label className="block">
-      <span className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-        {label}
-      </span>
+      <span className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{label}</span>
       {textarea ? (
-        <textarea
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          required={required}
-          rows={2}
-          className={base}
-        />
+        <textarea value={value} onChange={(e) => onChange(e.target.value)} required={required} rows={2} className={base} />
       ) : (
-        <input
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          required={required}
-          type={type}
-          inputMode={inputMode}
-          className={base}
-        />
+        <input value={value} onChange={(e) => onChange(e.target.value)} required={required} type={type} inputMode={inputMode} className={base} />
       )}
     </label>
   );
@@ -278,22 +246,13 @@ function EmptyView() {
   );
 }
 
-function SuccessView({ order, onDone }: { order: Order; onDone: () => void }) {
+function SuccessView({ order, onDone }: { order: { id: string; total: number; address: string }; onDone: () => void }) {
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      className="flex h-full flex-col items-center justify-center px-6 py-16 text-center"
-    >
-      <motion.div
-        initial={{ scale: 0.4, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ type: "spring", stiffness: 280, damping: 18 }}
-        className="grid h-24 w-24 place-items-center rounded-full bg-amber-brand text-primary-foreground glow-amber-strong"
-      >
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex h-full flex-col items-center justify-center px-6 py-16 text-center">
+      <motion.div initial={{ scale: 0.4, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ type: "spring", stiffness: 280, damping: 18 }} className="grid h-24 w-24 place-items-center rounded-full bg-amber-brand text-primary-foreground glow-amber-strong">
         <CheckCircle2 className="h-12 w-12" strokeWidth={2.5} />
       </motion.div>
-      <h3 className="mt-6 text-2xl font-black">Order Placed Successfully 🎉</h3>
+      <h3 className="mt-6 text-2xl font-black">Order Placed 🎉</h3>
       <p className="mt-2 text-sm text-muted-foreground">
         Your order <span className="font-mono text-foreground">{order.id}</span> is being prepared.
       </p>
@@ -304,16 +263,20 @@ function SuccessView({ order, onDone }: { order: Order; onDone: () => void }) {
         </div>
         <div className="mt-1 flex justify-between text-xs text-muted-foreground">
           <span>Delivering to</span>
-          <span className="max-w-[60%] truncate">{order.customer.address}</span>
+          <span className="max-w-[60%] truncate">{order.address}</span>
         </div>
       </div>
-      <motion.button
-        whileTap={{ scale: 0.96 }}
+      <Link
+        to="/track/$orderId"
+        params={{ orderId: order.id }}
         onClick={onDone}
-        className="mt-6 inline-flex items-center gap-2 rounded-full border border-border px-5 py-2.5 text-sm font-semibold hover:border-amber-brand/60"
+        className="mt-6 inline-flex items-center gap-2 rounded-full bg-amber-brand px-5 py-2.5 text-sm font-bold text-primary-foreground glow-amber"
       >
+        <Truck className="h-4 w-4" /> Track order
+      </Link>
+      <button onClick={onDone} className="mt-3 text-xs text-muted-foreground hover:text-foreground">
         Keep browsing
-      </motion.button>
+      </button>
     </motion.div>
   );
 }
