@@ -36,7 +36,7 @@ export function WhatsAppButton() {
       whileHover={{ scale: 1.08 }}
       whileTap={{ scale: 0.94 }}
       aria-label="Order on WhatsApp"
-      className="fixed bottom-5 left-5 z-[55] grid h-14 w-14 place-items-center rounded-full bg-[#25D366] text-white shadow-[0_10px_40px_-8px_rgba(37,211,102,0.6)] hover:shadow-[0_15px_50px_-8px_rgba(37,211,102,0.8)]"
+      className="fixed bottom-5 right-5 z-[55] grid h-14 w-14 place-items-center rounded-full bg-[#25D366] text-white shadow-[0_10px_40px_-8px_rgba(37,211,102,0.6)] hover:shadow-[0_15px_50px_-8px_rgba(37,211,102,0.8)]"
     >
       <span className="absolute inset-0 -z-10 animate-ping rounded-full bg-[#25D366]/40" />
       <MessageCircle className="h-6 w-6" strokeWidth={2.5} fill="currentColor" fillOpacity={0.15} />
