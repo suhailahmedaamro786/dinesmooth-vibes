@@ -84,10 +84,10 @@ export function Navbar() {
                     <div className="truncate text-sm font-semibold">{user.email}</div>
                   </div>
                   <button
-                    onClick={() => { setMenuOpen(false); navigate({ to: "/track/$orderId", params: { orderId: "latest" } }); }}
+                    onClick={() => { setMenuOpen(false); navigate({ to: "/profile" }); }}
                     className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm hover:bg-surface"
                   >
-                    <Package className="h-4 w-4 text-amber-brand" /> Track orders
+                    <Package className="h-4 w-4 text-amber-brand" /> My profile & orders
                   </button>
                   <button
                     onClick={handleSignOut}

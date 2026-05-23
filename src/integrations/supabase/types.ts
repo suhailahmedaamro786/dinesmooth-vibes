@@ -14,17 +14,44 @@ export type Database = {
   }
   public: {
     Tables: {
+      menu_overrides: {
+        Row: {
+          available: boolean
+          item_id: string
+          price_override: number | null
+          updated_at: string
+        }
+        Insert: {
+          available?: boolean
+          item_id: string
+          price_override?: number | null
+          updated_at?: string
+        }
+        Update: {
+          available?: boolean
+          item_id?: string
+          price_override?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       orders: {
         Row: {
           address: string
           created_at: string
           customer_name: string
+          discount: number
           id: string
           items: Json
           notes: string | null
+          payment_method: string
           phone: string
+          points_earned: number
+          points_redeemed: number
+          promo_code: string | null
           status: Database["public"]["Enums"]["order_status"]
           total: number
+          transaction_id: string | null
           updated_at: string
           user_id: string | null
         }
@@ -32,12 +59,18 @@ export type Database = {
           address: string
           created_at?: string
           customer_name: string
+          discount?: number
           id: string
           items?: Json
           notes?: string | null
+          payment_method?: string
           phone: string
+          points_earned?: number
+          points_redeemed?: number
+          promo_code?: string | null
           status?: Database["public"]["Enums"]["order_status"]
           total?: number
+          transaction_id?: string | null
           updated_at?: string
           user_id?: string | null
         }
@@ -45,14 +78,47 @@ export type Database = {
           address?: string
           created_at?: string
           customer_name?: string
+          discount?: number
           id?: string
           items?: Json
           notes?: string | null
+          payment_method?: string
           phone?: string
+          points_earned?: number
+          points_redeemed?: number
+          promo_code?: string | null
           status?: Database["public"]["Enums"]["order_status"]
           total?: number
+          transaction_id?: string | null
           updated_at?: string
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      point_transactions: {
+        Row: {
+          created_at: string
+          id: string
+          order_id: string | null
+          points: number
+          type: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          order_id?: string | null
+          points: number
+          type: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          order_id?: string | null
+          points?: number
+          type?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -62,6 +128,7 @@ export type Database = {
           default_address: string | null
           full_name: string | null
           id: string
+          loyalty_points: number
           phone: string | null
           updated_at: string
         }
@@ -70,6 +137,7 @@ export type Database = {
           default_address?: string | null
           full_name?: string | null
           id: string
+          loyalty_points?: number
           phone?: string | null
           updated_at?: string
         }
@@ -78,8 +146,78 @@ export type Database = {
           default_address?: string | null
           full_name?: string | null
           id?: string
+          loyalty_points?: number
           phone?: string | null
           updated_at?: string
+        }
+        Relationships: []
+      }
+      promo_codes: {
+        Row: {
+          active: boolean
+          code: string
+          created_at: string
+          discount_type: string
+          discount_value: number
+          expires_at: string | null
+          id: string
+          updated_at: string
+          usage_limit: number | null
+          used_count: number
+        }
+        Insert: {
+          active?: boolean
+          code: string
+          created_at?: string
+          discount_type: string
+          discount_value: number
+          expires_at?: string | null
+          id?: string
+          updated_at?: string
+          usage_limit?: number | null
+          used_count?: number
+        }
+        Update: {
+          active?: boolean
+          code?: string
+          created_at?: string
+          discount_type?: string
+          discount_value?: number
+          expires_at?: string | null
+          id?: string
+          updated_at?: string
+          usage_limit?: number | null
+          used_count?: number
+        }
+        Relationships: []
+      }
+      saved_addresses: {
+        Row: {
+          address: string
+          created_at: string
+          id: string
+          is_default: boolean
+          label: string
+          phone: string | null
+          user_id: string
+        }
+        Insert: {
+          address: string
+          created_at?: string
+          id?: string
+          is_default?: boolean
+          label: string
+          phone?: string | null
+          user_id: string
+        }
+        Update: {
+          address?: string
+          created_at?: string
+          id?: string
+          is_default?: boolean
+          label?: string
+          phone?: string | null
+          user_id?: string
         }
         Relationships: []
       }

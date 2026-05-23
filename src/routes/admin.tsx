@@ -1,18 +1,26 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { motion, AnimatePresence, LayoutGroup } from "motion/react";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { ArrowLeft, ChevronRight, Volume2, VolumeX, Loader2, XCircle } from "lucide-react";
+import {
+  ArrowLeft, ChevronRight, Volume2, VolumeX, Loader2, XCircle,
+  LayoutGrid, UtensilsCrossed, Tag, Users, BarChart3, Plus, Trash2,
+} from "lucide-react";
+import {
+  ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid,
+  PieChart, Pie, Cell,
+} from "recharts";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { ORDER_FLOW, STATUS_LABEL, type DbOrderStatus } from "@/lib/orderStatus";
 import { formatRs } from "@/lib/format";
+import { burgers, rolls, broast, pizzas, deals } from "@/data/menu";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/admin")({
   component: AdminPage,
   head: () => ({
     meta: [
-      { title: "DFC Admin · Live Orders" },
+      { title: "DFC Admin · Control Center" },
       { name: "description", content: "Real-time order dashboard for DFC — Dadu Food Corner." },
       { name: "robots", content: "noindex" },
     ],
@@ -20,21 +28,27 @@ export const Route = createFileRoute("/admin")({
 });
 
 type AdminOrder = {
-  id: string;
-  customer_name: string;
-  phone: string;
-  address: string;
-  notes: string | null;
-  status: DbOrderStatus;
-  total: number;
-  created_at: string;
+  id: string; customer_name: string; phone: string; address: string;
+  notes: string | null; status: DbOrderStatus; total: number;
+  created_at: string; payment_method?: string | null; transaction_id?: string | null;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   items: any[];
 };
 
+type Tab = "orders" | "menu" | "promo" | "customers" | "analytics";
+
+const TABS: { id: Tab; label: string; icon: React.ReactNode }[] = [
+  { id: "orders", label: "Live Orders", icon: <LayoutGrid className="h-4 w-4" /> },
+  { id: "menu", label: "Menu", icon: <UtensilsCrossed className="h-4 w-4" /> },
+  { id: "promo", label: "Promo Codes", icon: <Tag className="h-4 w-4" /> },
+  { id: "customers", label: "Customers", icon: <Users className="h-4 w-4" /> },
+  { id: "analytics", label: "Analytics", icon: <BarChart3 className="h-4 w-4" /> },
+];
+
 function AdminPage() {
   const { user, isAdmin, loading: authLoading } = useAuth();
   const navigate = useNavigate();
+  const [tab, setTab] = useState<Tab>("orders");
   const [orders, setOrders] = useState<AdminOrder[]>([]);
   const [loading, setLoading] = useState(true);
   const [soundOn, setSoundOn] = useState(true);
@@ -123,32 +137,30 @@ function AdminPage() {
           <XCircle className="mx-auto h-12 w-12 text-muted-foreground" />
           <h1 className="mt-4 text-xl font-bold">Admin access required</h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Your account doesn't have the admin role. Open the backend dashboard to grant your user the <span className="font-mono text-amber-brand">admin</span> role in <span className="font-mono">user_roles</span>.
+            Sign in as <span className="font-mono text-amber-brand">suhailahmedaamro786@gmail.com</span> to access the admin console.
           </p>
-          <Link to="/" className="mt-6 inline-flex items-center gap-2 rounded-full bg-amber-brand px-5 py-2.5 text-sm font-bold text-primary-foreground">
-            <ArrowLeft className="h-4 w-4" /> Back home
+          <Link to="/auth" className="mt-6 inline-flex items-center gap-2 rounded-full bg-amber-brand px-5 py-2.5 text-sm font-bold text-primary-foreground">
+            Go to sign in
+          </Link>
+          <Link to="/" className="mt-3 block text-xs text-muted-foreground hover:text-foreground">
+            <ArrowLeft className="mr-1 inline h-3 w-3" /> Back home
           </Link>
         </div>
       </div>
     );
   }
 
-  const grouped: Record<DbOrderStatus, AdminOrder[]> = {
-    received: [], confirmed: [], preparing: [], out_for_delivery: [], delivered: [], cancelled: [],
-  };
-  for (const o of orders) grouped[o.status].push(o);
-
   return (
     <div className="min-h-screen bg-background text-foreground">
       <header className="sticky top-0 z-40 border-b border-border bg-background/80 backdrop-blur-md">
         <div className="mx-auto flex max-w-[1600px] items-center justify-between gap-4 px-4 py-3 sm:px-6">
           <div className="flex items-center gap-3">
-            <Link to="/" className="grid h-9 w-9 place-items-center rounded-full border border-border text-muted-foreground hover:text-foreground" aria-label="Back to site">
+            <Link to="/" className="grid h-9 w-9 place-items-center rounded-full border border-border text-muted-foreground hover:text-foreground" aria-label="Back">
               <ArrowLeft className="h-4 w-4" />
             </Link>
             <div className="leading-tight">
               <div className="text-[10px] font-bold uppercase tracking-[0.22em] text-amber-brand">DFC Operations</div>
-              <div className="text-base font-bold">Live Order Console</div>
+              <div className="text-base font-bold">Control Center</div>
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -165,33 +177,53 @@ function AdminPage() {
             </button>
           </div>
         </div>
+        {/* Tabs */}
+        <div className="mx-auto flex max-w-[1600px] gap-1 overflow-x-auto px-4 pb-2 sm:px-6">
+          {TABS.map((t) => (
+            <button key={t.id} onClick={() => setTab(t.id)}
+              className={`inline-flex shrink-0 items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-bold transition ${tab === t.id ? "bg-amber-brand text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}>
+              {t.icon} {t.label}
+            </button>
+          ))}
+        </div>
       </header>
 
-      <div className="mx-auto grid max-w-[1600px] gap-6 px-4 py-6 sm:px-6 lg:grid-cols-[260px_1fr]">
-        <aside className="space-y-3">
-          <Metric label="Total revenue" value={formatRs(revenue)} accent />
-          <Metric label="Active orders" value={active.toString()} />
-          <Metric label="Delivered" value={completed.toString()} />
-          <div className="rounded-2xl border border-border bg-card p-4 text-xs text-muted-foreground">
-            <div className="font-semibold text-foreground">Tip</div>
-            Click <span className="text-amber-brand">Advance</span> to move an order along the kitchen flow, or <span className="text-destructive">Cancel</span> to cancel it.
-          </div>
-        </aside>
-
-        <main className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-5">
-          <LayoutGroup>
-            {(["received","confirmed","preparing","out_for_delivery","delivered"] as DbOrderStatus[]).map((status) => (
-              <Column key={status} status={status} orders={grouped[status]} setStatus={setStatus} />
-            ))}
-          </LayoutGroup>
-        </main>
+      <div className="mx-auto max-w-[1600px] px-4 py-6 sm:px-6">
+        {tab === "orders" && (
+          <OrdersTab orders={orders} setStatus={setStatus} revenue={revenue} active={active} completed={completed} />
+        )}
+        {tab === "menu" && <MenuTab />}
+        {tab === "promo" && <PromoTab />}
+        {tab === "customers" && <CustomersTab />}
+        {tab === "analytics" && <AnalyticsTab orders={orders} />}
       </div>
+    </div>
+  );
+}
 
-      {orders.length === 0 && (
-        <div className="mx-auto max-w-md px-6 py-12 text-center text-sm text-muted-foreground">
-          No orders yet. Place one from the <Link to="/" className="text-amber-brand hover:underline">customer site</Link>.
-        </div>
-      )}
+/* ────────────── Orders ────────────── */
+function OrdersTab({
+  orders, setStatus, revenue, active, completed,
+}: { orders: AdminOrder[]; setStatus: (id: string, s: DbOrderStatus) => void; revenue: number; active: number; completed: number }) {
+  const grouped: Record<DbOrderStatus, AdminOrder[]> = {
+    received: [], confirmed: [], preparing: [], out_for_delivery: [], delivered: [], cancelled: [],
+  };
+  for (const o of orders) grouped[o.status].push(o);
+
+  return (
+    <div className="grid gap-6 lg:grid-cols-[260px_1fr]">
+      <aside className="space-y-3">
+        <Metric label="Total revenue" value={formatRs(revenue)} accent />
+        <Metric label="Active orders" value={active.toString()} />
+        <Metric label="Delivered" value={completed.toString()} />
+      </aside>
+      <main className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-5">
+        <LayoutGroup>
+          {(["received","confirmed","preparing","out_for_delivery","delivered"] as DbOrderStatus[]).map((status) => (
+            <Column key={status} status={status} orders={grouped[status]} setStatus={setStatus} />
+          ))}
+        </LayoutGroup>
+      </main>
     </div>
   );
 }
@@ -210,7 +242,6 @@ function Column({
 }: { status: DbOrderStatus; orders: AdminOrder[]; setStatus: (id: string, s: DbOrderStatus) => void }) {
   const idx = ORDER_FLOW.indexOf(status);
   const next: DbOrderStatus | null = idx >= 0 && idx < ORDER_FLOW.length - 1 ? ORDER_FLOW[idx + 1] : null;
-
   return (
     <section className="flex min-h-[200px] flex-col rounded-2xl border border-border bg-card/40 p-3">
       <header className="mb-3 flex items-center justify-between px-1">
@@ -220,18 +251,14 @@ function Column({
       <div className="flex flex-1 flex-col gap-3">
         <AnimatePresence mode="popLayout">
           {orders.map((o) => (
-            <motion.article
-              key={o.id} layout layoutId={o.id}
+            <motion.article key={o.id} layout layoutId={o.id}
               initial={{ opacity: 0, scale: 0.9, y: 10 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.9 }}
               transition={{ type: "spring", stiffness: 300, damping: 28 }}
-              className="rounded-xl border border-border bg-background p-3.5 shadow-sm hover:border-amber-brand/50"
-            >
+              className="rounded-xl border border-border bg-background p-3.5 shadow-sm hover:border-amber-brand/50">
               <div className="flex items-start justify-between gap-2">
                 <div>
                   <div className="font-mono text-[11px] font-bold text-amber-brand">{o.id}</div>
-                  <div className="text-xs text-muted-foreground">
-                    {new Date(o.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
-                  </div>
+                  <div className="text-xs text-muted-foreground">{new Date(o.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</div>
                 </div>
                 <div className="text-right text-base font-black text-amber-brand tabular-nums">{formatRs(Number(o.total))}</div>
               </div>
@@ -239,7 +266,12 @@ function Column({
                 <div className="font-semibold">{o.customer_name}</div>
                 <div className="text-muted-foreground">{o.phone}</div>
                 <div className="mt-1 text-muted-foreground">{o.address}</div>
-                {o.notes && <div className="mt-1 italic text-muted-foreground">“{o.notes}”</div>}
+                {o.notes && <div className="mt-1 italic text-muted-foreground">"{o.notes}"</div>}
+                {o.payment_method && o.payment_method !== "cod" && (
+                  <div className="mt-1.5 rounded bg-amber-brand/10 px-1.5 py-1 text-[10px] font-bold uppercase text-amber-brand">
+                    {o.payment_method} · TxID: {o.transaction_id || "—"}
+                  </div>
+                )}
               </div>
               <ul className="mt-3 space-y-1 text-xs">
                 {o.items?.map((it, i) => (
@@ -267,5 +299,271 @@ function Column({
         </AnimatePresence>
       </div>
     </section>
+  );
+}
+
+/* ────────────── Menu management ────────────── */
+function MenuTab() {
+  const allItems = [
+    ...burgers.map((i) => ({ id: i.id, name: i.name, category: "Burgers" })),
+    ...rolls.map((i) => ({ id: i.id, name: i.name, category: "Rolls" })),
+    ...broast.map((i) => ({ id: i.id, name: i.name, category: "Broast" })),
+    ...pizzas.map((i) => ({ id: i.id, name: i.name, category: "Pizzas" })),
+    ...deals.map((i) => ({ id: i.id, name: i.name, category: "Deals" })),
+  ];
+  const [overrides, setOverrides] = useState<Record<string, { available: boolean }>>({});
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    supabase.from("menu_overrides").select("item_id, available").then(({ data }) => {
+      const m: Record<string, { available: boolean }> = {};
+      (data ?? []).forEach((r) => { m[r.item_id] = { available: r.available }; });
+      setOverrides(m);
+      setLoading(false);
+    });
+  }, []);
+
+  const toggle = async (id: string) => {
+    const current = overrides[id]?.available ?? true;
+    const newVal = !current;
+    setOverrides((m) => ({ ...m, [id]: { available: newVal } }));
+    const { error } = await supabase.from("menu_overrides").upsert({ item_id: id, available: newVal });
+    if (error) { toast.error(error.message); setOverrides((m) => ({ ...m, [id]: { available: current } })); }
+    else toast.success(`${id} → ${newVal ? "Available" : "Out of stock"}`);
+  };
+
+  if (loading) return <Loader2 className="mx-auto h-5 w-5 animate-spin text-amber-brand" />;
+
+  return (
+    <div className="rounded-2xl border border-border bg-card p-5">
+      <h2 className="mb-1 text-lg font-bold">Menu management</h2>
+      <p className="mb-4 text-sm text-muted-foreground">Toggle availability of any menu item. Pricing managed in code for now.</p>
+      <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+        {allItems.map((it) => {
+          const available = overrides[it.id]?.available ?? true;
+          return (
+            <div key={it.id} className="flex items-center justify-between rounded-xl border border-border bg-surface/40 px-3 py-2.5">
+              <div>
+                <div className="text-sm font-semibold">{it.name}</div>
+                <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">{it.category}</div>
+              </div>
+              <button onClick={() => toggle(it.id)}
+                className={`relative h-6 w-11 rounded-full transition ${available ? "bg-amber-brand" : "bg-muted"}`}>
+                <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-background transition-all ${available ? "left-5" : "left-0.5"}`} />
+              </button>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+/* ────────────── Promo codes ────────────── */
+type Promo = {
+  id: string; code: string; discount_type: "percent" | "flat";
+  discount_value: number; expires_at: string | null; usage_limit: number | null;
+  used_count: number; active: boolean;
+};
+
+function PromoTab() {
+  const [items, setItems] = useState<Promo[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [form, setForm] = useState({ code: "", discount_type: "percent" as "percent" | "flat", discount_value: 10, expires_at: "", usage_limit: "" });
+
+  const load = async () => {
+    const { data } = await supabase.from("promo_codes").select("*").order("created_at", { ascending: false });
+    setItems((data ?? []) as Promo[]);
+    setLoading(false);
+  };
+  useEffect(() => { load(); }, []);
+
+  const create = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const { error } = await supabase.from("promo_codes").insert({
+      code: form.code.trim().toUpperCase(),
+      discount_type: form.discount_type,
+      discount_value: form.discount_value,
+      expires_at: form.expires_at || null,
+      usage_limit: form.usage_limit ? Number(form.usage_limit) : null,
+    });
+    if (error) { toast.error(error.message); return; }
+    toast.success("Promo created");
+    setForm({ code: "", discount_type: "percent", discount_value: 10, expires_at: "", usage_limit: "" });
+    load();
+  };
+
+  const toggle = async (id: string, active: boolean) => {
+    await supabase.from("promo_codes").update({ active: !active }).eq("id", id);
+    load();
+  };
+  const remove = async (id: string) => {
+    await supabase.from("promo_codes").delete().eq("id", id);
+    load();
+  };
+
+  if (loading) return <Loader2 className="mx-auto h-5 w-5 animate-spin text-amber-brand" />;
+
+  return (
+    <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
+      <div className="rounded-2xl border border-border bg-card p-5">
+        <h2 className="mb-4 text-lg font-bold">Active promo codes</h2>
+        {items.length === 0 ? (
+          <p className="text-sm text-muted-foreground">No codes yet.</p>
+        ) : (
+          <div className="space-y-2">
+            {items.map((p) => (
+              <div key={p.id} className="flex items-center justify-between gap-3 rounded-xl border border-border bg-surface/40 p-3">
+                <div>
+                  <div className="font-mono text-sm font-black text-amber-brand">{p.code}</div>
+                  <div className="text-xs text-muted-foreground">
+                    {p.discount_type === "percent" ? `${p.discount_value}% off` : `Rs ${p.discount_value} off`} ·
+                    used {p.used_count}{p.usage_limit ? `/${p.usage_limit}` : ""}
+                    {p.expires_at ? ` · exp ${new Date(p.expires_at).toLocaleDateString()}` : ""}
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <button onClick={() => toggle(p.id, p.active)}
+                    className={`rounded-full px-3 py-1 text-[10px] font-bold uppercase ${p.active ? "bg-amber-brand/15 text-amber-brand" : "bg-muted text-muted-foreground"}`}>
+                    {p.active ? "Active" : "Off"}
+                  </button>
+                  <button onClick={() => remove(p.id)} className="text-muted-foreground hover:text-destructive"><Trash2 className="h-4 w-4" /></button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+      <form onSubmit={create} className="space-y-3 rounded-2xl border border-border bg-card p-5">
+        <h3 className="text-sm font-bold uppercase tracking-wider">New code</h3>
+        <input required value={form.code} onChange={(e) => setForm({ ...form, code: e.target.value })} placeholder="CODE" className="w-full rounded-xl border border-border bg-surface/60 px-3 py-2 text-sm uppercase outline-none focus:border-amber-brand" />
+        <select value={form.discount_type} onChange={(e) => setForm({ ...form, discount_type: e.target.value as "percent" | "flat" })} className="w-full rounded-xl border border-border bg-surface/60 px-3 py-2 text-sm outline-none focus:border-amber-brand">
+          <option value="percent">Percent off</option>
+          <option value="flat">Flat amount off</option>
+        </select>
+        <input type="number" min={1} value={form.discount_value} onChange={(e) => setForm({ ...form, discount_value: Number(e.target.value) })} className="w-full rounded-xl border border-border bg-surface/60 px-3 py-2 text-sm outline-none focus:border-amber-brand" />
+        <input type="date" value={form.expires_at} onChange={(e) => setForm({ ...form, expires_at: e.target.value })} className="w-full rounded-xl border border-border bg-surface/60 px-3 py-2 text-sm outline-none focus:border-amber-brand" />
+        <input type="number" placeholder="Usage limit (optional)" value={form.usage_limit} onChange={(e) => setForm({ ...form, usage_limit: e.target.value })} className="w-full rounded-xl border border-border bg-surface/60 px-3 py-2 text-sm outline-none focus:border-amber-brand" />
+        <button className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-amber-brand py-2.5 text-sm font-bold text-primary-foreground">
+          <Plus className="h-4 w-4" /> Create code
+        </button>
+      </form>
+    </div>
+  );
+}
+
+/* ────────────── Customers ────────────── */
+type Customer = { id: string; full_name: string | null; phone: string | null; loyalty_points: number; created_at: string };
+
+function CustomersTab() {
+  const [items, setItems] = useState<Customer[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    supabase.from("profiles").select("id, full_name, phone, loyalty_points, created_at").order("created_at", { ascending: false }).then(({ data }) => {
+      setItems((data ?? []) as Customer[]);
+      setLoading(false);
+    });
+  }, []);
+
+  if (loading) return <Loader2 className="mx-auto h-5 w-5 animate-spin text-amber-brand" />;
+  return (
+    <div className="rounded-2xl border border-border bg-card p-5">
+      <h2 className="mb-4 text-lg font-bold">Customers ({items.length})</h2>
+      <div className="overflow-x-auto">
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="border-b border-border text-[10px] uppercase tracking-wider text-muted-foreground">
+              <th className="py-2 text-left">Name</th><th className="text-left">Phone</th>
+              <th className="text-right">Points</th><th className="text-right">Joined</th>
+            </tr>
+          </thead>
+          <tbody>
+            {items.map((c) => (
+              <tr key={c.id} className="border-b border-border/40">
+                <td className="py-2 font-semibold">{c.full_name || "—"}</td>
+                <td className="text-muted-foreground">{c.phone || "—"}</td>
+                <td className="text-right font-bold text-amber-brand tabular-nums">{c.loyalty_points}</td>
+                <td className="text-right text-xs text-muted-foreground">{new Date(c.created_at).toLocaleDateString()}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
+/* ────────────── Analytics ────────────── */
+function AnalyticsTab({ orders }: { orders: AdminOrder[] }) {
+  const data = useMemo(() => {
+    // last 7 days revenue
+    const days: { day: string; revenue: number }[] = [];
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(); d.setDate(d.getDate() - i);
+      const key = d.toISOString().slice(0, 10);
+      const label = d.toLocaleDateString([], { weekday: "short" });
+      const revenue = orders.filter((o) => o.created_at.startsWith(key) && o.status !== "cancelled").reduce((n, o) => n + Number(o.total), 0);
+      days.push({ day: label, revenue });
+    }
+
+    // top items
+    const counts: Record<string, number> = {};
+    orders.forEach((o) => o.items?.forEach((it: { name: string; qty: number }) => {
+      counts[it.name] = (counts[it.name] ?? 0) + it.qty;
+    }));
+    const top = Object.entries(counts).map(([name, qty]) => ({ name, qty })).sort((a, b) => b.qty - a.qty).slice(0, 5);
+
+    // hours
+    const hourMap = new Map<number, number>();
+    for (let h = 0; h < 24; h++) hourMap.set(h, 0);
+    orders.forEach((o) => { const h = new Date(o.created_at).getHours(); hourMap.set(h, (hourMap.get(h) ?? 0) + 1); });
+    const hours = Array.from(hourMap.entries()).map(([h, c]) => ({ hour: `${h}h`, orders: c }));
+
+    return { days, top, hours, total: orders.length };
+  }, [orders]);
+
+  const COLORS = ["#f59e0b", "#fb923c", "#f97316", "#ef4444", "#a855f7"];
+
+  return (
+    <div className="grid gap-4 lg:grid-cols-2">
+      <div className="rounded-2xl border border-border bg-card p-5">
+        <h3 className="mb-4 text-sm font-bold uppercase tracking-wider">Revenue · last 7 days</h3>
+        <ResponsiveContainer width="100%" height={240}>
+          <BarChart data={data.days}>
+            <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+            <XAxis dataKey="day" stroke="hsl(var(--muted-foreground))" />
+            <YAxis stroke="hsl(var(--muted-foreground))" />
+            <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 8 }} />
+            <Bar dataKey="revenue" fill="#f59e0b" radius={[6, 6, 0, 0]} />
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+      <div className="rounded-2xl border border-border bg-card p-5">
+        <h3 className="mb-4 text-sm font-bold uppercase tracking-wider">Top 5 items</h3>
+        {data.top.length === 0 ? <p className="text-sm text-muted-foreground">No data yet.</p> : (
+          <ResponsiveContainer width="100%" height={240}>
+            <PieChart>
+              <Pie data={data.top} dataKey="qty" nameKey="name" cx="50%" cy="50%" outerRadius={90} label>
+                {data.top.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
+              </Pie>
+              <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 8 }} />
+            </PieChart>
+          </ResponsiveContainer>
+        )}
+      </div>
+      <div className="rounded-2xl border border-border bg-card p-5 lg:col-span-2">
+        <h3 className="mb-4 text-sm font-bold uppercase tracking-wider">Orders by hour</h3>
+        <ResponsiveContainer width="100%" height={220}>
+          <BarChart data={data.hours}>
+            <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+            <XAxis dataKey="hour" stroke="hsl(var(--muted-foreground))" />
+            <YAxis stroke="hsl(var(--muted-foreground))" />
+            <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 8 }} />
+            <Bar dataKey="orders" fill="#fb923c" radius={[6, 6, 0, 0]} />
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+    </div>
   );
 }
