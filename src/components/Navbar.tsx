@@ -5,6 +5,8 @@ import { useEffect, useState } from "react";
 import { useCartStore } from "@/store/useCartStore";
 import { useAuth } from "@/hooks/useAuth";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { LanguageToggle } from "@/components/LanguageToggle";
+import { useLanguage } from "@/hooks/useLanguage";
 import { toast } from "sonner";
 
 export function Navbar() {
@@ -14,6 +16,7 @@ export function Navbar() {
   const openCart = useCartStore((s) => s.openCart);
   const { user, isAdmin, signOut } = useAuth();
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12);
@@ -54,14 +57,15 @@ export function Navbar() {
         </Link>
 
         <nav className="hidden items-center gap-7 md:flex">
-          <a href="#menu" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Menu</a>
-          <a href="#deals" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Deals</a>
+          <a href="#menu" className="text-sm text-muted-foreground hover:text-foreground transition-colors">{t("nav.menu")}</a>
+          <a href="#deals" className="text-sm text-muted-foreground hover:text-foreground transition-colors">{t("nav.deals")}</a>
           {isAdmin && (
-            <Link to="/admin" className="text-sm text-amber-brand hover:opacity-80 transition-colors">Admin</Link>
+            <Link to="/admin" className="text-sm text-amber-brand hover:opacity-80 transition-colors">{t("nav.admin")}</Link>
           )}
         </nav>
 
         <div className="flex items-center gap-2">
+          <LanguageToggle />
           <ThemeToggle />
 
           {user ? (
@@ -87,13 +91,13 @@ export function Navbar() {
                     onClick={() => { setMenuOpen(false); navigate({ to: "/profile" }); }}
                     className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm hover:bg-surface"
                   >
-                    <Package className="h-4 w-4 text-amber-brand" /> My profile & orders
+                    <Package className="h-4 w-4 text-amber-brand" /> {t("nav.profile")}
                   </button>
                   <button
                     onClick={handleSignOut}
                     className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm hover:bg-surface"
                   >
-                    <LogOut className="h-4 w-4 text-destructive" /> Sign out
+                    <LogOut className="h-4 w-4 text-destructive" /> {t("nav.signOut")}
                   </button>
                 </motion.div>
               )}
@@ -103,7 +107,7 @@ export function Navbar() {
               to="/auth"
               className="hidden items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground hover:border-amber-brand/60 sm:inline-flex"
             >
-              <User className="h-3.5 w-3.5" /> Sign in
+              <User className="h-3.5 w-3.5" /> {t("nav.signIn")}
             </Link>
           )}
 
@@ -115,7 +119,7 @@ export function Navbar() {
             aria-label="Open cart"
           >
             <ShoppingBag className="h-4 w-4" strokeWidth={2.5} />
-            <span className="hidden sm:inline">Cart</span>
+            <span className="hidden sm:inline">{t("nav.cart")}</span>
             {qty > 0 && (
               <motion.span
                 key={qty}

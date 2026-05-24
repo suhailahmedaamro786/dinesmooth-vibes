@@ -1,7 +1,13 @@
 import { motion } from "motion/react";
 import { MapPin, Phone, Clock, MessageCircle } from "lucide-react";
+import { useLanguage } from "@/hooks/useLanguage";
+
+const MAP_LINK = "https://maps.app.goo.gl/ZVd7S76KTLU9xeo28";
+const MAP_EMBED =
+  "https://www.google.com/maps?q=Dadu+Food+Corner+DFC+Raza+Medical+Center+Shahjahan+Park+DHQ+Road+Dadu&output=embed";
 
 export function FindUs() {
+  const { t } = useLanguage();
   return (
     <section id="find-us" className="relative border-t border-border bg-background py-20">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
@@ -13,32 +19,33 @@ export function FindUs() {
           className="mb-10 text-center"
         >
           <div className="text-[10px] font-bold uppercase tracking-[0.22em] text-amber-brand">
-            Find us
+            {t("find.kicker")}
           </div>
           <h2 className="mt-2 text-3xl font-black tracking-tight sm:text-4xl">
-            Visit DFC — Dadu Food Corner
+            {t("find.title")}
           </h2>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Dadu, Sindh, Pakistan · Open 7 days a week
-          </p>
+          <p className="mt-2 text-sm text-muted-foreground">{t("find.subtitle")}</p>
         </motion.div>
 
         <div className="grid gap-6 lg:grid-cols-[1.4fr_1fr]">
-          <motion.div
+          <motion.a
+            href={MAP_LINK}
+            target="_blank"
+            rel="noopener noreferrer"
             initial={{ opacity: 0, scale: 0.96 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="overflow-hidden rounded-3xl border border-border bg-card shadow-xl"
+            className="block overflow-hidden rounded-3xl border border-border bg-card shadow-xl"
           >
             <iframe
               title="DFC — Dadu Food Corner location"
-              src="https://www.google.com/maps?q=26.7319,67.7752&z=15&output=embed"
-              className="h-[420px] w-full"
+              src={MAP_EMBED}
+              className="h-[420px] w-full pointer-events-none"
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
             />
-          </motion.div>
+          </motion.a>
 
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -47,10 +54,12 @@ export function FindUs() {
             transition={{ duration: 0.6, delay: 0.1 }}
             className="flex flex-col gap-3"
           >
-            <InfoCard icon={<MapPin className="h-5 w-5" />} title="Address">
-              Main Bazaar, Dadu<br />Sindh, Pakistan
+            <InfoCard icon={<MapPin className="h-5 w-5" />} title={t("find.address")}>
+              <a href={MAP_LINK} target="_blank" rel="noopener noreferrer" className="hover:text-amber-brand">
+                {t("find.addressLine")}
+              </a>
             </InfoCard>
-            <InfoCard icon={<Phone className="h-5 w-5" />} title="Call us">
+            <InfoCard icon={<Phone className="h-5 w-5" />} title={t("find.call")}>
               <a href="tel:+923145327444" className="hover:text-amber-brand">
                 +92 314 5327444
               </a>
@@ -66,13 +75,13 @@ export function FindUs() {
               </span>
               <div>
                 <div className="text-[10px] font-bold uppercase tracking-wider text-[#25D366]">
-                  WhatsApp orders
+                  {t("find.wa")}
                 </div>
-                <div className="text-sm font-semibold">Tap to chat with us</div>
+                <div className="text-sm font-semibold">{t("find.waSub")}</div>
               </div>
             </a>
-            <InfoCard icon={<Clock className="h-5 w-5" />} title="Opening hours">
-              Mon — Sun · 11:00 AM — 1:00 AM
+            <InfoCard icon={<Clock className="h-5 w-5" />} title={t("find.hours")}>
+              {t("find.hoursLine")}
             </InfoCard>
           </motion.div>
         </div>
