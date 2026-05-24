@@ -1,12 +1,15 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { motion } from "motion/react";
-import { ArrowLeft, Loader2, Package, Sparkles, MapPin } from "lucide-react";
+import { ArrowLeft, Loader2, Package, Sparkles, MapPin, Star } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { formatRs } from "@/lib/format";
 import { STATUS_LABEL, type DbOrderStatus } from "@/lib/orderStatus";
 import { toast } from "sonner";
+import { StarRating } from "@/components/StarRating";
+import { ReviewDialog, type ReviewTarget } from "@/components/ReviewDialog";
+import { fetchOwnReviews, type Review } from "@/lib/reviews";
 
 export const Route = createFileRoute("/profile")({
   component: ProfilePage,
@@ -18,8 +21,10 @@ export const Route = createFileRoute("/profile")({
   }),
 });
 
+type OrderItem = { itemId?: string; id?: string; name: string; qty: number; unitPrice: number; variant?: string };
 type Order = {
   id: string; total: number; status: DbOrderStatus; created_at: string; address: string;
+  items: OrderItem[]; customer_name?: string;
 };
 type Addr = { id: string; label: string; address: string; phone: string | null; is_default: boolean };
 
@@ -29,24 +34,32 @@ function ProfilePage() {
   const [points, setPoints] = useState(0);
   const [orders, setOrders] = useState<Order[]>([]);
   const [addresses, setAddresses] = useState<Addr[]>([]);
+  const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
   const [newAddr, setNewAddr] = useState({ label: "Home", address: "", phone: "" });
+  const [reviewTarget, setReviewTarget] = useState<ReviewTarget | null>(null);
+
+  const reviewedKey = (orderId: string, itemId: string) => `${orderId}::${itemId}`;
+  const reviewedSet = new Set(reviews.map((r) => reviewedKey(r.order_id ?? "", r.item_id)));
+
+  const loadAll = async (uid: string) => {
+    const [p, o, a, r] = await Promise.all([
+      supabase.from("profiles").select("loyalty_points,full_name").eq("id", uid).maybeSingle(),
+      supabase.from("orders").select("id,total,status,created_at,address,items,customer_name").eq("user_id", uid).order("created_at", { ascending: false }).limit(20),
+      supabase.from("saved_addresses").select("*").eq("user_id", uid).order("created_at", { ascending: false }),
+      fetchOwnReviews(uid),
+    ]);
+    setPoints(p.data?.loyalty_points ?? 0);
+    setOrders((o.data ?? []) as unknown as Order[]);
+    setAddresses((a.data ?? []) as Addr[]);
+    setReviews(r);
+    setLoading(false);
+  };
 
   useEffect(() => {
     if (authLoading) return;
     if (!user) { navigate({ to: "/auth" }); return; }
-
-    (async () => {
-      const [p, o, a] = await Promise.all([
-        supabase.from("profiles").select("loyalty_points").eq("id", user.id).maybeSingle(),
-        supabase.from("orders").select("id,total,status,created_at,address").eq("user_id", user.id).order("created_at", { ascending: false }).limit(20),
-        supabase.from("saved_addresses").select("*").eq("user_id", user.id).order("created_at", { ascending: false }),
-      ]);
-      setPoints(p.data?.loyalty_points ?? 0);
-      setOrders((o.data ?? []) as Order[]);
-      setAddresses((a.data ?? []) as Addr[]);
-      setLoading(false);
-    })();
+    loadAll(user.id);
   }, [user, authLoading, navigate]);
 
   const addAddress = async (e: React.FormEvent) => {
@@ -109,21 +122,77 @@ function ProfilePage() {
             <p className="text-sm text-muted-foreground">No orders yet.</p>
           ) : (
             <ul className="divide-y divide-border">
-              {orders.map((o) => (
-                <li key={o.id} className="flex items-center justify-between gap-3 py-3">
-                  <div>
-                    <Link to="/track/$orderId" params={{ orderId: o.id }} className="font-mono text-sm font-bold text-amber-brand hover:underline">{o.id}</Link>
-                    <div className="text-xs text-muted-foreground">{new Date(o.created_at).toLocaleString()}</div>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-sm font-black tabular-nums">{formatRs(Number(o.total))}</div>
-                    <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">{STATUS_LABEL[o.status]}</div>
-                  </div>
-                </li>
-              ))}
+              {orders.map((o) => {
+                const delivered = o.status === "delivered";
+                const itemIds = new Set<string>();
+                const uniqueItems = (o.items ?? []).filter((it) => {
+                  const id = it.itemId ?? it.id ?? it.name;
+                  if (itemIds.has(id)) return false;
+                  itemIds.add(id);
+                  return true;
+                });
+                return (
+                  <li key={o.id} className="py-3">
+                    <div className="flex items-center justify-between gap-3">
+                      <div>
+                        <Link to="/track/$orderId" params={{ orderId: o.id }} className="font-mono text-sm font-bold text-amber-brand hover:underline">{o.id}</Link>
+                        <div className="text-xs text-muted-foreground">{new Date(o.created_at).toLocaleString()}</div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-sm font-black tabular-nums">{formatRs(Number(o.total))}</div>
+                        <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">{STATUS_LABEL[o.status]}</div>
+                      </div>
+                    </div>
+                    {delivered && uniqueItems.length > 0 && (
+                      <div className="mt-3 flex flex-wrap gap-2">
+                        {uniqueItems.map((it) => {
+                          const itemId = it.itemId ?? it.id ?? it.name;
+                          const reviewed = reviewedSet.has(reviewedKey(o.id, itemId));
+                          return (
+                            <button
+                              key={itemId}
+                              disabled={reviewed}
+                              onClick={() => setReviewTarget({ itemId, itemName: it.name, orderId: o.id })}
+                              className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[11px] font-semibold transition ${
+                                reviewed
+                                  ? "border-border text-muted-foreground"
+                                  : "border-amber-brand/40 text-amber-brand hover:bg-amber-brand/10"
+                              }`}
+                            >
+                              <Star className="h-3 w-3" /> {reviewed ? `Reviewed: ${it.name}` : `Rate: ${it.name}`}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </li>
+                );
+              })}
             </ul>
           )}
         </section>
+
+        {/* My reviews */}
+        {reviews.length > 0 && (
+          <section className="rounded-3xl border border-border bg-card p-5">
+            <div className="mb-4 flex items-center gap-2">
+              <Star className="h-4 w-4 text-amber-brand" />
+              <h2 className="text-sm font-bold uppercase tracking-wider">My reviews</h2>
+            </div>
+            <ul className="space-y-3">
+              {reviews.map((r) => (
+                <li key={r.id} className="rounded-xl border border-border bg-surface/40 p-3">
+                  <div className="flex items-center justify-between">
+                    <StarRating value={r.rating} />
+                    <span className="text-[10px] text-muted-foreground">{new Date(r.created_at).toLocaleDateString()}</span>
+                  </div>
+                  <div className="mt-1 text-xs font-bold">{r.item_id}</div>
+                  {r.comment && <p className="mt-1 text-sm text-muted-foreground">{r.comment}</p>}
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
 
         {/* Saved addresses */}
         <section className="rounded-3xl border border-border bg-card p-5">

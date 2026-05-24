@@ -1,17 +1,24 @@
 import { AnimatePresence, motion } from "motion/react";
-import { useEffect, useState } from "react";
-import { X, Minus, Plus, Trash2, Loader2, CheckCircle2, ShoppingBag, Truck, Tag, Sparkles, MessageCircle } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { X, Minus, Plus, Trash2, Loader2, CheckCircle2, ShoppingBag, Truck, Tag, Sparkles, MessageCircle, Clock } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { useCartStore } from "@/store/useCartStore";
 import { formatRs } from "@/lib/format";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
+import { estimateDelivery, formatEstimate } from "@/lib/deliveryEstimate";
 
 type PaymentMethod = "cod" | "jazzcash" | "easypaisa";
 
 const PAYMENT_NUMBER = "0314 5327444";
 const WA_NUMBER = "923145327444";
+
+const PAYMENT_LABEL: Record<PaymentMethod, string> = {
+  cod: "Cash on Delivery",
+  jazzcash: "JazzCash",
+  easypaisa: "EasyPaisa",
+};
 
 export function CartDrawer() {
   const isOpen = useCartStore((s) => s.isOpen);
@@ -26,7 +33,7 @@ export function CartDrawer() {
 
   const [showCheckout, setShowCheckout] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const [success, setSuccess] = useState<{ id: string; total: number; address: string } | null>(null);
+  const [success, setSuccess] = useState<{ id: string; total: number; address: string; payment: PaymentMethod; etaText: string | null; waUrl: string } | null>(null);
   const [form, setForm] = useState({ name: "", phone: "", address: "", notes: "", txid: "" });
   const [payment, setPayment] = useState<PaymentMethod>("cod");
 
@@ -120,14 +127,40 @@ export function CartDrawer() {
 
     setSubmitting(false);
     toast.success(`Order ${orderId} placed!`);
-    setSuccess({ id: orderId, total, address: form.address });
+    const finalWa = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(buildWA({ orderId }))}`;
+    setSuccess({
+      id: orderId, total, address: form.address,
+      payment, etaText: eta ? `${formatEstimate(eta)} (${eta.area})` : null,
+      waUrl: finalWa,
+    });
     clear();
     setForm({ name: "", phone: "", address: "", notes: "", txid: "" });
   };
 
-  const buildWA = () => {
+  const eta = useMemo(() => estimateDelivery(form.address), [form.address]);
+
+  const buildWA = (opts?: { orderId?: string }) => {
     const items = lines.map((l) => `• ${l.qty}× ${l.name}${l.variant ? ` (${l.variant})` : ""} — ${formatRs(l.qty * l.unitPrice)}`).join("\n");
-    return `*DFC — Dadu Food Corner Order*\n${items}\n\n*Total:* ${formatRs(total)}\n${promo ? `Promo: ${promo.code} (-${formatRs(promo.discount)})\n` : ""}${loyaltyDiscount ? `Loyalty: -${formatRs(loyaltyDiscount)}\n` : ""}\nName: ${form.name}\nPhone: ${form.phone}\nAddress: ${form.address}`;
+    const lineBreaks: string[] = [
+      "*DFC — Dadu Food Corner Order*",
+      ...(opts?.orderId ? [`*Order ID:* ${opts.orderId}`] : []),
+      "",
+      "*Items:*",
+      items,
+      "",
+      `*Subtotal:* ${formatRs(subtotal)}`,
+      ...(promo ? [`Promo (${promo.code}): -${formatRs(promo.discount)}`] : []),
+      ...(loyaltyDiscount ? [`Loyalty: -${formatRs(loyaltyDiscount)}`] : []),
+      `*Total:* ${formatRs(total)}`,
+      `*Payment:* ${PAYMENT_LABEL[payment]}${form.txid ? ` (TxID: ${form.txid})` : ""}`,
+      "",
+      `*Name:* ${form.name}`,
+      `*Phone:* ${form.phone}`,
+      `*Address:* ${form.address}`,
+      ...(eta ? [`*Estimated delivery:* ${formatEstimate(eta)} (${eta.area})`] : []),
+      ...(form.notes ? [`*Notes:* ${form.notes}`] : []),
+    ];
+    return lineBreaks.join("\n");
   };
 
   return (
@@ -180,7 +213,24 @@ export function CartDrawer() {
                 <motion.form onSubmit={placeOrder} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35 }} className="space-y-4 border-t border-border px-5 py-5">
                   <Field label="Full name" value={form.name} onChange={(v) => setForm({ ...form, name: v })} required />
                   <Field label="Mobile number" type="tel" inputMode="tel" value={form.phone} onChange={(v) => setForm({ ...form, phone: v })} required />
-                  <Field label="Delivery address" value={form.address} onChange={(v) => setForm({ ...form, address: v })} required textarea />
+                  <Field label="Delivery address" value={form.address} onChange={(v) => setForm({ ...form, address: v })} required textarea placeholder="House #, street, area (e.g. Shahjahan Park, Dadu)" />
+
+                  {/* Delivery time estimator */}
+                  {eta && form.address.trim().length >= 3 && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }}
+                      className="flex items-center gap-3 rounded-xl border border-amber-brand/30 bg-amber-brand/5 px-3 py-2.5 text-xs"
+                    >
+                      <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-amber-brand/20 text-amber-brand">
+                        <Clock className="h-4 w-4" />
+                      </span>
+                      <div className="flex-1">
+                        <div className="text-[10px] font-bold uppercase tracking-wider text-amber-brand">Estimated delivery</div>
+                        <div className="font-semibold text-foreground">{formatEstimate(eta)} · {eta.area}</div>
+                      </div>
+                    </motion.div>
+                  )}
+
                   <Field label="Cooking / delivery notes (optional)" value={form.notes} onChange={(v) => setForm({ ...form, notes: v })} textarea />
 
                   {/* Promo */}
@@ -296,19 +346,20 @@ function Row({ label, value, accent }: { label: string; value: string; accent?: 
 }
 
 function Field({
-  label, value, onChange, type = "text", required, textarea, inputMode,
+  label, value, onChange, type = "text", required, textarea, inputMode, placeholder,
 }: {
   label: string; value: string; onChange: (v: string) => void; type?: string; required?: boolean; textarea?: boolean;
   inputMode?: React.HTMLAttributes<HTMLInputElement>["inputMode"];
+  placeholder?: string;
 }) {
   const base = "w-full rounded-xl border border-border bg-surface/60 px-3.5 py-2.5 text-sm placeholder:text-muted-foreground/70 outline-none transition focus:border-amber-brand focus:ring-2 focus:ring-amber-brand/30";
   return (
     <label className="block">
       <span className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{label}</span>
       {textarea ? (
-        <textarea value={value} onChange={(e) => onChange(e.target.value)} required={required} rows={2} className={base} />
+        <textarea value={value} onChange={(e) => onChange(e.target.value)} required={required} rows={2} placeholder={placeholder} className={base} />
       ) : (
-        <input value={value} onChange={(e) => onChange(e.target.value)} required={required} type={type} inputMode={inputMode} className={base} />
+        <input value={value} onChange={(e) => onChange(e.target.value)} required={required} type={type} inputMode={inputMode} placeholder={placeholder} className={base} />
       )}
     </label>
   );
@@ -326,30 +377,41 @@ function EmptyView() {
   );
 }
 
-function SuccessView({ order, onDone }: { order: { id: string; total: number; address: string }; onDone: () => void }) {
+function SuccessView({
+  order, onDone,
+}: {
+  order: { id: string; total: number; address: string; payment: PaymentMethod; etaText: string | null; waUrl: string };
+  onDone: () => void;
+}) {
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex h-full flex-col items-center justify-center px-6 py-16 text-center">
-      <motion.div initial={{ scale: 0.4, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ type: "spring", stiffness: 280, damping: 18 }} className="grid h-24 w-24 place-items-center rounded-full bg-amber-brand text-primary-foreground glow-amber-strong">
-        <CheckCircle2 className="h-12 w-12" strokeWidth={2.5} />
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex h-full flex-col items-center justify-center px-6 py-12 text-center">
+      <motion.div initial={{ scale: 0.4, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ type: "spring", stiffness: 280, damping: 18 }} className="grid h-20 w-20 place-items-center rounded-full bg-amber-brand text-primary-foreground glow-amber-strong">
+        <CheckCircle2 className="h-10 w-10" strokeWidth={2.5} />
       </motion.div>
-      <h3 className="mt-6 text-2xl font-black">Order Placed 🎉</h3>
-      <p className="mt-2 text-sm text-muted-foreground">
-        Your order <span className="font-mono text-foreground">{order.id}</span> is being prepared.
-      </p>
-      <div className="mt-6 w-full rounded-2xl border border-border bg-surface/60 p-4 text-left">
-        <div className="flex justify-between text-sm">
-          <span className="text-muted-foreground">Total</span>
-          <span className="font-black text-amber-brand">{formatRs(order.total)}</span>
-        </div>
-        <div className="mt-1 flex justify-between text-xs text-muted-foreground">
-          <span>Delivering to</span>
-          <span className="max-w-[60%] truncate">{order.address}</span>
+      <h3 className="mt-5 text-2xl font-black">Order Placed 🎉</h3>
+      <p className="mt-1 text-xs text-muted-foreground">Order ID</p>
+      <p className="font-mono text-lg font-black text-amber-brand">{order.id}</p>
+
+      <div className="mt-5 w-full space-y-2 rounded-2xl border border-border bg-surface/60 p-4 text-left text-sm">
+        <Row label="Total" value={formatRs(order.total)} accent />
+        <Row label="Payment" value={PAYMENT_LABEL[order.payment]} />
+        {order.etaText && <Row label="Estimated delivery" value={order.etaText} />}
+        <div className="flex items-start justify-between gap-3">
+          <span className="text-xs text-muted-foreground">Delivering to</span>
+          <span className="max-w-[60%] truncate text-xs">{order.address}</span>
         </div>
       </div>
-      <Link to="/track/$orderId" params={{ orderId: order.id }} onClick={onDone} className="mt-6 inline-flex items-center gap-2 rounded-full bg-amber-brand px-5 py-2.5 text-sm font-bold text-primary-foreground glow-amber">
-        <Truck className="h-4 w-4" /> Track order
-      </Link>
-      <button onClick={onDone} className="mt-3 text-xs text-muted-foreground hover:text-foreground">Keep browsing</button>
+
+      <div className="mt-5 flex w-full flex-col gap-2">
+        <Link to="/track/$orderId" params={{ orderId: order.id }} onClick={onDone} className="inline-flex items-center justify-center gap-2 rounded-full bg-amber-brand px-5 py-2.5 text-sm font-bold text-primary-foreground glow-amber">
+          <Truck className="h-4 w-4" /> Track order
+        </Link>
+        <a href={order.waUrl} target="_blank" rel="noopener noreferrer"
+          className="inline-flex items-center justify-center gap-2 rounded-full bg-[#25D366] px-5 py-2.5 text-sm font-bold text-white">
+          <MessageCircle className="h-4 w-4" /> Send to WhatsApp
+        </a>
+        <button onClick={onDone} className="mt-1 text-xs text-muted-foreground hover:text-foreground">Keep browsing</button>
+      </div>
     </motion.div>
   );
 }
