@@ -12,6 +12,7 @@ import appCss from "../styles.css?url";
 import { Toaster } from "@/components/ui/sonner";
 import { AuthProvider } from "@/hooks/useAuth";
 import { ThemeProvider } from "@/hooks/useTheme";
+import { LanguageProvider } from "@/hooks/useLanguage";
 
 function NotFoundComponent() {
   return (
@@ -119,10 +120,12 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
-        <AuthProvider>
-          <Outlet />
-          <Toaster position="top-center" richColors />
-        </AuthProvider>
+        <LanguageProvider>
+          <AuthProvider>
+            <Outlet />
+            <Toaster position="top-center" richColors />
+          </AuthProvider>
+        </LanguageProvider>
       </ThemeProvider>
     </QueryClientProvider>
   );
