@@ -33,7 +33,7 @@ export function CartDrawer() {
 
   const [showCheckout, setShowCheckout] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const [success, setSuccess] = useState<{ id: string; total: number; address: string } | null>(null);
+  const [success, setSuccess] = useState<{ id: string; total: number; address: string; payment: PaymentMethod; etaText: string | null; waUrl: string } | null>(null);
   const [form, setForm] = useState({ name: "", phone: "", address: "", notes: "", txid: "" });
   const [payment, setPayment] = useState<PaymentMethod>("cod");
 
@@ -127,7 +127,12 @@ export function CartDrawer() {
 
     setSubmitting(false);
     toast.success(`Order ${orderId} placed!`);
-    setSuccess({ id: orderId, total, address: form.address });
+    const finalWa = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(buildWA({ orderId }))}`;
+    setSuccess({
+      id: orderId, total, address: form.address,
+      payment, etaText: eta ? `${formatEstimate(eta)} (${eta.area})` : null,
+      waUrl: finalWa,
+    });
     clear();
     setForm({ name: "", phone: "", address: "", notes: "", txid: "" });
   };
@@ -208,7 +213,24 @@ export function CartDrawer() {
                 <motion.form onSubmit={placeOrder} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35 }} className="space-y-4 border-t border-border px-5 py-5">
                   <Field label="Full name" value={form.name} onChange={(v) => setForm({ ...form, name: v })} required />
                   <Field label="Mobile number" type="tel" inputMode="tel" value={form.phone} onChange={(v) => setForm({ ...form, phone: v })} required />
-                  <Field label="Delivery address" value={form.address} onChange={(v) => setForm({ ...form, address: v })} required textarea />
+                  <Field label="Delivery address" value={form.address} onChange={(v) => setForm({ ...form, address: v })} required textarea placeholder="House #, street, area (e.g. Shahjahan Park, Dadu)" />
+
+                  {/* Delivery time estimator */}
+                  {eta && form.address.trim().length >= 3 && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }}
+                      className="flex items-center gap-3 rounded-xl border border-amber-brand/30 bg-amber-brand/5 px-3 py-2.5 text-xs"
+                    >
+                      <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-amber-brand/20 text-amber-brand">
+                        <Clock className="h-4 w-4" />
+                      </span>
+                      <div className="flex-1">
+                        <div className="text-[10px] font-bold uppercase tracking-wider text-amber-brand">Estimated delivery</div>
+                        <div className="font-semibold text-foreground">{formatEstimate(eta)} · {eta.area}</div>
+                      </div>
+                    </motion.div>
+                  )}
+
                   <Field label="Cooking / delivery notes (optional)" value={form.notes} onChange={(v) => setForm({ ...form, notes: v })} textarea />
 
                   {/* Promo */}
@@ -324,19 +346,20 @@ function Row({ label, value, accent }: { label: string; value: string; accent?: 
 }
 
 function Field({
-  label, value, onChange, type = "text", required, textarea, inputMode,
+  label, value, onChange, type = "text", required, textarea, inputMode, placeholder,
 }: {
   label: string; value: string; onChange: (v: string) => void; type?: string; required?: boolean; textarea?: boolean;
   inputMode?: React.HTMLAttributes<HTMLInputElement>["inputMode"];
+  placeholder?: string;
 }) {
   const base = "w-full rounded-xl border border-border bg-surface/60 px-3.5 py-2.5 text-sm placeholder:text-muted-foreground/70 outline-none transition focus:border-amber-brand focus:ring-2 focus:ring-amber-brand/30";
   return (
     <label className="block">
       <span className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{label}</span>
       {textarea ? (
-        <textarea value={value} onChange={(e) => onChange(e.target.value)} required={required} rows={2} className={base} />
+        <textarea value={value} onChange={(e) => onChange(e.target.value)} required={required} rows={2} placeholder={placeholder} className={base} />
       ) : (
-        <input value={value} onChange={(e) => onChange(e.target.value)} required={required} type={type} inputMode={inputMode} className={base} />
+        <input value={value} onChange={(e) => onChange(e.target.value)} required={required} type={type} inputMode={inputMode} placeholder={placeholder} className={base} />
       )}
     </label>
   );
