@@ -247,12 +247,42 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      award_loyalty_points: {
+        Args: { p_earned: number; p_order_id: string; p_redeemed: number }
+        Returns: undefined
+      }
+      get_order_tracking: {
+        Args: { p_id: string }
+        Returns: {
+          address: string
+          created_at: string
+          customer_name: string
+          id: string
+          items: Json
+          payment_method: string
+          phone: string
+          status: Database["public"]["Enums"]["order_status"]
+          total: number
+          updated_at: string
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
         Returns: boolean
+      }
+      validate_promo_code: {
+        Args: { p_code: string }
+        Returns: {
+          code: string
+          discount_type: string
+          discount_value: number
+          expires_at: string
+          usage_limit: number
+          used_count: number
+        }[]
       }
     }
     Enums: {
