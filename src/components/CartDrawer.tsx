@@ -377,30 +377,41 @@ function EmptyView() {
   );
 }
 
-function SuccessView({ order, onDone }: { order: { id: string; total: number; address: string }; onDone: () => void }) {
+function SuccessView({
+  order, onDone,
+}: {
+  order: { id: string; total: number; address: string; payment: PaymentMethod; etaText: string | null; waUrl: string };
+  onDone: () => void;
+}) {
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex h-full flex-col items-center justify-center px-6 py-16 text-center">
-      <motion.div initial={{ scale: 0.4, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ type: "spring", stiffness: 280, damping: 18 }} className="grid h-24 w-24 place-items-center rounded-full bg-amber-brand text-primary-foreground glow-amber-strong">
-        <CheckCircle2 className="h-12 w-12" strokeWidth={2.5} />
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex h-full flex-col items-center justify-center px-6 py-12 text-center">
+      <motion.div initial={{ scale: 0.4, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ type: "spring", stiffness: 280, damping: 18 }} className="grid h-20 w-20 place-items-center rounded-full bg-amber-brand text-primary-foreground glow-amber-strong">
+        <CheckCircle2 className="h-10 w-10" strokeWidth={2.5} />
       </motion.div>
-      <h3 className="mt-6 text-2xl font-black">Order Placed 🎉</h3>
-      <p className="mt-2 text-sm text-muted-foreground">
-        Your order <span className="font-mono text-foreground">{order.id}</span> is being prepared.
-      </p>
-      <div className="mt-6 w-full rounded-2xl border border-border bg-surface/60 p-4 text-left">
-        <div className="flex justify-between text-sm">
-          <span className="text-muted-foreground">Total</span>
-          <span className="font-black text-amber-brand">{formatRs(order.total)}</span>
-        </div>
-        <div className="mt-1 flex justify-between text-xs text-muted-foreground">
-          <span>Delivering to</span>
-          <span className="max-w-[60%] truncate">{order.address}</span>
+      <h3 className="mt-5 text-2xl font-black">Order Placed 🎉</h3>
+      <p className="mt-1 text-xs text-muted-foreground">Order ID</p>
+      <p className="font-mono text-lg font-black text-amber-brand">{order.id}</p>
+
+      <div className="mt-5 w-full space-y-2 rounded-2xl border border-border bg-surface/60 p-4 text-left text-sm">
+        <Row label="Total" value={formatRs(order.total)} accent />
+        <Row label="Payment" value={PAYMENT_LABEL[order.payment]} />
+        {order.etaText && <Row label="Estimated delivery" value={order.etaText} />}
+        <div className="flex items-start justify-between gap-3">
+          <span className="text-xs text-muted-foreground">Delivering to</span>
+          <span className="max-w-[60%] truncate text-xs">{order.address}</span>
         </div>
       </div>
-      <Link to="/track/$orderId" params={{ orderId: order.id }} onClick={onDone} className="mt-6 inline-flex items-center gap-2 rounded-full bg-amber-brand px-5 py-2.5 text-sm font-bold text-primary-foreground glow-amber">
-        <Truck className="h-4 w-4" /> Track order
-      </Link>
-      <button onClick={onDone} className="mt-3 text-xs text-muted-foreground hover:text-foreground">Keep browsing</button>
+
+      <div className="mt-5 flex w-full flex-col gap-2">
+        <Link to="/track/$orderId" params={{ orderId: order.id }} onClick={onDone} className="inline-flex items-center justify-center gap-2 rounded-full bg-amber-brand px-5 py-2.5 text-sm font-bold text-primary-foreground glow-amber">
+          <Truck className="h-4 w-4" /> Track order
+        </Link>
+        <a href={order.waUrl} target="_blank" rel="noopener noreferrer"
+          className="inline-flex items-center justify-center gap-2 rounded-full bg-[#25D366] px-5 py-2.5 text-sm font-bold text-white">
+          <MessageCircle className="h-4 w-4" /> Send to WhatsApp
+        </a>
+        <button onClick={onDone} className="mt-1 text-xs text-muted-foreground hover:text-foreground">Keep browsing</button>
+      </div>
     </motion.div>
   );
 }
