@@ -191,6 +191,42 @@ export type Database = {
         }
         Relationships: []
       }
+      reviews: {
+        Row: {
+          comment: string | null
+          created_at: string
+          customer_name: string | null
+          id: string
+          item_id: string
+          order_id: string | null
+          rating: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          comment?: string | null
+          created_at?: string
+          customer_name?: string | null
+          id?: string
+          item_id: string
+          order_id?: string | null
+          rating: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          comment?: string | null
+          created_at?: string
+          customer_name?: string | null
+          id?: string
+          item_id?: string
+          order_id?: string | null
+          rating?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       saved_addresses: {
         Row: {
           address: string
@@ -264,6 +300,14 @@ export type Database = {
           status: Database["public"]["Enums"]["order_status"]
           total: number
           updated_at: string
+        }[]
+      }
+      get_review_summary: {
+        Args: never
+        Returns: {
+          avg_rating: number
+          item_id: string
+          review_count: number
         }[]
       }
       has_role: {
