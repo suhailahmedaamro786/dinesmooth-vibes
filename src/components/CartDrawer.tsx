@@ -63,26 +63,16 @@ export function CartDrawer() {
     const code = promoInput.trim().toUpperCase();
     if (!code) return;
     setPromoChecking(true);
-    const { data, error } = await supabase
-      .from("promo_codes")
-      .select("*")
-      .eq("code", code)
-      .eq("active", true)
-      .maybeSingle();
+    const { data, error } = await supabase.rpc("validate_promo_code", { p_code: code });
     setPromoChecking(false);
 
-    if (error || !data) { toast.error("Invalid promo code"); return; }
-    if (data.expires_at && new Date(data.expires_at) < new Date()) {
-      toast.error("This promo code has expired"); return;
-    }
-    if (data.usage_limit !== null && data.used_count >= data.usage_limit) {
-      toast.error("Promo code usage limit reached"); return;
-    }
-    const disc = data.discount_type === "percent"
-      ? Math.round((subtotal * Number(data.discount_value)) / 100)
-      : Number(data.discount_value);
-    setPromo({ code: data.code, discount: Math.min(disc, subtotal) });
-    toast.success(`Promo "${data.code}" applied — saved ${formatRs(disc)}`);
+    const row = Array.isArray(data) ? data[0] : null;
+    if (error || !row) { toast.error("Invalid or expired promo code"); return; }
+    const disc = row.discount_type === "percent"
+      ? Math.round((subtotal * Number(row.discount_value)) / 100)
+      : Number(row.discount_value);
+    setPromo({ code: row.code, discount: Math.min(disc, subtotal) });
+    toast.success(`Promo "${row.code}" applied — saved ${formatRs(disc)}`);
   };
 
   const placeOrder = async (e: React.FormEvent) => {
@@ -119,20 +109,13 @@ export function CartDrawer() {
 
     if (error) { setSubmitting(false); toast.error(`Could not place order: ${error.message}`); return; }
 
-    // Loyalty bookkeeping
-    if (user) {
-      if (redeemPoints > 0) {
-        await supabase.from("point_transactions").insert({
-          user_id: user.id, order_id: orderId, points: redeemPoints, type: "redeem",
-        });
-      }
-      if (pointsEarned > 0) {
-        await supabase.from("point_transactions").insert({
-          user_id: user.id, order_id: orderId, points: pointsEarned, type: "earn",
-        });
-      }
-      const newBal = loyaltyBalance - redeemPoints + pointsEarned;
-      await supabase.from("profiles").update({ loyalty_points: newBal }).eq("id", user.id);
+    // Loyalty bookkeeping via SECURITY DEFINER RPC (validates ownership server-side)
+    if (user && (redeemPoints > 0 || pointsEarned > 0)) {
+      await supabase.rpc("award_loyalty_points", {
+        p_order_id: orderId,
+        p_earned: pointsEarned,
+        p_redeemed: redeemPoints,
+      });
     }
 
     setSubmitting(false);

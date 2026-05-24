@@ -51,23 +51,19 @@ function TrackPage() {
         if (!data) setNotFound(true);
         else setOrder(data as Order);
       } else {
-        const { data } = await supabase.from("orders").select("*").eq("id", orderId).maybeSingle();
+        const { data, error } = await supabase.rpc("get_order_tracking", { p_id: orderId });
         if (cancelled) return;
-        if (!data) setNotFound(true);
-        else setOrder(data as Order);
+        const row = Array.isArray(data) ? data[0] : null;
+        if (error || !row) setNotFound(true);
+        else setOrder(row as unknown as Order);
       }
       setLoading(false);
     };
     fetchOrder();
 
-    // realtime updates for this order
-    const channel = supabase
-      .channel(`order-${orderId}`)
-      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "orders", filter: `id=eq.${orderId}` },
-        (payload) => setOrder(payload.new as Order))
-      .subscribe();
-
-    return () => { cancelled = true; supabase.removeChannel(channel); };
+    // Poll for status updates (realtime requires auth; tracking links are public)
+    const interval = setInterval(fetchOrder, 8000);
+    return () => { cancelled = true; clearInterval(interval); };
   }, [orderId]);
 
   if (loading) {
