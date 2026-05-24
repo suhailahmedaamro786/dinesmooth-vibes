@@ -4,12 +4,31 @@ import { Plus } from "lucide-react";
 import { burgers, rolls, broast, pizzas, deals, type PizzaSize, type PizzaItem, type SimpleItem, type DealItem } from "@/data/menu";
 import { useCartStore } from "@/store/useCartStore";
 import { formatRs } from "@/lib/format";
+import { StarRating } from "@/components/StarRating";
+import { useReviewSummaries } from "@/hooks/useReviewSummaries";
+import type { ReviewSummary } from "@/lib/reviews";
 
 type Tab = "Burgers" | "Rolls" | "Pizzas" | "Broast" | "Deals";
 const TABS: Tab[] = ["Burgers", "Rolls", "Pizzas", "Broast", "Deals"];
 
+function RatingBadge({ summary }: { summary?: ReviewSummary }) {
+  if (!summary || summary.review_count === 0) {
+    return <span className="text-[11px] text-muted-foreground">No reviews yet</span>;
+  }
+  return (
+    <div className="flex items-center gap-1.5">
+      <StarRating value={summary.avg_rating} size={12} />
+      <span className="text-[11px] font-bold text-foreground tabular-nums">
+        {summary.avg_rating.toFixed(1)}
+      </span>
+      <span className="text-[11px] text-muted-foreground">({summary.review_count})</span>
+    </div>
+  );
+}
+
 export function MenuSection() {
   const [tab, setTab] = useState<Tab>("Burgers");
+  const { map: summaries } = useReviewSummaries();
 
   return (
     <section id="menu" className="relative mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-24">
@@ -60,18 +79,18 @@ export function MenuSection() {
           transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
           className="mt-10"
         >
-          {tab === "Burgers" && <SimpleGrid items={burgers} />}
-          {tab === "Rolls" && <SimpleGrid items={rolls} />}
-          {tab === "Broast" && <SimpleGrid items={broast} />}
-          {tab === "Pizzas" && <PizzaGrid items={pizzas} />}
-          {tab === "Deals" && <DealsGrid items={deals} />}
+          {tab === "Burgers" && <SimpleGrid items={burgers} summaries={summaries} />}
+          {tab === "Rolls" && <SimpleGrid items={rolls} summaries={summaries} />}
+          {tab === "Broast" && <SimpleGrid items={broast} summaries={summaries} />}
+          {tab === "Pizzas" && <PizzaGrid items={pizzas} summaries={summaries} />}
+          {tab === "Deals" && <DealsGrid items={deals} summaries={summaries} />}
         </motion.div>
       </AnimatePresence>
     </section>
   );
 }
 
-function SimpleGrid({ items }: { items: SimpleItem[] }) {
+function SimpleGrid({ items, summaries }: { items: SimpleItem[]; summaries: Map<string, ReviewSummary> }) {
   const addLine = useCartStore((s) => s.addLine);
   return (
     <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
@@ -104,6 +123,7 @@ function SimpleGrid({ items }: { items: SimpleItem[] }) {
 
           <div className="flex flex-1 flex-col p-5">
             <h3 className="text-lg font-bold leading-tight">{it.name}</h3>
+            <div className="mt-1.5"><RatingBadge summary={summaries.get(it.id)} /></div>
             {it.description && (
               <p className="mt-1.5 text-sm text-muted-foreground">{it.description}</p>
             )}
@@ -124,7 +144,7 @@ function SimpleGrid({ items }: { items: SimpleItem[] }) {
   );
 }
 
-function PizzaGrid({ items }: { items: PizzaItem[] }) {
+function PizzaGrid({ items, summaries }: { items: PizzaItem[]; summaries: Map<string, ReviewSummary> }) {
   return (
     <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
       {items.map((p, idx) => (
@@ -135,14 +155,14 @@ function PizzaGrid({ items }: { items: PizzaItem[] }) {
           viewport={{ once: true, margin: "-60px" }}
           transition={{ duration: 0.45, delay: idx * 0.04 }}
         >
-          <PizzaCard pizza={p} />
+          <PizzaCard pizza={p} summary={summaries.get(p.id)} />
         </motion.div>
       ))}
     </div>
   );
 }
 
-function PizzaCard({ pizza }: { pizza: PizzaItem }) {
+function PizzaCard({ pizza, summary }: { pizza: PizzaItem; summary?: ReviewSummary }) {
   const [size, setSize] = useState<PizzaSize>("M");
   const addLine = useCartStore((s) => s.addLine);
   const price = pizza.prices[size];
@@ -173,6 +193,7 @@ function PizzaCard({ pizza }: { pizza: PizzaItem }) {
           <div className="flex items-start justify-between gap-3">
             <div>
               <h3 className="text-lg font-bold leading-tight">{pizza.name}</h3>
+              <div className="mt-1"><RatingBadge summary={summary} /></div>
               {pizza.description && (
                 <p className="mt-1 text-sm text-muted-foreground">{pizza.description}</p>
               )}
@@ -254,7 +275,7 @@ function AnimatedPrice({ value }: { value: number }) {
   );
 }
 
-function DealsGrid({ items }: { items: DealItem[] }) {
+function DealsGrid({ items, summaries }: { items: DealItem[]; summaries: Map<string, ReviewSummary> }) {
   const addLine = useCartStore((s) => s.addLine);
   return (
     <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
@@ -298,6 +319,7 @@ function DealsGrid({ items }: { items: DealItem[] }) {
                   Bundle Deal
                 </div>
                 <h3 className="mt-1 text-2xl font-black tracking-tight">{d.name}</h3>
+                <div className="mt-1"><RatingBadge summary={summaries.get(d.id)} /></div>
               </div>
               <div className="text-right">
                 <div className="text-[10px] uppercase tracking-widest text-muted-foreground">Only</div>

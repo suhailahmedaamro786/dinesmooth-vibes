@@ -1,17 +1,24 @@
 import { AnimatePresence, motion } from "motion/react";
-import { useEffect, useState } from "react";
-import { X, Minus, Plus, Trash2, Loader2, CheckCircle2, ShoppingBag, Truck, Tag, Sparkles, MessageCircle } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { X, Minus, Plus, Trash2, Loader2, CheckCircle2, ShoppingBag, Truck, Tag, Sparkles, MessageCircle, Clock } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { useCartStore } from "@/store/useCartStore";
 import { formatRs } from "@/lib/format";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
+import { estimateDelivery, formatEstimate } from "@/lib/deliveryEstimate";
 
 type PaymentMethod = "cod" | "jazzcash" | "easypaisa";
 
 const PAYMENT_NUMBER = "0314 5327444";
 const WA_NUMBER = "923145327444";
+
+const PAYMENT_LABEL: Record<PaymentMethod, string> = {
+  cod: "Cash on Delivery",
+  jazzcash: "JazzCash",
+  easypaisa: "EasyPaisa",
+};
 
 export function CartDrawer() {
   const isOpen = useCartStore((s) => s.isOpen);
@@ -125,9 +132,30 @@ export function CartDrawer() {
     setForm({ name: "", phone: "", address: "", notes: "", txid: "" });
   };
 
-  const buildWA = () => {
+  const eta = useMemo(() => estimateDelivery(form.address), [form.address]);
+
+  const buildWA = (opts?: { orderId?: string }) => {
     const items = lines.map((l) => `• ${l.qty}× ${l.name}${l.variant ? ` (${l.variant})` : ""} — ${formatRs(l.qty * l.unitPrice)}`).join("\n");
-    return `*DFC — Dadu Food Corner Order*\n${items}\n\n*Total:* ${formatRs(total)}\n${promo ? `Promo: ${promo.code} (-${formatRs(promo.discount)})\n` : ""}${loyaltyDiscount ? `Loyalty: -${formatRs(loyaltyDiscount)}\n` : ""}\nName: ${form.name}\nPhone: ${form.phone}\nAddress: ${form.address}`;
+    const lineBreaks: string[] = [
+      "*DFC — Dadu Food Corner Order*",
+      ...(opts?.orderId ? [`*Order ID:* ${opts.orderId}`] : []),
+      "",
+      "*Items:*",
+      items,
+      "",
+      `*Subtotal:* ${formatRs(subtotal)}`,
+      ...(promo ? [`Promo (${promo.code}): -${formatRs(promo.discount)}`] : []),
+      ...(loyaltyDiscount ? [`Loyalty: -${formatRs(loyaltyDiscount)}`] : []),
+      `*Total:* ${formatRs(total)}`,
+      `*Payment:* ${PAYMENT_LABEL[payment]}${form.txid ? ` (TxID: ${form.txid})` : ""}`,
+      "",
+      `*Name:* ${form.name}`,
+      `*Phone:* ${form.phone}`,
+      `*Address:* ${form.address}`,
+      ...(eta ? [`*Estimated delivery:* ${formatEstimate(eta)} (${eta.area})`] : []),
+      ...(form.notes ? [`*Notes:* ${form.notes}`] : []),
+    ];
+    return lineBreaks.join("\n");
   };
 
   return (
