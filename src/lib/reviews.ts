@@ -23,22 +23,26 @@ export async function fetchReviewSummaries(): Promise<Map<string, ReviewSummary>
 }
 
 export async function fetchReviewsForItem(itemId: string, limit = 20): Promise<Review[]> {
-  const { data } = await supabase
-    .from("reviews" as never)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const client = supabase as any;
+  const { data } = await client
+    .from("reviews")
     .select("*")
     .eq("item_id", itemId)
     .order("created_at", { ascending: false })
     .limit(limit);
-  return (data ?? []) as unknown as Review[];
+  return (data ?? []) as Review[];
 }
 
 export async function fetchOwnReviews(userId: string): Promise<Review[]> {
-  const { data } = await supabase
-    .from("reviews" as never)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const client = supabase as any;
+  const { data } = await client
+    .from("reviews")
     .select("*")
     .eq("user_id", userId)
     .order("created_at", { ascending: false });
-  return (data ?? []) as unknown as Review[];
+  return (data ?? []) as Review[];
 }
 
 export async function submitReview(input: {
@@ -49,7 +53,9 @@ export async function submitReview(input: {
   comment: string;
   customerName?: string | null;
 }) {
-  const { error } = await supabase.from("reviews" as never).insert({
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const client = supabase as any;
+  const { error } = await client.from("reviews").insert({
     user_id: input.userId,
     item_id: input.itemId,
     order_id: input.orderId,
