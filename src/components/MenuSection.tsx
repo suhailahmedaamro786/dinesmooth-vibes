@@ -102,7 +102,7 @@ export function MenuSection() {
   );
 }
 
-function SimpleGrid({ items, summaries }: { items: SimpleItem[]; summaries: Map<string, ReviewSummary> }) {
+function SimpleGrid({ items, summaries, openDetail }: { items: SimpleItem[]; summaries: Map<string, ReviewSummary>; openDetail: OpenDetail }) {
   const addLine = useCartStore((s) => s.addLine);
   return (
     <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
@@ -116,7 +116,12 @@ function SimpleGrid({ items, summaries }: { items: SimpleItem[]; summaries: Map<
           whileHover={{ scale: 1.02, y: -2 }}
           className="group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-card transition-colors hover:border-amber-brand/50"
         >
-          <div className="relative aspect-[5/4] overflow-hidden bg-surface">
+          <button
+            type="button"
+            onClick={() => openDetail({ kind: "simple", item: it })}
+            className="relative aspect-[5/4] w-full overflow-hidden bg-surface text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-brand"
+            aria-label={`View details for ${it.name}`}
+          >
             <motion.img
               src={it.image}
               alt={it.name}
@@ -131,13 +136,19 @@ function SimpleGrid({ items, summaries }: { items: SimpleItem[]; summaries: Map<
             <span className="absolute right-3 top-3 rounded-full bg-background/85 px-2.5 py-1 text-xs font-black text-amber-brand backdrop-blur">
               {formatRs(it.price)}
             </span>
-          </div>
+          </button>
 
           <div className="flex flex-1 flex-col p-5">
-            <h3 className="text-lg font-bold leading-tight">{it.name}</h3>
+            <button
+              type="button"
+              onClick={() => openDetail({ kind: "simple", item: it })}
+              className="text-left text-lg font-bold leading-tight hover:text-amber-brand"
+            >
+              {it.name}
+            </button>
             <div className="mt-1.5"><RatingBadge summary={summaries.get(it.id)} /></div>
             {it.description && (
-              <p className="mt-1.5 text-sm text-muted-foreground">{it.description}</p>
+              <p className="mt-1.5 text-sm text-muted-foreground line-clamp-2">{it.description}</p>
             )}
             <motion.button
               whileTap={{ scale: 0.95 }}
@@ -156,7 +167,7 @@ function SimpleGrid({ items, summaries }: { items: SimpleItem[]; summaries: Map<
   );
 }
 
-function PizzaGrid({ items, summaries }: { items: PizzaItem[]; summaries: Map<string, ReviewSummary> }) {
+function PizzaGrid({ items, summaries, openDetail }: { items: PizzaItem[]; summaries: Map<string, ReviewSummary>; openDetail: OpenDetail }) {
   return (
     <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
       {items.map((p, idx) => (
@@ -167,14 +178,14 @@ function PizzaGrid({ items, summaries }: { items: PizzaItem[]; summaries: Map<st
           viewport={{ once: true, margin: "-60px" }}
           transition={{ duration: 0.45, delay: idx * 0.04 }}
         >
-          <PizzaCard pizza={p} summary={summaries.get(p.id)} />
+          <PizzaCard pizza={p} summary={summaries.get(p.id)} openDetail={openDetail} />
         </motion.div>
       ))}
     </div>
   );
 }
 
-function PizzaCard({ pizza, summary }: { pizza: PizzaItem; summary?: ReviewSummary }) {
+function PizzaCard({ pizza, summary, openDetail }: { pizza: PizzaItem; summary?: ReviewSummary; openDetail: OpenDetail }) {
   const [size, setSize] = useState<PizzaSize>("M");
   const addLine = useCartStore((s) => s.addLine);
   const price = pizza.prices[size];
@@ -187,7 +198,12 @@ function PizzaCard({ pizza, summary }: { pizza: PizzaItem; summary?: ReviewSumma
       className="relative overflow-hidden rounded-2xl border border-border bg-card transition-colors hover:border-amber-brand/50"
     >
       <div className="flex flex-col sm:flex-row">
-        <div className="relative aspect-square w-full shrink-0 overflow-hidden sm:w-44 md:w-52">
+        <button
+          type="button"
+          onClick={() => openDetail({ kind: "pizza", item: pizza })}
+          className="relative aspect-square w-full shrink-0 overflow-hidden sm:w-44 md:w-52 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-brand"
+          aria-label={`View details for ${pizza.name}`}
+        >
           <motion.img
             src={pizza.image}
             alt={pizza.name}
@@ -199,15 +215,21 @@ function PizzaCard({ pizza, summary }: { pizza: PizzaItem; summary?: ReviewSumma
             transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
           />
           <div aria-hidden className="pointer-events-none absolute inset-0 bg-gradient-to-t from-card/80 via-transparent to-transparent sm:bg-gradient-to-r" />
-        </div>
+        </button>
 
         <div className="flex flex-1 flex-col p-5">
           <div className="flex items-start justify-between gap-3">
             <div>
-              <h3 className="text-lg font-bold leading-tight">{pizza.name}</h3>
+              <button
+                type="button"
+                onClick={() => openDetail({ kind: "pizza", item: pizza })}
+                className="text-left text-lg font-bold leading-tight hover:text-amber-brand"
+              >
+                {pizza.name}
+              </button>
               <div className="mt-1"><RatingBadge summary={summary} /></div>
               {pizza.description && (
-                <p className="mt-1 text-sm text-muted-foreground">{pizza.description}</p>
+                <p className="mt-1 text-sm text-muted-foreground line-clamp-2">{pizza.description}</p>
               )}
             </div>
             <div className="text-right">
@@ -287,7 +309,7 @@ function AnimatedPrice({ value }: { value: number }) {
   );
 }
 
-function DealsGrid({ items, summaries }: { items: DealItem[]; summaries: Map<string, ReviewSummary> }) {
+function DealsGrid({ items, summaries, openDetail }: { items: DealItem[]; summaries: Map<string, ReviewSummary>; openDetail: OpenDetail }) {
   const addLine = useCartStore((s) => s.addLine);
   return (
     <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
@@ -305,7 +327,12 @@ function DealsGrid({ items, summaries }: { items: DealItem[]; summaries: Map<str
               : "border-amber-brand/40 hover:border-amber-brand"
           }`}
         >
-          <div className="relative aspect-[16/9] w-full overflow-hidden bg-surface">
+          <button
+            type="button"
+            onClick={() => openDetail({ kind: "deal", item: d })}
+            className="relative aspect-[16/9] w-full overflow-hidden bg-surface text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-brand"
+            aria-label={`View details for ${d.name}`}
+          >
             <motion.img
               src={d.image}
               alt={d.name}
@@ -322,7 +349,7 @@ function DealsGrid({ items, summaries }: { items: DealItem[]; summaries: Map<str
                 Best value
               </span>
             )}
-          </div>
+          </button>
 
           <div className={`relative -mt-6 p-6 ${d.highlight ? "bg-gradient-to-br from-amber-brand/10 via-card to-card" : "bg-card"}`}>
             <div className="flex items-start justify-between gap-3">
