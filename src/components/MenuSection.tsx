@@ -7,9 +7,12 @@ import { formatRs } from "@/lib/format";
 import { StarRating } from "@/components/StarRating";
 import { useReviewSummaries } from "@/hooks/useReviewSummaries";
 import type { ReviewSummary } from "@/lib/reviews";
+import { ItemDetailDialog, type DetailItem } from "@/components/ItemDetailDialog";
 
 type Tab = "Burgers" | "Rolls" | "Pizzas" | "Broast" | "Deals";
 const TABS: Tab[] = ["Burgers", "Rolls", "Pizzas", "Broast", "Deals"];
+
+type OpenDetail = (d: DetailItem) => void;
 
 function RatingBadge({ summary }: { summary?: ReviewSummary }) {
   if (!summary || summary.review_count === 0) {
@@ -29,6 +32,8 @@ function RatingBadge({ summary }: { summary?: ReviewSummary }) {
 export function MenuSection() {
   const [tab, setTab] = useState<Tab>("Burgers");
   const { map: summaries } = useReviewSummaries();
+  const [detail, setDetail] = useState<DetailItem | null>(null);
+  const openDetail: OpenDetail = (d) => setDetail(d);
 
   return (
     <section id="menu" className="relative mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-24">
@@ -42,7 +47,7 @@ export function MenuSection() {
           </h2>
         </div>
         <p className="max-w-md text-sm text-muted-foreground">
-          Every item is made-to-order. Tap to add — your cart updates in real time.
+          Tap any item to see details. Hit <span className="font-bold text-amber-brand">Add</span> to drop it in your cart.
         </p>
       </div>
 
@@ -79,13 +84,20 @@ export function MenuSection() {
           transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
           className="mt-10"
         >
-          {tab === "Burgers" && <SimpleGrid items={burgers} summaries={summaries} />}
-          {tab === "Rolls" && <SimpleGrid items={rolls} summaries={summaries} />}
-          {tab === "Broast" && <SimpleGrid items={broast} summaries={summaries} />}
-          {tab === "Pizzas" && <PizzaGrid items={pizzas} summaries={summaries} />}
-          {tab === "Deals" && <DealsGrid items={deals} summaries={summaries} />}
+          {tab === "Burgers" && <SimpleGrid items={burgers} summaries={summaries} openDetail={openDetail} />}
+          {tab === "Rolls" && <SimpleGrid items={rolls} summaries={summaries} openDetail={openDetail} />}
+          {tab === "Broast" && <SimpleGrid items={broast} summaries={summaries} openDetail={openDetail} />}
+          {tab === "Pizzas" && <PizzaGrid items={pizzas} summaries={summaries} openDetail={openDetail} />}
+          {tab === "Deals" && <DealsGrid items={deals} summaries={summaries} openDetail={openDetail} />}
         </motion.div>
       </AnimatePresence>
+
+      <ItemDetailDialog
+        detail={detail}
+        open={!!detail}
+        onOpenChange={(o) => !o && setDetail(null)}
+        summary={detail ? summaries.get(detail.item.id) : undefined}
+      />
     </section>
   );
 }
