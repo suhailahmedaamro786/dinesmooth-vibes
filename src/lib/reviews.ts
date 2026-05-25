@@ -8,7 +8,6 @@ export type Review = {
   order_id: string | null;
   rating: number;
   comment: string | null;
-  customer_name: string | null;
   created_at: string;
 };
 
@@ -27,7 +26,7 @@ export async function fetchReviewsForItem(itemId: string, limit = 20): Promise<R
   const client = supabase as any;
   const { data } = await client
     .from("reviews")
-    .select("*")
+    .select("id,user_id,item_id,order_id,rating,comment,created_at")
     .eq("item_id", itemId)
     .order("created_at", { ascending: false })
     .limit(limit);
@@ -39,7 +38,7 @@ export async function fetchOwnReviews(userId: string): Promise<Review[]> {
   const client = supabase as any;
   const { data } = await client
     .from("reviews")
-    .select("*")
+    .select("id,user_id,item_id,order_id,rating,comment,created_at")
     .eq("user_id", userId)
     .order("created_at", { ascending: false });
   return (data ?? []) as Review[];
@@ -51,7 +50,6 @@ export async function submitReview(input: {
   orderId: string;
   rating: number;
   comment: string;
-  customerName?: string | null;
 }) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const client = supabase as any;
@@ -61,7 +59,6 @@ export async function submitReview(input: {
     order_id: input.orderId,
     rating: input.rating,
     comment: input.comment.trim() || null,
-    customer_name: input.customerName ?? null,
   });
   return { error };
 }

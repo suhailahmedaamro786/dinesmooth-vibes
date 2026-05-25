@@ -15,7 +15,6 @@ export function ReviewDialog({
   open,
   target,
   userId,
-  customerName,
   onClose,
   onSubmitted,
 }: {
@@ -39,7 +38,7 @@ export function ReviewDialog({
     setSubmitting(true);
     const { error } = await submitReview({
       userId, itemId: target.itemId, orderId: target.orderId,
-      rating, comment, customerName,
+      rating, comment,
     });
     setSubmitting(false);
     if (error) {
