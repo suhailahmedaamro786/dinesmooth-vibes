@@ -1,13 +1,11 @@
 import { motion } from "motion/react";
 import { MapPin, Phone, Clock, MessageCircle } from "lucide-react";
-import { useLanguage } from "@/hooks/useLanguage";
 
 const MAP_LINK = "https://maps.app.goo.gl/ZVd7S76KTLU9xeo28";
 const MAP_EMBED =
   "https://www.google.com/maps?q=Dadu+Food+Corner+DFC+Raza+Medical+Center+Shahjahan+Park+DHQ+Road+Dadu&output=embed";
 
 export function FindUs() {
-  const { t } = useLanguage();
   return (
     <section id="find-us" className="relative border-t border-border bg-background py-20">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
@@ -19,12 +17,12 @@ export function FindUs() {
           className="mb-10 text-center"
         >
           <div className="text-[10px] font-bold uppercase tracking-[0.22em] text-amber-brand">
-            {t("find.kicker")}
+            Find us
           </div>
           <h2 className="mt-2 text-3xl font-black tracking-tight sm:text-4xl">
-            {t("find.title")}
+            Visit DFC — Dadu Food Corner
           </h2>
-          <p className="mt-2 text-sm text-muted-foreground">{t("find.subtitle")}</p>
+          <p className="mt-2 text-sm text-muted-foreground">Dadu, Sindh, Pakistan · Open 7 days a week</p>
         </motion.div>
 
         <div className="grid gap-6 lg:grid-cols-[1.4fr_1fr]">
@@ -54,12 +52,12 @@ export function FindUs() {
             transition={{ duration: 0.6, delay: 0.1 }}
             className="flex flex-col gap-3"
           >
-            <InfoCard icon={<MapPin className="h-5 w-5" />} title={t("find.address")}>
+            <InfoCard icon={<MapPin className="h-5 w-5" />} title="Address">
               <a href={MAP_LINK} target="_blank" rel="noopener noreferrer" className="hover:text-amber-brand">
-                {t("find.addressLine")}
+                Raza Medical Center, Shahjahan Park, DHQ Road, Dadu 76200, Sindh
               </a>
             </InfoCard>
-            <InfoCard icon={<Phone className="h-5 w-5" />} title={t("find.call")}>
+            <InfoCard icon={<Phone className="h-5 w-5" />} title="Call us">
               <a href="tel:+923145327444" className="hover:text-amber-brand">
                 +92 314 5327444
               </a>
@@ -75,13 +73,13 @@ export function FindUs() {
               </span>
               <div>
                 <div className="text-[10px] font-bold uppercase tracking-wider text-[#25D366]">
-                  {t("find.wa")}
+                  WhatsApp orders
                 </div>
-                <div className="text-sm font-semibold">{t("find.waSub")}</div>
+                <div className="text-sm font-semibold">Tap to chat with us</div>
               </div>
             </a>
-            <InfoCard icon={<Clock className="h-5 w-5" />} title={t("find.hours")}>
-              {t("find.hoursLine")}
+            <InfoCard icon={<Clock className="h-5 w-5" />} title="Opening hours">
+              Mon — Sun · 11:00 AM — 1:00 AM
             </InfoCard>
           </motion.div>
         </div>

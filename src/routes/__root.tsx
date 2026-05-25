@@ -4,15 +4,17 @@ import {
   Link,
   createRootRouteWithContext,
   useRouter,
+  useRouterState,
+  useNavigate,
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
+import { useEffect } from "react";
 
 import appCss from "../styles.css?url";
 import { Toaster } from "@/components/ui/sonner";
-import { AuthProvider } from "@/hooks/useAuth";
+import { AuthProvider, useAuth } from "@/hooks/useAuth";
 import { ThemeProvider } from "@/hooks/useTheme";
-import { LanguageProvider } from "@/hooks/useLanguage";
 
 function NotFoundComponent() {
   return (
@@ -114,18 +116,42 @@ function RootShell({ children }: { children: React.ReactNode }) {
   );
 }
 
+function AuthGate({ children }: { children: React.ReactNode }) {
+  const { user, loading } = useAuth();
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const navigate = useNavigate();
+
+  const isPublic = pathname === "/auth";
+
+  useEffect(() => {
+    if (!loading && !user && !isPublic) {
+      navigate({ to: "/auth", replace: true });
+    }
+  }, [loading, user, isPublic, navigate]);
+
+  if (loading) {
+    return (
+      <div className="grid min-h-screen place-items-center bg-background text-sm text-muted-foreground">
+        Loading…
+      </div>
+    );
+  }
+  if (!user && !isPublic) return null;
+  return <>{children}</>;
+}
+
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
 
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
-        <LanguageProvider>
-          <AuthProvider>
+        <AuthProvider>
+          <AuthGate>
             <Outlet />
-            <Toaster position="top-center" richColors />
-          </AuthProvider>
-        </LanguageProvider>
+          </AuthGate>
+          <Toaster position="top-center" richColors />
+        </AuthProvider>
       </ThemeProvider>
     </QueryClientProvider>
   );

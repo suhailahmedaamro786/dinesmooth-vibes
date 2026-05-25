@@ -2,14 +2,11 @@ import { motion } from "motion/react";
 import { Train, Sparkles } from "lucide-react";
 import { SPECIAL_TRAIN_PIZZA_PRICE } from "@/data/menu";
 import { formatRs } from "@/lib/format";
-import { useLanguage } from "@/hooks/useLanguage";
 import heroSpread from "@/assets/hero-spread.jpg";
 
 export function Hero() {
-  const { t } = useLanguage();
   return (
     <section className="relative isolate overflow-hidden pt-32 pb-20 sm:pt-40 sm:pb-28">
-      {/* Background photo + overlays */}
       <motion.img
         src={heroSpread}
         alt=""
@@ -39,12 +36,12 @@ export function Hero() {
         >
           <span className="inline-flex items-center gap-2 rounded-full border border-border bg-surface/70 px-3 py-1.5 text-[11px] uppercase tracking-[0.22em] text-muted-foreground backdrop-blur">
             <Sparkles className="h-3.5 w-3.5 text-amber-brand" />
-            {t("hero.badge")}
+            Freshly fired · Hand-tossed · Served hot
           </span>
 
           <h1 className="mt-6 text-balance text-5xl font-black leading-[0.95] tracking-tight sm:text-7xl md:text-8xl">
-            <span className="text-foreground">{t("hero.title1")}</span>{" "}
-            <span className="text-amber-brand">{t("hero.title2")}</span>
+            <span className="text-foreground">DADU FOOD</span>{" "}
+            <span className="text-amber-brand">CORNER</span>
             <span className="block mt-3 text-2xl font-semibold tracking-[0.4em] text-muted-foreground sm:text-3xl">
               — DFC —
             </span>
@@ -56,7 +53,7 @@ export function Hero() {
             transition={{ delay: 0.25, duration: 0.6 }}
             className="mx-auto mt-6 max-w-xl text-base text-muted-foreground sm:text-lg"
           >
-            {t("hero.sub")}
+            THE TASTE HUB. Zingers, broasts, hand-stretched pizzas and rolls crafted with obsessive love for flavour.
           </motion.p>
         </motion.div>
 
@@ -74,15 +71,15 @@ export function Hero() {
           </span>
           <div className="flex-1 text-left">
             <div className="text-[11px] font-bold uppercase tracking-[0.22em] text-amber-brand">
-              {t("hero.special")}
+              Limited Service Special
             </div>
             <div className="text-base font-semibold sm:text-lg">
-              {t("hero.train")}{" "}
-              <span className="text-muted-foreground font-normal">{t("hero.forService")}</span>
+              Special Train Pizza{" "}
+              <span className="text-muted-foreground font-normal">(For Service)</span>
             </div>
           </div>
           <div className="text-right">
-            <div className="text-[10px] uppercase tracking-widest text-muted-foreground">{t("hero.only")}</div>
+            <div className="text-[10px] uppercase tracking-widest text-muted-foreground">Only</div>
             <div className="text-2xl font-black text-amber-brand">
               {formatRs(SPECIAL_TRAIN_PIZZA_PRICE)}
             </div>
