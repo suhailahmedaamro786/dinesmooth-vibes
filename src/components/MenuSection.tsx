@@ -357,7 +357,7 @@ function DealsGrid({ items, summaries, openDetail }: { items: DealItem[]; summar
                 <div className="text-[10px] font-bold uppercase tracking-[0.22em] text-amber-brand">
                   Bundle Deal
                 </div>
-                <h3 className="mt-1 text-2xl font-black tracking-tight">{d.name}</h3>
+                <button type="button" onClick={() => openDetail({ kind: "deal", item: d })} className="mt-1 block text-left text-2xl font-black tracking-tight hover:text-amber-brand">{d.name}</button>
                 <div className="mt-1"><RatingBadge summary={summaries.get(d.id)} /></div>
               </div>
               <div className="text-right">
