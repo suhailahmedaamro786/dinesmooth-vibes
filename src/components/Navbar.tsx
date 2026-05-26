@@ -87,10 +87,16 @@ export function Navbar() {
                     <div className="truncate text-sm font-semibold">{user.email}</div>
                   </div>
                   <button
+                    onClick={() => { setMenuOpen(false); navigate({ to: "/dashboard" }); }}
+                    className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm hover:bg-surface"
+                  >
+                    <Package className="h-4 w-4 text-amber-brand" /> My dashboard
+                  </button>
+                  <button
                     onClick={() => { setMenuOpen(false); navigate({ to: "/profile" }); }}
                     className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm hover:bg-surface"
                   >
-                    <Package className="h-4 w-4 text-amber-brand" /> My profile & orders
+                    <User className="h-4 w-4 text-amber-brand" /> Profile & orders
                   </button>
                   <button
                     onClick={handleSignOut}
