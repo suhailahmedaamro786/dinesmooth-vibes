@@ -37,7 +37,13 @@ export function MenuSection() {
 
   return (
     <section id="menu" className="relative mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-24">
-      <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-end">
+      <motion.div
+        initial={{ opacity: 0, y: 24 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.5 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+        className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-end"
+      >
         <div>
           <div className="text-[11px] font-bold uppercase tracking-[0.22em] text-amber-brand">
             The Menu
@@ -49,7 +55,7 @@ export function MenuSection() {
         <p className="max-w-md text-sm text-muted-foreground">
           Tap any item to see details. Hit <span className="font-bold text-amber-brand">Add</span> to drop it in your cart.
         </p>
-      </div>
+      </motion.div>
 
       <div id="deals" className="mt-10 flex gap-1 overflow-x-auto rounded-full border border-border bg-surface/60 p-1 backdrop-blur scrollbar-none">
         {TABS.map((t) => {
