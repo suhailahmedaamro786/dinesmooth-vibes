@@ -56,6 +56,9 @@ export function Navbar() {
         <nav className="hidden items-center gap-7 md:flex">
           <a href="#menu" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Menu</a>
           <a href="#deals" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Deals</a>
+          {user && (
+            <Link to="/dashboard" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Dashboard</Link>
+          )}
           {isAdmin && (
             <Link to="/admin" className="text-sm text-amber-brand hover:opacity-80 transition-colors">Admin</Link>
           )}
