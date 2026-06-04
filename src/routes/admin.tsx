@@ -4,16 +4,18 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import {
   ArrowLeft, ChevronRight, Volume2, VolumeX, Loader2, XCircle,
   LayoutGrid, UtensilsCrossed, Tag, Users, BarChart3, Plus, Trash2,
+  Download, Search, X,
 } from "lucide-react";
 import {
   ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid,
-  PieChart, Pie, Cell,
+  PieChart, Pie, Cell, AreaChart, Area,
 } from "recharts";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { ORDER_FLOW, STATUS_LABEL, type DbOrderStatus } from "@/lib/orderStatus";
 import { formatRs } from "@/lib/format";
 import { burgers, rolls, broast, pizzas, deals } from "@/data/menu";
+import { downloadCSV } from "@/lib/csv";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/admin")({
@@ -194,7 +196,7 @@ function AdminPage() {
         )}
         {tab === "menu" && <MenuTab />}
         {tab === "promo" && <PromoTab />}
-        {tab === "customers" && <CustomersTab />}
+        {tab === "customers" && <CustomersTab orders={orders} />}
         {tab === "analytics" && <AnalyticsTab orders={orders} />}
       </div>
     </div>
@@ -210,12 +212,33 @@ function OrdersTab({
   };
   for (const o of orders) grouped[o.status].push(o);
 
+  const exportOrders = () => {
+    const rows = orders.map((o) => ({
+      id: o.id,
+      created_at: o.created_at,
+      status: o.status,
+      customer_name: o.customer_name,
+      phone: o.phone,
+      address: o.address,
+      payment_method: o.payment_method ?? "",
+      transaction_id: o.transaction_id ?? "",
+      total: o.total,
+      items: (o.items ?? []).map((it) => `${it.qty}x ${it.name}${it.variant ? ` (${it.variant})` : ""}`).join(" | "),
+      notes: o.notes ?? "",
+    }));
+    downloadCSV(`dfc-orders-${new Date().toISOString().slice(0,10)}.csv`, rows);
+  };
+
   return (
     <div className="grid gap-6 lg:grid-cols-[260px_1fr]">
       <aside className="space-y-3">
         <Metric label="Total revenue" value={formatRs(revenue)} accent />
         <Metric label="Active orders" value={active.toString()} />
         <Metric label="Delivered" value={completed.toString()} />
+        <button onClick={exportOrders} disabled={orders.length === 0}
+          className="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-border bg-card px-4 py-3 text-xs font-bold uppercase tracking-wider hover:border-amber-brand hover:text-amber-brand disabled:opacity-50">
+          <Download className="h-4 w-4" /> Export CSV
+        </button>
       </aside>
       <main className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-5">
         <LayoutGroup>
@@ -404,10 +427,25 @@ function PromoTab() {
 
   if (loading) return <Loader2 className="mx-auto h-5 w-5 animate-spin text-amber-brand" />;
 
+  const exportPromos = () => {
+    downloadCSV(`dfc-promo-codes-${new Date().toISOString().slice(0,10)}.csv`,
+      items.map((p) => ({
+        code: p.code, discount_type: p.discount_type, discount_value: p.discount_value,
+        active: p.active, used_count: p.used_count, usage_limit: p.usage_limit ?? "",
+        expires_at: p.expires_at ?? "",
+      })));
+  };
+
   return (
     <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
       <div className="rounded-2xl border border-border bg-card p-5">
-        <h2 className="mb-4 text-lg font-bold">Active promo codes</h2>
+        <div className="mb-4 flex items-center justify-between gap-3">
+          <h2 className="text-lg font-bold">Active promo codes</h2>
+          <button onClick={exportPromos} disabled={items.length === 0}
+            className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider hover:border-amber-brand hover:text-amber-brand disabled:opacity-50">
+            <Download className="h-3.5 w-3.5" /> Export CSV
+          </button>
+        </div>
         {items.length === 0 ? (
           <p className="text-sm text-muted-foreground">No codes yet.</p>
         ) : (
@@ -455,9 +493,11 @@ function PromoTab() {
 /* ────────────── Customers ────────────── */
 type Customer = { id: string; full_name: string | null; phone: string | null; loyalty_points: number; created_at: string };
 
-function CustomersTab() {
+function CustomersTab({ orders }: { orders: AdminOrder[] }) {
   const [items, setItems] = useState<Customer[]>([]);
   const [loading, setLoading] = useState(true);
+  const [query, setQuery] = useState("");
+  const [selectedId, setSelectedId] = useState<string | null>(null);
 
   useEffect(() => {
     supabase.from("profiles").select("id, full_name, phone, loyalty_points, created_at").order("created_at", { ascending: false }).then(({ data }) => {
@@ -466,45 +506,195 @@ function CustomersTab() {
     });
   }, []);
 
+  // Aggregate order stats per profile (by user_id) and per phone (for guest matching)
+  const statsByUser = useMemo(() => {
+    const m = new Map<string, { count: number; total: number; last: string | null }>();
+    for (const o of orders) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const uid = (o as any).user_id as string | null;
+      if (!uid) continue;
+      const cur = m.get(uid) ?? { count: 0, total: 0, last: null };
+      cur.count += 1; cur.total += Number(o.total);
+      if (!cur.last || o.created_at > cur.last) cur.last = o.created_at;
+      m.set(uid, cur);
+    }
+    return m;
+  }, [orders]);
+
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return items;
+    return items.filter((c) =>
+      (c.full_name ?? "").toLowerCase().includes(q) ||
+      (c.phone ?? "").toLowerCase().includes(q) ||
+      c.id.toLowerCase().includes(q),
+    );
+  }, [items, query]);
+
+  const selected = useMemo(() => items.find((c) => c.id === selectedId) ?? null, [items, selectedId]);
+  const selectedHistory = useMemo(() => {
+    if (!selected) return [];
+    return orders
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      .filter((o) => (o as any).user_id === selected.id || (selected.phone && o.phone === selected.phone))
+      .sort((a, b) => b.created_at.localeCompare(a.created_at));
+  }, [orders, selected]);
+
+  const exportCustomers = () => {
+    downloadCSV(`dfc-customers-${new Date().toISOString().slice(0,10)}.csv`,
+      items.map((c) => {
+        const s = statsByUser.get(c.id);
+        return {
+          id: c.id, full_name: c.full_name ?? "", phone: c.phone ?? "",
+          loyalty_points: c.loyalty_points,
+          orders_count: s?.count ?? 0,
+          lifetime_spend: s?.total ?? 0,
+          last_order_at: s?.last ?? "",
+          joined_at: c.created_at,
+        };
+      }));
+  };
+
   if (loading) return <Loader2 className="mx-auto h-5 w-5 animate-spin text-amber-brand" />;
   return (
-    <div className="rounded-2xl border border-border bg-card p-5">
-      <h2 className="mb-4 text-lg font-bold">Customers ({items.length})</h2>
-      <div className="overflow-x-auto">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="border-b border-border text-[10px] uppercase tracking-wider text-muted-foreground">
-              <th className="py-2 text-left">Name</th><th className="text-left">Phone</th>
-              <th className="text-right">Points</th><th className="text-right">Joined</th>
-            </tr>
-          </thead>
-          <tbody>
-            {items.map((c) => (
-              <tr key={c.id} className="border-b border-border/40">
-                <td className="py-2 font-semibold">{c.full_name || "—"}</td>
-                <td className="text-muted-foreground">{c.phone || "—"}</td>
-                <td className="text-right font-bold text-amber-brand tabular-nums">{c.loyalty_points}</td>
-                <td className="text-right text-xs text-muted-foreground">{new Date(c.created_at).toLocaleDateString()}</td>
+    <div className="grid gap-6 lg:grid-cols-[1fr_380px]">
+      <div className="rounded-2xl border border-border bg-card p-5">
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+          <h2 className="text-lg font-bold">Customers ({items.length})</h2>
+          <button onClick={exportCustomers} disabled={items.length === 0}
+            className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider hover:border-amber-brand hover:text-amber-brand disabled:opacity-50">
+            <Download className="h-3.5 w-3.5" /> Export CSV
+          </button>
+        </div>
+        <div className="relative mb-4">
+          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <input
+            value={query} onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search by name, phone, or ID…"
+            className="w-full rounded-full border border-border bg-surface/60 py-2.5 pl-9 pr-3 text-sm outline-none focus:border-amber-brand"
+          />
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-border text-[10px] uppercase tracking-wider text-muted-foreground">
+                <th className="py-2 text-left">Name</th><th className="text-left">Phone</th>
+                <th className="text-right">Orders</th><th className="text-right">Spend</th>
+                <th className="text-right">Points</th><th className="text-right">Joined</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {filtered.map((c) => {
+                const s = statsByUser.get(c.id);
+                const active = c.id === selectedId;
+                return (
+                  <tr key={c.id} onClick={() => setSelectedId(c.id)}
+                    className={`cursor-pointer border-b border-border/40 transition hover:bg-surface/40 ${active ? "bg-amber-brand/10" : ""}`}>
+                    <td className="py-2 font-semibold">{c.full_name || "—"}</td>
+                    <td className="text-muted-foreground">{c.phone || "—"}</td>
+                    <td className="text-right tabular-nums">{s?.count ?? 0}</td>
+                    <td className="text-right tabular-nums text-muted-foreground">{formatRs(s?.total ?? 0)}</td>
+                    <td className="text-right font-bold text-amber-brand tabular-nums">{c.loyalty_points}</td>
+                    <td className="text-right text-xs text-muted-foreground">{new Date(c.created_at).toLocaleDateString()}</td>
+                  </tr>
+                );
+              })}
+              {filtered.length === 0 && (
+                <tr><td colSpan={6} className="py-6 text-center text-sm text-muted-foreground">No customers match "{query}".</td></tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
+
+      <aside className="rounded-2xl border border-border bg-card p-5">
+        {!selected ? (
+          <div className="grid h-full min-h-[200px] place-items-center text-center text-sm text-muted-foreground">
+            <div>
+              <Users className="mx-auto mb-2 h-8 w-8 opacity-40" />
+              Select a customer to view order history.
+            </div>
+          </div>
+        ) : (
+          <>
+            <div className="flex items-start justify-between gap-2">
+              <div>
+                <div className="text-[10px] font-bold uppercase tracking-[0.22em] text-amber-brand">Customer</div>
+                <h3 className="text-base font-bold">{selected.full_name || "—"}</h3>
+                <p className="text-xs text-muted-foreground">{selected.phone || "No phone"}</p>
+                <p className="mt-1 font-mono text-[10px] text-muted-foreground">{selected.id}</p>
+              </div>
+              <button onClick={() => setSelectedId(null)} className="grid h-8 w-8 place-items-center rounded-full border border-border text-muted-foreground hover:text-foreground">
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+            <div className="mt-4 grid grid-cols-3 gap-2 text-center">
+              <div className="rounded-xl border border-border bg-surface/40 p-2">
+                <div className="text-[10px] uppercase text-muted-foreground">Orders</div>
+                <div className="text-lg font-black tabular-nums">{selectedHistory.length}</div>
+              </div>
+              <div className="rounded-xl border border-border bg-surface/40 p-2">
+                <div className="text-[10px] uppercase text-muted-foreground">Spend</div>
+                <div className="text-sm font-black tabular-nums text-amber-brand">
+                  {formatRs(selectedHistory.reduce((n, o) => n + Number(o.total), 0))}
+                </div>
+              </div>
+              <div className="rounded-xl border border-border bg-surface/40 p-2">
+                <div className="text-[10px] uppercase text-muted-foreground">Points</div>
+                <div className="text-lg font-black tabular-nums text-amber-brand">{selected.loyalty_points}</div>
+              </div>
+            </div>
+            <h4 className="mt-5 mb-2 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Order history</h4>
+            <div className="max-h-[420px] space-y-2 overflow-y-auto pr-1">
+              {selectedHistory.length === 0 ? (
+                <p className="text-xs text-muted-foreground">No orders yet.</p>
+              ) : selectedHistory.map((o) => (
+                <div key={o.id} className="rounded-xl border border-border bg-surface/40 p-3 text-xs">
+                  <div className="flex items-center justify-between">
+                    <span className="font-mono font-bold text-amber-brand">{o.id}</span>
+                    <span className="tabular-nums font-bold">{formatRs(Number(o.total))}</span>
+                  </div>
+                  <div className="mt-0.5 flex items-center justify-between text-muted-foreground">
+                    <span>{new Date(o.created_at).toLocaleString()}</span>
+                    <span className="rounded-full bg-amber-brand/10 px-2 py-0.5 text-[10px] font-bold uppercase text-amber-brand">{STATUS_LABEL[o.status]}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
+      </aside>
     </div>
   );
 }
 
 /* ────────────── Analytics ────────────── */
 function AnalyticsTab({ orders }: { orders: AdminOrder[] }) {
+  const SHIFTS: { id: string; label: string; from: number; to: number; color: string }[] = [
+    { id: "morning",   label: "Morning (6–11)",   from: 6,  to: 11, color: "#fbbf24" },
+    { id: "lunch",     label: "Lunch (11–15)",    from: 11, to: 15, color: "#f97316" },
+    { id: "afternoon", label: "Afternoon (15–18)", from: 15, to: 18, color: "#ef4444" },
+    { id: "evening",   label: "Evening (18–22)",  from: 18, to: 22, color: "#a855f7" },
+    { id: "night",     label: "Night (22–6)",     from: 22, to: 30, color: "#6366f1" },
+  ];
+  const shiftFor = (h: number) => {
+    const hr = h < 6 ? h + 24 : h;
+    return SHIFTS.find((s) => hr >= s.from && hr < s.to) ?? SHIFTS[0];
+  };
+
   const data = useMemo(() => {
-    // last 7 days revenue
-    const days: { day: string; revenue: number }[] = [];
-    for (let i = 6; i >= 0; i--) {
+    // last 14 days revenue trend (area)
+    const days: { day: string; revenue: number; orders: number }[] = [];
+    for (let i = 13; i >= 0; i--) {
       const d = new Date(); d.setDate(d.getDate() - i);
       const key = d.toISOString().slice(0, 10);
-      const label = d.toLocaleDateString([], { weekday: "short" });
-      const revenue = orders.filter((o) => o.created_at.startsWith(key) && o.status !== "cancelled").reduce((n, o) => n + Number(o.total), 0);
-      days.push({ day: label, revenue });
+      const label = d.toLocaleDateString([], { month: "short", day: "numeric" });
+      const dayOrders = orders.filter((o) => o.created_at.startsWith(key) && o.status !== "cancelled");
+      days.push({
+        day: label,
+        revenue: dayOrders.reduce((n, o) => n + Number(o.total), 0),
+        orders: dayOrders.length,
+      });
     }
 
     // top items
@@ -514,56 +704,102 @@ function AnalyticsTab({ orders }: { orders: AdminOrder[] }) {
     }));
     const top = Object.entries(counts).map(([name, qty]) => ({ name, qty })).sort((a, b) => b.qty - a.qty).slice(0, 5);
 
-    // hours
-    const hourMap = new Map<number, number>();
-    for (let h = 0; h < 24; h++) hourMap.set(h, 0);
-    orders.forEach((o) => { const h = new Date(o.created_at).getHours(); hourMap.set(h, (hourMap.get(h) ?? 0) + 1); });
-    const hours = Array.from(hourMap.entries()).map(([h, c]) => ({ hour: `${h}h`, orders: c }));
+    // shift breakdown
+    const shiftRevenue: Record<string, { label: string; revenue: number; orders: number; color: string }> = {};
+    SHIFTS.forEach((s) => { shiftRevenue[s.id] = { label: s.label, revenue: 0, orders: 0, color: s.color }; });
+    orders.forEach((o) => {
+      if (o.status === "cancelled") return;
+      const s = shiftFor(new Date(o.created_at).getHours());
+      shiftRevenue[s.id].revenue += Number(o.total);
+      shiftRevenue[s.id].orders += 1;
+    });
+    const shifts = Object.values(shiftRevenue);
 
-    return { days, top, hours, total: orders.length };
+    // total kpis
+    const valid = orders.filter((o) => o.status !== "cancelled");
+    const totalRevenue = valid.reduce((n, o) => n + Number(o.total), 0);
+    const avgOrder = valid.length ? totalRevenue / valid.length : 0;
+
+    return { days, top, shifts, totalRevenue, avgOrder, totalOrders: valid.length };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [orders]);
 
   const COLORS = ["#f59e0b", "#fb923c", "#f97316", "#ef4444", "#a855f7"];
 
   return (
-    <div className="grid gap-4 lg:grid-cols-2">
-      <div className="rounded-2xl border border-border bg-card p-5">
-        <h3 className="mb-4 text-sm font-bold uppercase tracking-wider">Revenue · last 7 days</h3>
-        <ResponsiveContainer width="100%" height={240}>
-          <BarChart data={data.days}>
+    <div className="grid gap-4 lg:grid-cols-3">
+      <Metric label="Revenue (all-time)" value={formatRs(data.totalRevenue)} accent />
+      <Metric label="Orders" value={data.totalOrders.toString()} />
+      <Metric label="Avg order value" value={formatRs(data.avgOrder)} />
+
+      <div className="rounded-2xl border border-border bg-card p-5 lg:col-span-3">
+        <h3 className="mb-4 text-sm font-bold uppercase tracking-wider">Revenue trend · last 14 days</h3>
+        <ResponsiveContainer width="100%" height={260}>
+          <AreaChart data={data.days}>
+            <defs>
+              <linearGradient id="revGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#f59e0b" stopOpacity={0.6} />
+                <stop offset="100%" stopColor="#f59e0b" stopOpacity={0} />
+              </linearGradient>
+            </defs>
             <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-            <XAxis dataKey="day" stroke="hsl(var(--muted-foreground))" />
-            <YAxis stroke="hsl(var(--muted-foreground))" />
+            <XAxis dataKey="day" stroke="hsl(var(--muted-foreground))" tick={{ fontSize: 11 }} />
+            <YAxis stroke="hsl(var(--muted-foreground))" tick={{ fontSize: 11 }} />
             <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 8 }} />
-            <Bar dataKey="revenue" fill="#f59e0b" radius={[6, 6, 0, 0]} />
+            <Area type="monotone" dataKey="revenue" stroke="#f59e0b" fill="url(#revGrad)" strokeWidth={2.5} />
+          </AreaChart>
+        </ResponsiveContainer>
+      </div>
+
+      <div className="rounded-2xl border border-border bg-card p-5 lg:col-span-2">
+        <h3 className="mb-4 text-sm font-bold uppercase tracking-wider">Revenue by shift</h3>
+        <ResponsiveContainer width="100%" height={240}>
+          <BarChart data={data.shifts}>
+            <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+            <XAxis dataKey="label" stroke="hsl(var(--muted-foreground))" tick={{ fontSize: 11 }} />
+            <YAxis stroke="hsl(var(--muted-foreground))" tick={{ fontSize: 11 }} />
+            <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 8 }}
+              formatter={(value: number, name: string) => name === "revenue" ? [formatRs(value), "Revenue"] : [value, "Orders"]} />
+            <Bar dataKey="revenue" radius={[6, 6, 0, 0]}>
+              {data.shifts.map((s, i) => <Cell key={i} fill={s.color} />)}
+            </Bar>
           </BarChart>
         </ResponsiveContainer>
       </div>
+
       <div className="rounded-2xl border border-border bg-card p-5">
-        <h3 className="mb-4 text-sm font-bold uppercase tracking-wider">Top 5 items</h3>
-        {data.top.length === 0 ? <p className="text-sm text-muted-foreground">No data yet.</p> : (
+        <h3 className="mb-4 text-sm font-bold uppercase tracking-wider">Orders by shift</h3>
+        {data.shifts.every((s) => s.orders === 0) ? (
+          <p className="text-sm text-muted-foreground">No data yet.</p>
+        ) : (
           <ResponsiveContainer width="100%" height={240}>
             <PieChart>
-              <Pie data={data.top} dataKey="qty" nameKey="name" cx="50%" cy="50%" outerRadius={90} label>
-                {data.top.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
+              <Pie data={data.shifts} dataKey="orders" nameKey="label" cx="50%" cy="50%" outerRadius={90} label={(e) => `${e.orders}`}>
+                {data.shifts.map((s, i) => <Cell key={i} fill={s.color} />)}
               </Pie>
               <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 8 }} />
             </PieChart>
           </ResponsiveContainer>
         )}
       </div>
-      <div className="rounded-2xl border border-border bg-card p-5 lg:col-span-2">
-        <h3 className="mb-4 text-sm font-bold uppercase tracking-wider">Orders by hour</h3>
-        <ResponsiveContainer width="100%" height={220}>
-          <BarChart data={data.hours}>
-            <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-            <XAxis dataKey="hour" stroke="hsl(var(--muted-foreground))" />
-            <YAxis stroke="hsl(var(--muted-foreground))" />
-            <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 8 }} />
-            <Bar dataKey="orders" fill="#fb923c" radius={[6, 6, 0, 0]} />
-          </BarChart>
-        </ResponsiveContainer>
+
+      <div className="rounded-2xl border border-border bg-card p-5 lg:col-span-3">
+        <h3 className="mb-4 text-sm font-bold uppercase tracking-wider">Top 5 items</h3>
+        {data.top.length === 0 ? <p className="text-sm text-muted-foreground">No data yet.</p> : (
+          <ResponsiveContainer width="100%" height={240}>
+            <BarChart data={data.top} layout="vertical">
+              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+              <XAxis type="number" stroke="hsl(var(--muted-foreground))" tick={{ fontSize: 11 }} />
+              <YAxis dataKey="name" type="category" stroke="hsl(var(--muted-foreground))" tick={{ fontSize: 11 }} width={120} />
+              <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 8 }} />
+              <Bar dataKey="qty" radius={[0, 6, 6, 0]}>
+                {data.top.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        )}
       </div>
     </div>
   );
 }
+
