@@ -493,9 +493,11 @@ function PromoTab() {
 /* ────────────── Customers ────────────── */
 type Customer = { id: string; full_name: string | null; phone: string | null; loyalty_points: number; created_at: string };
 
-function CustomersTab() {
+function CustomersTab({ orders }: { orders: AdminOrder[] }) {
   const [items, setItems] = useState<Customer[]>([]);
   const [loading, setLoading] = useState(true);
+  const [query, setQuery] = useState("");
+  const [selectedId, setSelectedId] = useState<string | null>(null);
 
   useEffect(() => {
     supabase.from("profiles").select("id, full_name, phone, loyalty_points, created_at").order("created_at", { ascending: false }).then(({ data }) => {
@@ -504,30 +506,164 @@ function CustomersTab() {
     });
   }, []);
 
+  // Aggregate order stats per profile (by user_id) and per phone (for guest matching)
+  const statsByUser = useMemo(() => {
+    const m = new Map<string, { count: number; total: number; last: string | null }>();
+    for (const o of orders) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const uid = (o as any).user_id as string | null;
+      if (!uid) continue;
+      const cur = m.get(uid) ?? { count: 0, total: 0, last: null };
+      cur.count += 1; cur.total += Number(o.total);
+      if (!cur.last || o.created_at > cur.last) cur.last = o.created_at;
+      m.set(uid, cur);
+    }
+    return m;
+  }, [orders]);
+
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return items;
+    return items.filter((c) =>
+      (c.full_name ?? "").toLowerCase().includes(q) ||
+      (c.phone ?? "").toLowerCase().includes(q) ||
+      c.id.toLowerCase().includes(q),
+    );
+  }, [items, query]);
+
+  const selected = useMemo(() => items.find((c) => c.id === selectedId) ?? null, [items, selectedId]);
+  const selectedHistory = useMemo(() => {
+    if (!selected) return [];
+    return orders
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      .filter((o) => (o as any).user_id === selected.id || (selected.phone && o.phone === selected.phone))
+      .sort((a, b) => b.created_at.localeCompare(a.created_at));
+  }, [orders, selected]);
+
+  const exportCustomers = () => {
+    downloadCSV(`dfc-customers-${new Date().toISOString().slice(0,10)}.csv`,
+      items.map((c) => {
+        const s = statsByUser.get(c.id);
+        return {
+          id: c.id, full_name: c.full_name ?? "", phone: c.phone ?? "",
+          loyalty_points: c.loyalty_points,
+          orders_count: s?.count ?? 0,
+          lifetime_spend: s?.total ?? 0,
+          last_order_at: s?.last ?? "",
+          joined_at: c.created_at,
+        };
+      }));
+  };
+
   if (loading) return <Loader2 className="mx-auto h-5 w-5 animate-spin text-amber-brand" />;
   return (
-    <div className="rounded-2xl border border-border bg-card p-5">
-      <h2 className="mb-4 text-lg font-bold">Customers ({items.length})</h2>
-      <div className="overflow-x-auto">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="border-b border-border text-[10px] uppercase tracking-wider text-muted-foreground">
-              <th className="py-2 text-left">Name</th><th className="text-left">Phone</th>
-              <th className="text-right">Points</th><th className="text-right">Joined</th>
-            </tr>
-          </thead>
-          <tbody>
-            {items.map((c) => (
-              <tr key={c.id} className="border-b border-border/40">
-                <td className="py-2 font-semibold">{c.full_name || "—"}</td>
-                <td className="text-muted-foreground">{c.phone || "—"}</td>
-                <td className="text-right font-bold text-amber-brand tabular-nums">{c.loyalty_points}</td>
-                <td className="text-right text-xs text-muted-foreground">{new Date(c.created_at).toLocaleDateString()}</td>
+    <div className="grid gap-6 lg:grid-cols-[1fr_380px]">
+      <div className="rounded-2xl border border-border bg-card p-5">
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+          <h2 className="text-lg font-bold">Customers ({items.length})</h2>
+          <button onClick={exportCustomers} disabled={items.length === 0}
+            className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider hover:border-amber-brand hover:text-amber-brand disabled:opacity-50">
+            <Download className="h-3.5 w-3.5" /> Export CSV
+          </button>
+        </div>
+        <div className="relative mb-4">
+          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <input
+            value={query} onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search by name, phone, or ID…"
+            className="w-full rounded-full border border-border bg-surface/60 py-2.5 pl-9 pr-3 text-sm outline-none focus:border-amber-brand"
+          />
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-border text-[10px] uppercase tracking-wider text-muted-foreground">
+                <th className="py-2 text-left">Name</th><th className="text-left">Phone</th>
+                <th className="text-right">Orders</th><th className="text-right">Spend</th>
+                <th className="text-right">Points</th><th className="text-right">Joined</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {filtered.map((c) => {
+                const s = statsByUser.get(c.id);
+                const active = c.id === selectedId;
+                return (
+                  <tr key={c.id} onClick={() => setSelectedId(c.id)}
+                    className={`cursor-pointer border-b border-border/40 transition hover:bg-surface/40 ${active ? "bg-amber-brand/10" : ""}`}>
+                    <td className="py-2 font-semibold">{c.full_name || "—"}</td>
+                    <td className="text-muted-foreground">{c.phone || "—"}</td>
+                    <td className="text-right tabular-nums">{s?.count ?? 0}</td>
+                    <td className="text-right tabular-nums text-muted-foreground">{formatRs(s?.total ?? 0)}</td>
+                    <td className="text-right font-bold text-amber-brand tabular-nums">{c.loyalty_points}</td>
+                    <td className="text-right text-xs text-muted-foreground">{new Date(c.created_at).toLocaleDateString()}</td>
+                  </tr>
+                );
+              })}
+              {filtered.length === 0 && (
+                <tr><td colSpan={6} className="py-6 text-center text-sm text-muted-foreground">No customers match "{query}".</td></tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
+
+      <aside className="rounded-2xl border border-border bg-card p-5">
+        {!selected ? (
+          <div className="grid h-full min-h-[200px] place-items-center text-center text-sm text-muted-foreground">
+            <div>
+              <Users className="mx-auto mb-2 h-8 w-8 opacity-40" />
+              Select a customer to view order history.
+            </div>
+          </div>
+        ) : (
+          <>
+            <div className="flex items-start justify-between gap-2">
+              <div>
+                <div className="text-[10px] font-bold uppercase tracking-[0.22em] text-amber-brand">Customer</div>
+                <h3 className="text-base font-bold">{selected.full_name || "—"}</h3>
+                <p className="text-xs text-muted-foreground">{selected.phone || "No phone"}</p>
+                <p className="mt-1 font-mono text-[10px] text-muted-foreground">{selected.id}</p>
+              </div>
+              <button onClick={() => setSelectedId(null)} className="grid h-8 w-8 place-items-center rounded-full border border-border text-muted-foreground hover:text-foreground">
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+            <div className="mt-4 grid grid-cols-3 gap-2 text-center">
+              <div className="rounded-xl border border-border bg-surface/40 p-2">
+                <div className="text-[10px] uppercase text-muted-foreground">Orders</div>
+                <div className="text-lg font-black tabular-nums">{selectedHistory.length}</div>
+              </div>
+              <div className="rounded-xl border border-border bg-surface/40 p-2">
+                <div className="text-[10px] uppercase text-muted-foreground">Spend</div>
+                <div className="text-sm font-black tabular-nums text-amber-brand">
+                  {formatRs(selectedHistory.reduce((n, o) => n + Number(o.total), 0))}
+                </div>
+              </div>
+              <div className="rounded-xl border border-border bg-surface/40 p-2">
+                <div className="text-[10px] uppercase text-muted-foreground">Points</div>
+                <div className="text-lg font-black tabular-nums text-amber-brand">{selected.loyalty_points}</div>
+              </div>
+            </div>
+            <h4 className="mt-5 mb-2 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Order history</h4>
+            <div className="max-h-[420px] space-y-2 overflow-y-auto pr-1">
+              {selectedHistory.length === 0 ? (
+                <p className="text-xs text-muted-foreground">No orders yet.</p>
+              ) : selectedHistory.map((o) => (
+                <div key={o.id} className="rounded-xl border border-border bg-surface/40 p-3 text-xs">
+                  <div className="flex items-center justify-between">
+                    <span className="font-mono font-bold text-amber-brand">{o.id}</span>
+                    <span className="tabular-nums font-bold">{formatRs(Number(o.total))}</span>
+                  </div>
+                  <div className="mt-0.5 flex items-center justify-between text-muted-foreground">
+                    <span>{new Date(o.created_at).toLocaleString()}</span>
+                    <span className="rounded-full bg-amber-brand/10 px-2 py-0.5 text-[10px] font-bold uppercase text-amber-brand">{STATUS_LABEL[o.status]}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
+      </aside>
     </div>
   );
 }
