@@ -803,14 +803,3 @@ function AnalyticsTab({ orders }: { orders: AdminOrder[] }) {
   );
 }
 
-function LegacyAnalyticsUnused({ orders }: { orders: AdminOrder[] }) {
-  const data = useMemo(() => {
-    const counts: Record<string, number> = {};
-    orders.forEach((o) => o.items?.forEach((it: { name: string; qty: number }) => {
-      counts[it.name] = (counts[it.name] ?? 0) + it.qty;
-    }));
-    const top = Object.entries(counts).map(([name, qty]) => ({ name, qty })).sort((a, b) => b.qty - a.qty).slice(0, 5);
-    return { top };
-  }, [orders]);
-  return <span style={{ display: "none" }}>{data.top.length}</span>;
-}
