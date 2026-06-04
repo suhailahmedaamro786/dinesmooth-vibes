@@ -4,16 +4,18 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import {
   ArrowLeft, ChevronRight, Volume2, VolumeX, Loader2, XCircle,
   LayoutGrid, UtensilsCrossed, Tag, Users, BarChart3, Plus, Trash2,
+  Download, Search, X,
 } from "lucide-react";
 import {
   ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid,
-  PieChart, Pie, Cell,
+  PieChart, Pie, Cell, AreaChart, Area,
 } from "recharts";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { ORDER_FLOW, STATUS_LABEL, type DbOrderStatus } from "@/lib/orderStatus";
 import { formatRs } from "@/lib/format";
 import { burgers, rolls, broast, pizzas, deals } from "@/data/menu";
+import { downloadCSV } from "@/lib/csv";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/admin")({
