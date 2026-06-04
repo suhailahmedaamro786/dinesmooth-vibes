@@ -196,7 +196,7 @@ function AdminPage() {
         )}
         {tab === "menu" && <MenuTab />}
         {tab === "promo" && <PromoTab />}
-        {tab === "customers" && <CustomersTab />}
+        {tab === "customers" && <CustomersTab orders={orders} />}
         {tab === "analytics" && <AnalyticsTab orders={orders} />}
       </div>
     </div>
