@@ -670,15 +670,31 @@ function CustomersTab({ orders }: { orders: AdminOrder[] }) {
 
 /* ────────────── Analytics ────────────── */
 function AnalyticsTab({ orders }: { orders: AdminOrder[] }) {
+  const SHIFTS: { id: string; label: string; from: number; to: number; color: string }[] = [
+    { id: "morning",   label: "Morning (6–11)",   from: 6,  to: 11, color: "#fbbf24" },
+    { id: "lunch",     label: "Lunch (11–15)",    from: 11, to: 15, color: "#f97316" },
+    { id: "afternoon", label: "Afternoon (15–18)", from: 15, to: 18, color: "#ef4444" },
+    { id: "evening",   label: "Evening (18–22)",  from: 18, to: 22, color: "#a855f7" },
+    { id: "night",     label: "Night (22–6)",     from: 22, to: 30, color: "#6366f1" },
+  ];
+  const shiftFor = (h: number) => {
+    const hr = h < 6 ? h + 24 : h;
+    return SHIFTS.find((s) => hr >= s.from && hr < s.to) ?? SHIFTS[0];
+  };
+
   const data = useMemo(() => {
-    // last 7 days revenue
-    const days: { day: string; revenue: number }[] = [];
-    for (let i = 6; i >= 0; i--) {
+    // last 14 days revenue trend (area)
+    const days: { day: string; revenue: number; orders: number }[] = [];
+    for (let i = 13; i >= 0; i--) {
       const d = new Date(); d.setDate(d.getDate() - i);
       const key = d.toISOString().slice(0, 10);
-      const label = d.toLocaleDateString([], { weekday: "short" });
-      const revenue = orders.filter((o) => o.created_at.startsWith(key) && o.status !== "cancelled").reduce((n, o) => n + Number(o.total), 0);
-      days.push({ day: label, revenue });
+      const label = d.toLocaleDateString([], { month: "short", day: "numeric" });
+      const dayOrders = orders.filter((o) => o.created_at.startsWith(key) && o.status !== "cancelled");
+      days.push({
+        day: label,
+        revenue: dayOrders.reduce((n, o) => n + Number(o.total), 0),
+        orders: dayOrders.length,
+      });
     }
 
     // top items
@@ -688,14 +704,116 @@ function AnalyticsTab({ orders }: { orders: AdminOrder[] }) {
     }));
     const top = Object.entries(counts).map(([name, qty]) => ({ name, qty })).sort((a, b) => b.qty - a.qty).slice(0, 5);
 
-    // hours
-    const hourMap = new Map<number, number>();
-    for (let h = 0; h < 24; h++) hourMap.set(h, 0);
-    orders.forEach((o) => { const h = new Date(o.created_at).getHours(); hourMap.set(h, (hourMap.get(h) ?? 0) + 1); });
-    const hours = Array.from(hourMap.entries()).map(([h, c]) => ({ hour: `${h}h`, orders: c }));
+    // shift breakdown
+    const shiftRevenue: Record<string, { label: string; revenue: number; orders: number; color: string }> = {};
+    SHIFTS.forEach((s) => { shiftRevenue[s.id] = { label: s.label, revenue: 0, orders: 0, color: s.color }; });
+    orders.forEach((o) => {
+      if (o.status === "cancelled") return;
+      const s = shiftFor(new Date(o.created_at).getHours());
+      shiftRevenue[s.id].revenue += Number(o.total);
+      shiftRevenue[s.id].orders += 1;
+    });
+    const shifts = Object.values(shiftRevenue);
 
-    return { days, top, hours, total: orders.length };
+    // total kpis
+    const valid = orders.filter((o) => o.status !== "cancelled");
+    const totalRevenue = valid.reduce((n, o) => n + Number(o.total), 0);
+    const avgOrder = valid.length ? totalRevenue / valid.length : 0;
+
+    return { days, top, shifts, totalRevenue, avgOrder, totalOrders: valid.length };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [orders]);
+
+  const COLORS = ["#f59e0b", "#fb923c", "#f97316", "#ef4444", "#a855f7"];
+
+  return (
+    <div className="grid gap-4 lg:grid-cols-3">
+      <Metric label="Revenue (all-time)" value={formatRs(data.totalRevenue)} accent />
+      <Metric label="Orders" value={data.totalOrders.toString()} />
+      <Metric label="Avg order value" value={formatRs(data.avgOrder)} />
+
+      <div className="rounded-2xl border border-border bg-card p-5 lg:col-span-3">
+        <h3 className="mb-4 text-sm font-bold uppercase tracking-wider">Revenue trend · last 14 days</h3>
+        <ResponsiveContainer width="100%" height={260}>
+          <AreaChart data={data.days}>
+            <defs>
+              <linearGradient id="revGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#f59e0b" stopOpacity={0.6} />
+                <stop offset="100%" stopColor="#f59e0b" stopOpacity={0} />
+              </linearGradient>
+            </defs>
+            <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+            <XAxis dataKey="day" stroke="hsl(var(--muted-foreground))" tick={{ fontSize: 11 }} />
+            <YAxis stroke="hsl(var(--muted-foreground))" tick={{ fontSize: 11 }} />
+            <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 8 }} />
+            <Area type="monotone" dataKey="revenue" stroke="#f59e0b" fill="url(#revGrad)" strokeWidth={2.5} />
+          </AreaChart>
+        </ResponsiveContainer>
+      </div>
+
+      <div className="rounded-2xl border border-border bg-card p-5 lg:col-span-2">
+        <h3 className="mb-4 text-sm font-bold uppercase tracking-wider">Revenue by shift</h3>
+        <ResponsiveContainer width="100%" height={240}>
+          <BarChart data={data.shifts}>
+            <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+            <XAxis dataKey="label" stroke="hsl(var(--muted-foreground))" tick={{ fontSize: 11 }} />
+            <YAxis stroke="hsl(var(--muted-foreground))" tick={{ fontSize: 11 }} />
+            <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 8 }}
+              formatter={(value: number, name: string) => name === "revenue" ? [formatRs(value), "Revenue"] : [value, "Orders"]} />
+            <Bar dataKey="revenue" radius={[6, 6, 0, 0]}>
+              {data.shifts.map((s, i) => <Cell key={i} fill={s.color} />)}
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+
+      <div className="rounded-2xl border border-border bg-card p-5">
+        <h3 className="mb-4 text-sm font-bold uppercase tracking-wider">Orders by shift</h3>
+        {data.shifts.every((s) => s.orders === 0) ? (
+          <p className="text-sm text-muted-foreground">No data yet.</p>
+        ) : (
+          <ResponsiveContainer width="100%" height={240}>
+            <PieChart>
+              <Pie data={data.shifts} dataKey="orders" nameKey="label" cx="50%" cy="50%" outerRadius={90} label={(e) => `${e.orders}`}>
+                {data.shifts.map((s, i) => <Cell key={i} fill={s.color} />)}
+              </Pie>
+              <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 8 }} />
+            </PieChart>
+          </ResponsiveContainer>
+        )}
+      </div>
+
+      <div className="rounded-2xl border border-border bg-card p-5 lg:col-span-3">
+        <h3 className="mb-4 text-sm font-bold uppercase tracking-wider">Top 5 items</h3>
+        {data.top.length === 0 ? <p className="text-sm text-muted-foreground">No data yet.</p> : (
+          <ResponsiveContainer width="100%" height={240}>
+            <BarChart data={data.top} layout="vertical">
+              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+              <XAxis type="number" stroke="hsl(var(--muted-foreground))" tick={{ fontSize: 11 }} />
+              <YAxis dataKey="name" type="category" stroke="hsl(var(--muted-foreground))" tick={{ fontSize: 11 }} width={120} />
+              <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 8 }} />
+              <Bar dataKey="qty" radius={[0, 6, 6, 0]}>
+                {data.top.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function LegacyAnalyticsUnused({ orders }: { orders: AdminOrder[] }) {
+  const data = useMemo(() => {
+    const counts: Record<string, number> = {};
+    orders.forEach((o) => o.items?.forEach((it: { name: string; qty: number }) => {
+      counts[it.name] = (counts[it.name] ?? 0) + it.qty;
+    }));
+    const top = Object.entries(counts).map(([name, qty]) => ({ name, qty })).sort((a, b) => b.qty - a.qty).slice(0, 5);
+    return { top };
+  }, [orders]);
+  return <span style={{ display: "none" }}>{data.top.length}</span>;
+}
 
   const COLORS = ["#f59e0b", "#fb923c", "#f97316", "#ef4444", "#a855f7"];
 
