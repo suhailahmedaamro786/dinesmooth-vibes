@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 export type ReviewSummary = { item_id: string; avg_rating: number; review_count: number };
 export type Review = {
   id: string;
-  user_id: string;
+  user_id?: string;
   item_id: string;
   order_id: string | null;
   rating: number;
@@ -26,7 +26,7 @@ export async function fetchReviewsForItem(itemId: string, limit = 20): Promise<R
   const client = supabase as any;
   const { data } = await client
     .from("reviews")
-    .select("id,user_id,item_id,order_id,rating,comment,created_at")
+    .select("id,item_id,order_id,rating,comment,created_at")
     .eq("item_id", itemId)
     .order("created_at", { ascending: false })
     .limit(limit);
@@ -38,7 +38,7 @@ export async function fetchOwnReviews(userId: string): Promise<Review[]> {
   const client = supabase as any;
   const { data } = await client
     .from("reviews")
-    .select("id,user_id,item_id,order_id,rating,comment,created_at")
+    .select("id,item_id,order_id,rating,comment,created_at")
     .eq("user_id", userId)
     .order("created_at", { ascending: false });
   return (data ?? []) as Review[];
