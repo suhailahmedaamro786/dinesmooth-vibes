@@ -212,12 +212,33 @@ function OrdersTab({
   };
   for (const o of orders) grouped[o.status].push(o);
 
+  const exportOrders = () => {
+    const rows = orders.map((o) => ({
+      id: o.id,
+      created_at: o.created_at,
+      status: o.status,
+      customer_name: o.customer_name,
+      phone: o.phone,
+      address: o.address,
+      payment_method: o.payment_method ?? "",
+      transaction_id: o.transaction_id ?? "",
+      total: o.total,
+      items: (o.items ?? []).map((it) => `${it.qty}x ${it.name}${it.variant ? ` (${it.variant})` : ""}`).join(" | "),
+      notes: o.notes ?? "",
+    }));
+    downloadCSV(`dfc-orders-${new Date().toISOString().slice(0,10)}.csv`, rows);
+  };
+
   return (
     <div className="grid gap-6 lg:grid-cols-[260px_1fr]">
       <aside className="space-y-3">
         <Metric label="Total revenue" value={formatRs(revenue)} accent />
         <Metric label="Active orders" value={active.toString()} />
         <Metric label="Delivered" value={completed.toString()} />
+        <button onClick={exportOrders} disabled={orders.length === 0}
+          className="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-border bg-card px-4 py-3 text-xs font-bold uppercase tracking-wider hover:border-amber-brand hover:text-amber-brand disabled:opacity-50">
+          <Download className="h-4 w-4" /> Export CSV
+        </button>
       </aside>
       <main className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-5">
         <LayoutGroup>
