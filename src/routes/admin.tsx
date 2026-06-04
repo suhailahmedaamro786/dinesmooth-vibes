@@ -427,10 +427,25 @@ function PromoTab() {
 
   if (loading) return <Loader2 className="mx-auto h-5 w-5 animate-spin text-amber-brand" />;
 
+  const exportPromos = () => {
+    downloadCSV(`dfc-promo-codes-${new Date().toISOString().slice(0,10)}.csv`,
+      items.map((p) => ({
+        code: p.code, discount_type: p.discount_type, discount_value: p.discount_value,
+        active: p.active, used_count: p.used_count, usage_limit: p.usage_limit ?? "",
+        expires_at: p.expires_at ?? "",
+      })));
+  };
+
   return (
     <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
       <div className="rounded-2xl border border-border bg-card p-5">
-        <h2 className="mb-4 text-lg font-bold">Active promo codes</h2>
+        <div className="mb-4 flex items-center justify-between gap-3">
+          <h2 className="text-lg font-bold">Active promo codes</h2>
+          <button onClick={exportPromos} disabled={items.length === 0}
+            className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider hover:border-amber-brand hover:text-amber-brand disabled:opacity-50">
+            <Download className="h-3.5 w-3.5" /> Export CSV
+          </button>
+        </div>
         {items.length === 0 ? (
           <p className="text-sm text-muted-foreground">No codes yet.</p>
         ) : (
