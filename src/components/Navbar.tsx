@@ -46,9 +46,9 @@ export function Navbar() {
             <Flame className="h-5 w-5" strokeWidth={2.5} />
           </span>
           <div className="leading-none">
-            <div className="text-sm font-black tracking-[0.18em] text-amber-brand">DFC</div>
+            <div className="text-sm font-black tracking-[0.18em] text-amber-brand">D-Pizza</div>
             <div className="text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
-              The Taste Hub
+              D-Pizza Food
             </div>
           </div>
         </Link>

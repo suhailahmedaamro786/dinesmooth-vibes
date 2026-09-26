@@ -10,14 +10,14 @@ export function Footer() {
               <Flame className="h-5 w-5" strokeWidth={2.5} />
             </span>
             <div className="leading-none">
-              <div className="text-sm font-black tracking-[0.18em] text-amber-brand">DFC</div>
+              <div className="text-sm font-black tracking-[0.18em] text-amber-brand">D-Pizza</div>
               <div className="text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
-                Dadu Food Corner
+                D-Pizza Food
               </div>
             </div>
           </div>
           <p className="mt-4 max-w-sm text-sm text-muted-foreground">
-            The Taste Hub. Crafted with obsessive love for flavour — served hot, served fast.
+            Crafted with obsessive love for flavour — served hot, served fast.
           </p>
         </div>
         <div className="text-sm">
@@ -32,12 +32,12 @@ export function Footer() {
           <ul className="mt-3 space-y-2">
             <li className="flex items-center gap-2"><MapPin className="h-4 w-4 text-amber-brand" /> Shahani Paro, Dādu</li>
             <li className="flex items-center gap-2"><Phone className="h-4 w-4 text-amber-brand" /> Order: +92 314 5327444</li>
-            <li className="flex items-center gap-2"><Instagram className="h-4 w-4 text-amber-brand" /> @dfc.tastehub</li>
+            <li className="flex items-center gap-2"><Instagram className="h-4 w-4 text-amber-brand" /> @dpizzafood</li>
           </ul>
         </div>
       </div>
       <div className="border-t border-border py-5 text-center text-xs text-muted-foreground">
-        © {new Date().getFullYear()} DADU FOOD CORNER — DFC. All rights reserved.
+        © {new Date().getFullYear()} D-PIZZA FOOD. All rights reserved.
       </div>
     </footer>
   );
