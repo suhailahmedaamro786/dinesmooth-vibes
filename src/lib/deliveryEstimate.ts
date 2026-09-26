@@ -9,7 +9,7 @@ export type DeliveryEstimate = {
 type Rule = { match: RegExp; area: string; min: number; max: number; zone: DeliveryEstimate["zone"] };
 
 const RULES: Rule[] = [
-  { match: /shahani\s*paro|shahani|d\s*pizza|pqgh/i, area: "Shahani Paro / D Pizza Food", min: 15, max: 25, zone: "near" },
+  { match: /shahani\s*paro|shahani|d[-\s]?pizza|pqgh/i, area: "Shahani Paro / D-Pizza Food", min: 15, max: 25, zone: "near" },
   { match: /shahjahan|shah jahan|raza\s*medical|dhq/i, area: "Shahjahan Park / DHQ Rd", min: 20, max: 30, zone: "near" },
   { match: /main\s*bazaar|sadar|station\s*road/i, area: "Main Bazaar / Sadar", min: 20, max: 30, zone: "city" },
   { match: /dadu/i, area: "Dadu City", min: 25, max: 40, zone: "city" },
