@@ -213,7 +213,7 @@ export function CartDrawer() {
                 <motion.form onSubmit={placeOrder} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35 }} className="space-y-4 border-t border-border px-5 py-5">
                   <Field label="Full name" value={form.name} onChange={(v) => setForm({ ...form, name: v })} required />
                   <Field label="Mobile number" type="tel" inputMode="tel" value={form.phone} onChange={(v) => setForm({ ...form, phone: v })} required />
-                  <Field label="Delivery address" value={form.address} onChange={(v) => setForm({ ...form, address: v })} required textarea placeholder="House #, street, area (e.g. Shahjahan Park, Dadu)" />
+                  <Field label="Delivery address" value={form.address} onChange={(v) => setForm({ ...form, address: v })} required textarea placeholder="House #, street, area (e.g. Shahani Paro, Dādu)" />
 
                   {/* Delivery time estimator */}
                   {eta && form.address.trim().length >= 3 && (

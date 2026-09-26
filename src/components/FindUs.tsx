@@ -1,9 +1,10 @@
 import { motion } from "motion/react";
 import { MapPin, Phone, Clock, MessageCircle } from "lucide-react";
 
-const MAP_LINK = "https://maps.app.goo.gl/ZVd7S76KTLU9xeo28";
+const MAP_LINK =
+  "https://www.google.com/maps/search/?api=1&query=PQGH%2B54Q+D+Pizza+Food+Shahani+Paro+Rd+Dadu+Pakistan";
 const MAP_EMBED =
-  "https://www.google.com/maps?q=Dadu+Food+Corner+DFC+Raza+Medical+Center+Shahjahan+Park+DHQ+Road+Dadu&output=embed";
+  "https://www.google.com/maps?q=PQGH%2B54Q+D+Pizza+Food+Shahani+Paro+Rd+Shahani+Paro+Dadu+Pakistan&output=embed";
 
 export function FindUs() {
   return (
@@ -22,7 +23,7 @@ export function FindUs() {
           <h2 className="mt-2 text-3xl font-black tracking-tight sm:text-4xl">
             Visit DFC — Dadu Food Corner
           </h2>
-          <p className="mt-2 text-sm text-muted-foreground">Dadu, Sindh, Pakistan · Open 7 days a week</p>
+          <p className="mt-2 text-sm text-muted-foreground">Shahani Paro, Dādu, Pakistan · Open 7 days a week</p>
         </motion.div>
 
         <div className="grid gap-6 lg:grid-cols-[1.4fr_1fr]">
@@ -54,7 +55,7 @@ export function FindUs() {
           >
             <InfoCard icon={<MapPin className="h-5 w-5" />} title="Address">
               <a href={MAP_LINK} target="_blank" rel="noopener noreferrer" className="hover:text-amber-brand">
-                Raza Medical Center, Shahjahan Park, DHQ Road, Dadu 76200, Sindh
+                PQGH+54Q D Pizza Food, Shahani Paro Rd, Shahani Paro, Dādu, Pakistan
               </a>
             </InfoCard>
             <InfoCard icon={<Phone className="h-5 w-5" />} title="Call us">
