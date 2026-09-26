@@ -2,9 +2,9 @@ import { motion } from "motion/react";
 import { MapPin, Phone, Clock, MessageCircle } from "lucide-react";
 
 const MAP_LINK =
-  "https://www.google.com/maps/search/?api=1&query=PQGH%2B54Q+D+Pizza+Food+Shahani+Paro+Rd+Dadu+Pakistan";
+  "https://www.google.com/maps/search/?api=1&query=PQGH%2B54Q+D-Pizza+Food+Shahani+Paro+Rd+Dadu+Pakistan";
 const MAP_EMBED =
-  "https://www.google.com/maps?q=PQGH%2B54Q+D+Pizza+Food+Shahani+Paro+Rd+Shahani+Paro+Dadu+Pakistan&output=embed";
+  "https://www.google.com/maps?q=PQGH%2B54Q+D-Pizza+Food+Shahani+Paro+Rd+Shahani+Paro+Dadu+Pakistan&output=embed";
 
 export function FindUs() {
   return (
@@ -55,7 +55,7 @@ export function FindUs() {
           >
             <InfoCard icon={<MapPin className="h-5 w-5" />} title="Address">
               <a href={MAP_LINK} target="_blank" rel="noopener noreferrer" className="hover:text-amber-brand">
-                PQGH+54Q D Pizza Food, Shahani Paro Rd, Shahani Paro, Dādu, Pakistan
+                PQGH+54Q D-Pizza Food, Shahani Paro Rd, Shahani Paro, Dādu, Pakistan
               </a>
             </InfoCard>
             <InfoCard icon={<Phone className="h-5 w-5" />} title="Call us">
