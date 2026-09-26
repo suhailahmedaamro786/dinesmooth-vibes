@@ -10,8 +10,8 @@ export const Route = createFileRoute("/track/$orderId")({
   component: TrackPage,
   head: () => ({
     meta: [
-      { title: "Track your order · DFC" },
-      { name: "description", content: "Live status updates for your DFC order." },
+      { title: "Track your order · D-Pizza Food" },
+      { name: "description", content: "Live status updates for your D-Pizza Food order." },
       { name: "robots", content: "noindex" },
     ],
   }),

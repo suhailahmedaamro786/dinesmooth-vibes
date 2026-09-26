@@ -40,10 +40,10 @@ export function Hero() {
           </span>
 
           <h1 className="mt-6 text-balance text-5xl font-black leading-[0.95] tracking-tight sm:text-7xl md:text-8xl">
-            <span className="text-foreground">DADU FOOD</span>{" "}
+            <span className="text-foreground">D-PIZZA</span>{" "}
             <span className="text-amber-brand">CORNER</span>
             <span className="block mt-3 text-2xl font-semibold tracking-[0.4em] text-muted-foreground sm:text-3xl">
-              — DFC —
+              — DADU —
             </span>
           </h1>
 
@@ -53,7 +53,7 @@ export function Hero() {
             transition={{ delay: 0.25, duration: 0.6 }}
             className="mx-auto mt-6 max-w-xl text-base text-muted-foreground sm:text-lg"
           >
-            THE TASTE HUB. Zingers, broasts, hand-stretched pizzas and rolls crafted with obsessive love for flavour.
+            Zingers, broasts, hand-stretched pizzas and rolls crafted with obsessive love for flavour.
           </motion.p>
         </motion.div>
 

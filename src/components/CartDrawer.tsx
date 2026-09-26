@@ -92,7 +92,7 @@ export function CartDrawer() {
     }
     setSubmitting(true);
 
-    const orderId = `DFC-${Date.now().toString(36).toUpperCase()}`;
+    const orderId = `DPF-${Date.now().toString(36).toUpperCase()}`;
     const pointsEarned = user ? Math.floor(total / 10) : 0; // Rs100 = 10 pts
 
     const { error } = await supabase.from("orders").insert({
@@ -142,7 +142,7 @@ export function CartDrawer() {
   const buildWA = (opts?: { orderId?: string }) => {
     const items = lines.map((l) => `• ${l.qty}× ${l.name}${l.variant ? ` (${l.variant})` : ""} — ${formatRs(l.qty * l.unitPrice)}`).join("\n");
     const lineBreaks: string[] = [
-      "*DFC — Dadu Food Corner Order*",
+      "*D-Pizza Food Order*",
       ...(opts?.orderId ? [`*Order ID:* ${opts.orderId}`] : []),
       "",
       "*Items:*",
@@ -245,7 +245,7 @@ export function CartDrawer() {
                       </div>
                     ) : (
                       <div className="flex gap-2">
-                        <input value={promoInput} onChange={(e) => setPromoInput(e.target.value)} placeholder="e.g. DFC10" className="flex-1 rounded-xl border border-border bg-surface/60 px-3 py-2 text-sm uppercase outline-none focus:border-amber-brand" />
+                        <input value={promoInput} onChange={(e) => setPromoInput(e.target.value)} placeholder="e.g. DPF10" className="flex-1 rounded-xl border border-border bg-surface/60 px-3 py-2 text-sm uppercase outline-none focus:border-amber-brand" />
                         <button type="button" onClick={applyPromo} disabled={promoChecking} className="rounded-xl bg-amber-brand px-4 text-xs font-bold text-primary-foreground disabled:opacity-60">
                           {promoChecking ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : "Apply"}
                         </button>

@@ -10,8 +10,8 @@ export const Route = createFileRoute("/auth")({
   component: AuthPage,
   head: () => ({
     meta: [
-      { title: "Sign in · DFC Dadu Food Corner" },
-      { name: "description", content: "Sign in or create your DFC account to track orders and reorder favourites." },
+      { title: "Sign in · D-Pizza Food" },
+      { name: "description", content: "Sign in or create your D-Pizza Food account to track orders and reorder favourites." },
       { name: "robots", content: "noindex" },
     ],
   }),
@@ -88,7 +88,7 @@ function AuthPage() {
         >
           <Flame className="h-7 w-7" strokeWidth={2.5} />
         </motion.div>
-        <h1 className="mt-5 text-3xl font-black tracking-tight">DFC Taste Hub</h1>
+        <h1 className="mt-5 text-3xl font-black tracking-tight">D-Pizza Food</h1>
         <p className="mt-1 text-sm text-muted-foreground">
           {mode === "login" ? "Welcome back, hungry friend" : "Create your account in 10 seconds"}
         </p>
@@ -141,7 +141,7 @@ function AuthPage() {
           </button>
 
           <p className="pt-2 text-center text-xs text-muted-foreground">
-            {mode === "login" ? "New to DFC?" : "Already have an account?"}{" "}
+            {mode === "login" ? "New to D-Pizza Food?" : "Already have an account?"}{" "}
             <button
               type="button"
               onClick={() => setMode(mode === "login" ? "signup" : "login")}

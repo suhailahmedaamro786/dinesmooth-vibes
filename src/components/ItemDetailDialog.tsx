@@ -22,7 +22,7 @@ export function ItemDetailDialog({
 }) {
   if (!detail) return null;
   const it = detail.item;
-  const description = it.description ?? "Made-to-order at DFC — freshly fired, served hot.";
+  const description = it.description ?? "Made-to-order at D-Pizza Food — freshly fired, served hot.";
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

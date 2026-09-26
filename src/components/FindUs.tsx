@@ -21,7 +21,7 @@ export function FindUs() {
             Find us
           </div>
           <h2 className="mt-2 text-3xl font-black tracking-tight sm:text-4xl">
-            Visit DFC — Dadu Food Corner
+            Visit D-Pizza Food
           </h2>
           <p className="mt-2 text-sm text-muted-foreground">Shahani Paro, Dādu, Pakistan · Open 7 days a week</p>
         </motion.div>
@@ -38,7 +38,7 @@ export function FindUs() {
             className="block overflow-hidden rounded-3xl border border-border bg-card shadow-xl"
           >
             <iframe
-              title="DFC — Dadu Food Corner location"
+              title="D-Pizza Food location"
               src={MAP_EMBED}
               className="h-[420px] w-full pointer-events-none"
               loading="lazy"

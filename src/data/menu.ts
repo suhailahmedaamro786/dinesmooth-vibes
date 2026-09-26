@@ -92,7 +92,7 @@ export const broast: SimpleItem[] = [
 ];
 
 export const pizzas: PizzaItem[] = [
-  { id: "p1", name: "DFC Special",          category: "Pizzas", image: pizzaDfc,        prices: { S: 550, M: 1000, L: 1400, XL: 1750 }, description: "Loaded house special — every topping that matters." },
+  { id: "p1", name: "D-Pizza Special",          category: "Pizzas", image: pizzaDfc,        prices: { S: 550, M: 1000, L: 1400, XL: 1750 }, description: "Loaded house special — every topping that matters." },
   { id: "p2", name: "Chicken Tikka BBQ",    category: "Pizzas", image: pizzaTikka,      prices: { S: 500, M: 950,  L: 1350, XL: 1700 }, description: "Smoky tikka chunks, BBQ drizzle." },
   { id: "p3", name: "Chicken Fajita",       category: "Pizzas", image: pizzaFajita,     prices: { S: 500, M: 950,  L: 1350, XL: 1700 }, description: "Fajita chicken, peppers, onions." },
   { id: "p4", name: "Chicken Supreme",      category: "Pizzas", image: pizzaSupreme,    prices: { S: 500, M: 900,  L: 1300, XL: 1600 }, description: "Mushrooms, peppers, olives & chicken." },
@@ -106,8 +106,8 @@ export const pizzas: PizzaItem[] = [
 export const deals: DealItem[] = [
   { id: "d1", name: "Family Deal",  price: 3150, category: "Deals", image: dealFamily,  description: "1 XL Pizza + 3 Small Pizzas + 1 Jumbo Cold Drink.", highlight: true },
   { id: "d2", name: "Friends Deal", price: 1800, category: "Deals", image: dealFriends, description: "5 Zinger Burgers + 2 Chicken Rolls." },
-  { id: "d3", name: "Yaari Deal",   price: 1000, category: "Deals", image: dealYaari,   description: "1 DFC Special Small Pizza + 1 Zinger Burger + 1 Chicken Roll." },
-  { id: "d4", name: "DFC Special Bread", price: 1100, category: "Deals", image: dealBread, description: "Our signature DFC special bread platter." },
+  { id: "d3", name: "Yaari Deal",   price: 1000, category: "Deals", image: dealYaari,   description: "1 D-Pizza Special Small Pizza + 1 Zinger Burger + 1 Chicken Roll." },
+  { id: "d4", name: "D-Pizza Special Bread", price: 1100, category: "Deals", image: dealBread, description: "Our signature D-Pizza special bread platter." },
 ];
 
 export const SPECIAL_TRAIN_PIZZA_PRICE = 3500;
