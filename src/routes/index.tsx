@@ -11,9 +11,9 @@ export const Route = createFileRoute("/")({
   component: Index,
   head: () => ({
     meta: [
-      { title: "DFC · Dadu Food Corner — The Taste Hub" },
-      { name: "description", content: "DADU FOOD CORNER (DFC) — order zingers, broasts, hand-tossed pizzas, rolls and bundle deals online with live order tracking." },
-      { property: "og:title", content: "DFC · Dadu Food Corner — The Taste Hub" },
+      { title: "D-Pizza Food — Dadu" },
+      { name: "description", content: "D-Pizza Food — order zingers, broasts, hand-tossed pizzas, rolls and bundle deals online with live order tracking." },
+      { property: "og:title", content: "D-Pizza Food — Dadu" },
       { property: "og:description", content: "Zingers, broasts, pizzas & exclusive bundle deals." },
     ],
   }),

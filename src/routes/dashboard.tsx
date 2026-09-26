@@ -17,8 +17,8 @@ export const Route = createFileRoute("/dashboard")({
   component: DashboardPage,
   head: () => ({
     meta: [
-      { title: "My Dashboard · DFC" },
-      { name: "description", content: "Your DFC dashboard — orders, points and favourites at a glance." },
+      { title: "My Dashboard · D-Pizza Food" },
+      { name: "description", content: "Your D-Pizza Food dashboard — orders, points and favourites at a glance." },
       { name: "robots", content: "noindex" },
     ],
   }),
@@ -90,7 +90,7 @@ function DashboardPage() {
               <ArrowLeft className="h-4 w-4" />
             </Link>
             <div className="leading-tight">
-              <div className="text-[10px] font-bold uppercase tracking-[0.22em] text-amber-brand">DFC · Customer</div>
+              <div className="text-[10px] font-bold uppercase tracking-[0.22em] text-amber-brand">D-Pizza Food · Customer</div>
               <div className="text-base font-bold">My Dashboard</div>
             </div>
           </div>
@@ -114,7 +114,7 @@ function DashboardPage() {
             Welcome back{name ? `, ${name.split(" ")[0]}` : ""} 👋
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Here's a quick look at your DFC activity.
+            Here's a quick look at your D-Pizza Food activity.
           </p>
         </motion.div>
 

@@ -78,16 +78,16 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "DADU FOOD CORNER WEBSITE" },
-      { name: "description", content: "DFC Taste Hub is a fast-food restaurant web app for DADU FOOD CORNER." },
+      { title: "D-PIZZA FOOD" },
+      { name: "description", content: "D-Pizza Food is a fast-food restaurant web app in Dadu — zingers, broasts, pizzas, rolls and deals." },
       { name: "author", content: "Lovable" },
-      { property: "og:title", content: "DADU FOOD CORNER WEBSITE" },
-      { property: "og:description", content: "DFC Taste Hub is a fast-food restaurant web app for DADU FOOD CORNER." },
+      { property: "og:title", content: "D-PIZZA FOOD" },
+      { property: "og:description", content: "D-Pizza Food is a fast-food restaurant web app in Dadu — zingers, broasts, pizzas, rolls and deals." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
-      { name: "twitter:title", content: "DADU FOOD CORNER WEBSITE" },
-      { name: "twitter:description", content: "DFC Taste Hub is a fast-food restaurant web app for DADU FOOD CORNER." },
+      { name: "twitter:title", content: "D-PIZZA FOOD" },
+      { name: "twitter:description", content: "D-Pizza Food is a fast-food restaurant web app in Dadu — zingers, broasts, pizzas, rolls and deals." },
     ],
     links: [
       {

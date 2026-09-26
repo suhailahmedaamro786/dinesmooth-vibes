@@ -15,7 +15,7 @@ export const Route = createFileRoute("/profile")({
   component: ProfilePage,
   head: () => ({
     meta: [
-      { title: "My Profile · DFC" },
+      { title: "My Profile · D-Pizza Food" },
       { name: "robots", content: "noindex" },
     ],
   }),

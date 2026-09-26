@@ -22,8 +22,8 @@ export const Route = createFileRoute("/admin")({
   component: AdminPage,
   head: () => ({
     meta: [
-      { title: "DFC Admin · Control Center" },
-      { name: "description", content: "Real-time order dashboard for DFC — Dadu Food Corner." },
+      { title: "D-Pizza Food Admin · Control Center" },
+      { name: "description", content: "Real-time order dashboard for D-Pizza Food." },
       { name: "robots", content: "noindex" },
     ],
   }),
@@ -161,7 +161,7 @@ function AdminPage() {
               <ArrowLeft className="h-4 w-4" />
             </Link>
             <div className="leading-tight">
-              <div className="text-[10px] font-bold uppercase tracking-[0.22em] text-amber-brand">DFC Operations</div>
+              <div className="text-[10px] font-bold uppercase tracking-[0.22em] text-amber-brand">D-Pizza Food Operations</div>
               <div className="text-base font-bold">Control Center</div>
             </div>
           </div>

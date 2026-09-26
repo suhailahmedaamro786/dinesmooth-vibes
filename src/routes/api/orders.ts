@@ -24,7 +24,7 @@ export const Route = createFileRoute("/api/orders")({
         );
       },
       GET: async () =>
-        new Response(JSON.stringify({ ok: true, message: "DFC orders endpoint" }), {
+        new Response(JSON.stringify({ ok: true, message: "D-Pizza Food orders endpoint" }), {
           status: 200,
           headers: { "Content-Type": "application/json" },
         }),

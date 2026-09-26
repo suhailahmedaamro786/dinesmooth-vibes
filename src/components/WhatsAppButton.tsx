@@ -10,7 +10,7 @@ export function WhatsAppButton() {
   const subtotal = useCartStore((s) => s.subtotal());
 
   const buildMessage = () => {
-    const header = `*DFC — Dadu Food Corner Order*\n`;
+    const header = `*D-Pizza Food Order*\n`;
     if (lines.length === 0) {
       return `${header}\nHi! I'd like to place an order.`;
     }
