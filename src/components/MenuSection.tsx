@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from "motion/react";
 import { useState, useMemo } from "react";
 import { Plus } from "lucide-react";
-import { burgers, rolls, broast, pizzas, deals, type PizzaSize, type PizzaItem, type SimpleItem, type DealItem } from "@/data/menu";
+import { burgers, rolls, broast, pizzas, deals, bbq, platters, pastaItems, sandwiches, type PizzaSize, type PizzaItem, type SimpleItem, type DealItem, type Category } from "@/data/menu";
 import { useCartStore } from "@/store/useCartStore";
 import { formatRs } from "@/lib/format";
 import { StarRating } from "@/components/StarRating";
@@ -9,8 +9,8 @@ import { useReviewSummaries } from "@/hooks/useReviewSummaries";
 import type { ReviewSummary } from "@/lib/reviews";
 import { ItemDetailDialog, type DetailItem } from "@/components/ItemDetailDialog";
 
-type Tab = "Burgers" | "Rolls" | "Pizzas" | "Broast" | "Deals";
-const TABS: Tab[] = ["Burgers", "Rolls", "Pizzas", "Broast", "Deals"];
+type Tab = Category;
+const TABS: Tab[] = ["Burgers", "Rolls", "Pizzas", "BBQ", "Broast", "Platters", "Pasta", "Sandwiches", "Deals"];
 
 type OpenDetail = (d: DetailItem) => void;
 
@@ -93,6 +93,10 @@ export function MenuSection() {
           {tab === "Burgers" && <SimpleGrid items={burgers} summaries={summaries} openDetail={openDetail} />}
           {tab === "Rolls" && <SimpleGrid items={rolls} summaries={summaries} openDetail={openDetail} />}
           {tab === "Broast" && <SimpleGrid items={broast} summaries={summaries} openDetail={openDetail} />}
+          {tab === "BBQ" && <SimpleGrid items={bbq} summaries={summaries} openDetail={openDetail} />}
+          {tab === "Platters" && <SimpleGrid items={platters} summaries={summaries} openDetail={openDetail} />}
+          {tab === "Pasta" && <SimpleGrid items={pastaItems} summaries={summaries} openDetail={openDetail} />}
+          {tab === "Sandwiches" && <SimpleGrid items={sandwiches} summaries={summaries} openDetail={openDetail} />}
           {tab === "Pizzas" && <PizzaGrid items={pizzas} summaries={summaries} openDetail={openDetail} />}
           {tab === "Deals" && <DealsGrid items={deals} summaries={summaries} openDetail={openDetail} />}
         </motion.div>
