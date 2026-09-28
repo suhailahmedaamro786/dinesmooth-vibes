@@ -36,7 +36,7 @@ export function Hero() {
         >
           <span className="inline-flex items-center gap-2 rounded-full border border-border bg-surface/70 px-3 py-1.5 text-[11px] uppercase tracking-[0.22em] text-muted-foreground backdrop-blur">
             <Sparkles className="h-3.5 w-3.5 text-amber-brand" />
-            Freshly fired · Hand-tossed · Served hot
+            Freshly fired · Charcoal BBQ · Served hot
           </span>
 
           <h1 className="mt-6 text-balance text-5xl font-black leading-[0.95] tracking-tight sm:text-7xl md:text-8xl">
@@ -53,7 +53,7 @@ export function Hero() {
             transition={{ delay: 0.25, duration: 0.6 }}
             className="mx-auto mt-6 max-w-xl text-base text-muted-foreground sm:text-lg"
           >
-            Zingers, broasts, hand-stretched pizzas and rolls crafted with obsessive love for flavour.
+            Zingers, broasts, hand-stretched & lava pizzas, charcoal BBQ, platters, pasta and rolls — crafted with obsessive love for flavour.
           </motion.p>
         </motion.div>
 
