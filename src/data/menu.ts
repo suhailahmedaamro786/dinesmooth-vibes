@@ -20,7 +20,9 @@ import lavaPizza from "@/assets/menu/lava-pizza.jpg";
 
 import bbqTikka from "@/assets/menu/bbq-tikka.jpg";
 import bbqPlatter from "@/assets/menu/bbq-platter.jpg";
+import malaiBoti from "@/assets/menu/malai-boti.jpg";
 import pasta from "@/assets/menu/pasta.jpg";
+import fries from "@/assets/menu/fries.jpg";
 
 import dealFamily from "@/assets/menu/deal-family.jpg";
 import dealFriends from "@/assets/menu/deal-friends.jpg";
@@ -89,10 +91,10 @@ export const rolls: SimpleItem[] = [
 
 export const bbq: SimpleItem[] = [
   { id: "q1", name: "Chicken Tikka", price: 400, category: "BBQ", image: bbqTikka, description: "Smoky char-grilled tikka, lemon & onion." },
-  { id: "q2", name: "Chicken Malai Tikka", price: 400, category: "BBQ", image: bbqTikka, description: "Creamy malai marinade, melt-in-mouth." },
+  { id: "q2", name: "Chicken Malai Tikka", price: 400, category: "BBQ", image: malaiBoti, description: "Creamy malai marinade, melt-in-mouth." },
   { id: "q3", name: "Chicken Leg Tikka", price: 350, category: "BBQ", image: bbqTikka, description: "Juicy leg piece, fire-grilled." },
-  { id: "q4", name: "Chicken Leg Malai Tikka", price: 350, category: "BBQ", image: bbqTikka, description: "Malai-marinated leg, smoky finish." },
-  { id: "q5", name: "Chicken Malai Boti", price: 250, category: "BBQ", image: bbqTikka, description: "Soft creamy boti cubes." },
+  { id: "q4", name: "Chicken Leg Malai Tikka", price: 350, category: "BBQ", image: malaiBoti, description: "Malai-marinated leg, smoky finish." },
+  { id: "q5", name: "Chicken Malai Boti", price: 250, category: "BBQ", image: malaiBoti, description: "Soft creamy boti cubes." },
   { id: "q6", name: "Chicken Red Boti", price: 250, category: "BBQ", image: bbqTikka, description: "Spicy red masala boti." },
   { id: "q7", name: "Reshmi Kabab", price: 200, category: "BBQ", image: bbqPlatter, description: "Silky minced-chicken kabab skewers." },
   { id: "q8", name: "Chicken Hot Wings", price: 200, category: "BBQ", image: hotWings6, description: "Fiery grilled hot wings." },
@@ -118,7 +120,7 @@ export const broast: SimpleItem[] = [
   { id: "br1", name: "Chicken Broast", price: 400, category: "Broast", image: broastQtr, description: "Golden crispy broast piece." },
   { id: "br2", name: "Strem Broast", price: 450, category: "Broast", image: broastHalf, description: "Extra-crunchy steam broast." },
   { id: "br3", name: "Cheese Broast", price: 450, category: "Broast", image: broastHalf, description: "Broast with a cheesy twist." },
-  { id: "br4", name: "Fries", price: 100, category: "Broast", image: nuggets, description: "Crispy golden fries." },
+  { id: "br4", name: "Fries", price: 100, category: "Broast", image: fries, description: "Crispy golden fries." },
 ];
 
 export const pizzas: PizzaItem[] = [
