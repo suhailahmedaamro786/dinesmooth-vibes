@@ -59,12 +59,12 @@ export function FindUs() {
               </a>
             </InfoCard>
             <InfoCard icon={<Phone className="h-5 w-5" />} title="Call us">
-              <a href="tel:+923145327444" className="hover:text-amber-brand">
-                +92 314 5327444
+              <a href="tel:+923131342361" className="hover:text-amber-brand">
+                +92 313 1342361
               </a>
             </InfoCard>
             <a
-              href="https://wa.me/923145327444"
+              href="https://wa.me/923131342361"
               target="_blank"
               rel="noopener noreferrer"
               className="group flex items-start gap-3 rounded-2xl border border-[#25D366]/40 bg-[#25D366]/5 p-4 transition hover:border-[#25D366] hover:bg-[#25D366]/10"

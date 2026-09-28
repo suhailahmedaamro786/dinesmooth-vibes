@@ -3,7 +3,7 @@ import { MessageCircle } from "lucide-react";
 import { useCartStore } from "@/store/useCartStore";
 import { formatRs } from "@/lib/format";
 
-const WA_NUMBER = "923145327444"; // +92 314 5327444
+const WA_NUMBER = "923131342361"; // +92 313 1342361
 
 export function WhatsAppButton() {
   const lines = useCartStore((s) => s.lines);

@@ -11,8 +11,8 @@ import { estimateDelivery, formatEstimate } from "@/lib/deliveryEstimate";
 
 type PaymentMethod = "cod" | "jazzcash" | "easypaisa";
 
-const PAYMENT_NUMBER = "0314 5327444";
-const WA_NUMBER = "923145327444";
+const PAYMENT_NUMBER = "0313 1342361";
+const WA_NUMBER = "923131342361";
 
 const PAYMENT_LABEL: Record<PaymentMethod, string> = {
   cod: "Cash on Delivery",

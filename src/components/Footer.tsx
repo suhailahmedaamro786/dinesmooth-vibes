@@ -31,7 +31,7 @@ export function Footer() {
           <div className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">Visit</div>
           <ul className="mt-3 space-y-2">
             <li className="flex items-center gap-2"><MapPin className="h-4 w-4 text-amber-brand" /> Shahani Paro, Dādu</li>
-            <li className="flex items-center gap-2"><Phone className="h-4 w-4 text-amber-brand" /> Order: +92 314 5327444</li>
+            <li className="flex items-center gap-2"><Phone className="h-4 w-4 text-amber-brand" /> Order: +92 313 1342361</li>
             <li className="flex items-center gap-2"><Instagram className="h-4 w-4 text-amber-brand" /> @dpizzafood</li>
           </ul>
         </div>
