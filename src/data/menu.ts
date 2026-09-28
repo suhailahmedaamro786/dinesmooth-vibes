@@ -9,7 +9,6 @@ import zingerRoll from "@/assets/menu/zinger-roll.jpg";
 
 import broastQtr from "@/assets/menu/broast-qtr.jpg";
 import broastHalf from "@/assets/menu/broast-half.jpg";
-import nuggets from "@/assets/menu/nuggets.jpg";
 import hotWings6 from "@/assets/menu/hot-wings-6.jpg";
 
 import pizzaDfc from "@/assets/menu/pizza-dfc.jpg";
