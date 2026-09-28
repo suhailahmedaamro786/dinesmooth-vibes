@@ -14,7 +14,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { ORDER_FLOW, STATUS_LABEL, type DbOrderStatus } from "@/lib/orderStatus";
 import { formatRs } from "@/lib/format";
-import { burgers, rolls, broast, pizzas, deals } from "@/data/menu";
+import { burgers, rolls, broast, pizzas, deals, bbq, platters, pastaItems, sandwiches } from "@/data/menu";
 import { downloadCSV } from "@/lib/csv";
 import { toast } from "sonner";
 
@@ -331,6 +331,10 @@ function MenuTab() {
     ...burgers.map((i) => ({ id: i.id, name: i.name, category: "Burgers" })),
     ...rolls.map((i) => ({ id: i.id, name: i.name, category: "Rolls" })),
     ...broast.map((i) => ({ id: i.id, name: i.name, category: "Broast" })),
+    ...bbq.map((i) => ({ id: i.id, name: i.name, category: "BBQ" })),
+    ...platters.map((i) => ({ id: i.id, name: i.name, category: "Platters" })),
+    ...pastaItems.map((i) => ({ id: i.id, name: i.name, category: "Pasta" })),
+    ...sandwiches.map((i) => ({ id: i.id, name: i.name, category: "Sandwiches" })),
     ...pizzas.map((i) => ({ id: i.id, name: i.name, category: "Pizzas" })),
     ...deals.map((i) => ({ id: i.id, name: i.name, category: "Deals" })),
   ];
