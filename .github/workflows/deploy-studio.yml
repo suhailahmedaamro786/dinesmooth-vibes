@@ -27,6 +27,6 @@ jobs:
         run: npm install
 
       - name: Deploy Studio to Sanity Hosting
-        run: npx sanity@latest deploy --yes --auto-updates --schema-required --url d-pizza-menu
+        run: npx sanity deploy --yes --schema-required --url d-pizza-menu
         env:
           SANITY_AUTH_TOKEN: ${{ secrets.SANITY_AUTH_TOKEN }}
