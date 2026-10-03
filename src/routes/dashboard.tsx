@@ -19,6 +19,8 @@ export const Route = createFileRoute("/dashboard")({
     meta: [
       { title: "My Dashboard · D-Pizza Food" },
       { name: "description", content: "Your D-Pizza Food dashboard — orders, points and favourites at a glance." },
+      { property: "og:title", content: "My Dashboard · D-Pizza Food" },
+      { property: "og:description", content: "Your D-Pizza Food orders, loyalty points and favourites at a glance." },
       { name: "robots", content: "noindex" },
     ],
   }),

@@ -16,6 +16,9 @@ export const Route = createFileRoute("/profile")({
   head: () => ({
     meta: [
       { title: "My Profile · D-Pizza Food" },
+      { name: "description", content: "Manage your D-Pizza Food profile, order history, reviews and saved delivery addresses in Dadu." },
+      { property: "og:title", content: "My Profile · D-Pizza Food" },
+      { property: "og:description", content: "Your D-Pizza Food order history, reviews and saved addresses." },
       { name: "robots", content: "noindex" },
     ],
   }),
@@ -91,7 +94,7 @@ function ProfilePage() {
           <Link to="/" className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground">
             <ArrowLeft className="h-3.5 w-3.5" /> Back
           </Link>
-          <div className="text-[10px] font-bold uppercase tracking-[0.22em] text-amber-brand">My Profile</div>
+          <h1 className="text-[10px] font-bold uppercase tracking-[0.22em] text-amber-brand">My Profile</h1>
         </div>
       </header>
 

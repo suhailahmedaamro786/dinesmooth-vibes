@@ -11,7 +11,9 @@ export const Route = createFileRoute("/track/$orderId")({
   head: () => ({
     meta: [
       { title: "Track your order · D-Pizza Food" },
-      { name: "description", content: "Live status updates for your D-Pizza Food order." },
+      { name: "description", content: "Follow your D-Pizza Food order live — from received and preparing to out for delivery in Dadu." },
+      { property: "og:title", content: "Track your order · D-Pizza Food" },
+      { property: "og:description", content: "Live status updates for your D-Pizza Food order in Dadu." },
       { name: "robots", content: "noindex" },
     ],
   }),
@@ -100,7 +102,7 @@ function TrackPage() {
             <ArrowLeft className="h-4 w-4" />
           </Link>
           <div>
-            <div className="text-[10px] font-bold uppercase tracking-[0.22em] text-amber-brand">Order tracking</div>
+            <h1 className="text-[10px] font-bold uppercase tracking-[0.22em] text-amber-brand">Order tracking</h1>
             <div className="font-mono text-sm font-bold">{order.id}</div>
           </div>
         </div>
