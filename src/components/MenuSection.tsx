@@ -57,28 +57,37 @@ export function MenuSection() {
         </p>
       </motion.div>
 
-      <div id="deals" className="mt-10 flex gap-1 overflow-x-auto rounded-full border border-border bg-surface/60 p-1 backdrop-blur scrollbar-none">
-        {TABS.map((t) => {
-          const active = tab === t;
-          return (
-            <button
-              key={t}
-              onClick={() => setTab(t)}
-              className={`relative shrink-0 rounded-full px-5 py-2.5 text-sm font-semibold transition-colors ${
-                active ? "text-primary-foreground" : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              {active && (
-                <motion.span
-                  layoutId="menu-tab-indicator"
-                  className="absolute inset-0 -z-10 rounded-full bg-amber-brand"
-                  transition={{ type: "spring", stiffness: 380, damping: 32 }}
-                />
-              )}
-              {t}
-            </button>
-          );
-        })}
+      <div
+        id="deals"
+        aria-label="Menu categories"
+        className="mt-10 rounded-2xl border border-border bg-surface/60 p-1.5 backdrop-blur"
+      >
+        <div className="grid grid-cols-3 gap-1 sm:flex sm:gap-1 sm:overflow-x-auto sm:scrollbar-none">
+          {TABS.map((t) => {
+            const active = tab === t;
+            return (
+              <button
+                key={t}
+                onClick={() => setTab(t)}
+                className={`relative min-w-0 rounded-full px-2 py-3 text-xs font-semibold transition-colors sm:shrink-0 sm:px-5 sm:py-2.5 sm:text-sm ${
+                  active ? "text-primary-foreground" : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {active && (
+                  <motion.span
+                    layoutId="menu-tab-indicator"
+                    className="absolute inset-0 -z-10 rounded-full bg-amber-brand"
+                    transition={{ type: "spring", stiffness: 380, damping: 32 }}
+                  />
+                )}
+                <span className="relative z-10">{t}</span>
+              </button>
+            );
+          })}
+        </div>
+        <div className="px-3 pb-1 pt-2 text-center text-[10px] font-medium uppercase tracking-[0.18em] text-muted-foreground sm:hidden">
+          All menu categories
+        </div>
       </div>
 
       <AnimatePresence mode="wait">
