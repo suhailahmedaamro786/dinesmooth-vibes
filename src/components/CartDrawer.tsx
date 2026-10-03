@@ -5,6 +5,10 @@ import { useCartStore } from "@/store/useCartStore";
 import { formatRs } from "@/lib/format";
 import { toast } from "sonner";
 import { estimateDelivery, formatEstimate } from "@/lib/deliveryEstimate";
+import { burgers, rolls, broast, pizzas, deals, bbq, platters, pastaItems, sandwiches } from "@/data/menu";
+
+const menuItems = [...burgers, ...rolls, ...broast, ...pizzas, ...deals, ...bbq, ...platters, ...pastaItems, ...sandwiches];
+const imageById = new Map(menuItems.map((item) => [item.id, item.image]));
 
 const WA_NUMBER = "923131342361";
 
