@@ -224,7 +224,16 @@ export function CartDrawer() {
 }
 
 function CartItemImage({ itemId }: { itemId: string }) {
-  return null;
+  const src = imageById.get(itemId);
+  if (!src) return null;
+  return (
+    <img
+      src={src}
+      alt=""
+      loading="lazy"
+      className="h-full w-full object-cover"
+    />
+  );
 }
 
 function Field({
