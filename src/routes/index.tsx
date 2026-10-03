@@ -17,25 +17,41 @@ export const Route = createFileRoute("/")({
       { property: "og:title", content: "D-Pizza Food — Dadu" },
       { property: "og:description", content: "Zingers, broasts, pizzas & exclusive bundle deals." },
       { property: "og:url", content: "https://d-pizza-dadu.lovable.app/" },
+      { property: "og:locale", content: "en_PK" },
     ],
-    links: [{ rel: "canonical", href: "https://d-pizza-dadu.lovable.app/" }],
+    links: [
+      { rel: "canonical", href: "https://d-pizza-dadu.lovable.app/" },
+      { rel: "alternate", hrefLang: "en-PK", href: "https://d-pizza-dadu.lovable.app/" },
+    ],
     scripts: [
       {
         type: "application/ld+json",
         children: JSON.stringify({
           "@context": "https://schema.org",
           "@type": "Restaurant",
+          "@id": "https://d-pizza-dadu.lovable.app/#restaurant",
           name: "D-Pizza Food",
           url: "https://d-pizza-dadu.lovable.app/",
           telephone: "+923131342361",
-          servesCuisine: ["Pizza", "Fast Food", "BBQ"],
+          servesCuisine: ["Pizza", "Fast Food", "BBQ", "Burgers", "Pakistani"],
           priceRange: "Rs",
+          areaServed: { "@type": "City", name: "Dadu" },
           address: {
             "@type": "PostalAddress",
             streetAddress: "PQGH+54Q, Shahani Paro Rd, Shahani Paro",
             addressLocality: "Dadu",
+            addressRegion: "Sindh",
+            postalCode: "76100",
             addressCountry: "PK",
           },
+          openingHoursSpecification: [{
+            "@type": "OpeningHoursSpecification",
+            dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+            opens: "11:00",
+            closes: "01:00"
+          }],
+          menu: "https://d-pizza-dadu.lovable.app/#menu",
+          hasMap: "https://www.google.com/maps/search/?api=1&query=PQGH%2B54Q+D-Pizza+Food+Shahani+Paro+Rd+Dadu+Pakistan"
         }),
       },
     ],
