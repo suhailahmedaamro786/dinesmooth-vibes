@@ -10,6 +10,7 @@ export interface CartLine {
   variant?: string;
   unitPrice: number;
   qty: number;
+  image?: string;
 }
 
 interface CartState {
