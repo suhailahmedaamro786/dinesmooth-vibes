@@ -44,6 +44,7 @@ export function Hero() {
             <span className="text-amber-brand">CORNER</span>
             <span className="block mt-3 text-2xl font-semibold tracking-[0.4em] text-muted-foreground sm:text-3xl">
               — DADU —
+              <span className="sr-only"> Pizza &amp; Fast Food Delivery in Dadu</span>
             </span>
           </h1>
 
