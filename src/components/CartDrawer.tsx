@@ -5,12 +5,8 @@ import { useCartStore } from "@/store/useCartStore";
 import { formatRs } from "@/lib/format";
 import { toast } from "sonner";
 import { estimateDelivery, formatEstimate } from "@/lib/deliveryEstimate";
-import { burgers, rolls, broast, pizzas, deals, bbq, platters, pastaItems, sandwiches } from "@/data/menu";
 
 const WA_NUMBER = "923131342361";
-
-const menuItems = [...burgers, ...rolls, ...broast, ...pizzas, ...deals, ...bbq, ...platters, ...pastaItems, ...sandwiches];
-const imageById = new Map(menuItems.map((item) => [item.id, item.image]));
 
 export function CartDrawer() {
   const isOpen = useCartStore((s) => s.isOpen);
@@ -41,10 +37,8 @@ export function CartDrawer() {
     const orderId = `DPF-${Date.now().toString(36).toUpperCase()}`;
     const items = lines
       .map((line) => {
-        const image = imageById.get(line.itemId);
         const variant = line.variant ? ` (${line.variant})` : "";
-        const imageLine = image ? `\\n   🖼️ ${image}` : "";
-        return `• ${line.qty}× ${line.name}${variant} — ${formatRs(line.qty * line.unitPrice)}${imageLine}`;
+        return `• ${line.qty}× ${line.name}${variant} — ${formatRs(line.qty * line.unitPrice)}`;
       })
       .join("\\n");
 
@@ -61,7 +55,6 @@ export function CartDrawer() {
       `*Full name:* ${form.name.trim()}`,
       `*Mobile:* ${form.phone.trim()}`,
       `*Delivery address:* ${form.address.trim()}`,
-      ...(eta ? [`*Estimated delivery:* ${formatEstimate(eta)} · ${eta.area}`] : []),
       "",
       "Please confirm this order on WhatsApp. Thank you! 🙌",
     ].join("\\n");
@@ -130,9 +123,7 @@ export function CartDrawer() {
                           className="flex items-start gap-3 px-5 py-4"
                         >
                           <div className="h-16 w-16 shrink-0 overflow-hidden rounded-xl border border-border bg-surface">
-                            {imageById.get(line.itemId) ? (
-                              <img src={imageById.get(line.itemId)} alt="" className="h-full w-full object-cover" />
-                            ) : null}
+                            {line.itemId ? <CartItemImage itemId={line.itemId} /> : null}
                           </div>
                           <div className="min-w-0 flex-1">
                             <div className="font-semibold leading-tight">{line.name}</div>
@@ -226,6 +217,10 @@ export function CartDrawer() {
       )}
     </AnimatePresence>
   );
+}
+
+function CartItemImage({ itemId }: { itemId: string }) {
+  return null;
 }
 
 function Field({
