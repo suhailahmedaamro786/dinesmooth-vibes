@@ -6,6 +6,7 @@ import { CartDrawer } from "@/components/CartDrawer";
 import { Footer } from "@/components/Footer";
 import { WhatsAppButton } from "@/components/WhatsAppButton";
 import { FindUs } from "@/components/FindUs";
+import { Reviews } from "@/components/Reviews";
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -48,6 +49,7 @@ function Index() {
       <main>
         <Hero />
         <MenuSection />
+        <Reviews />
         <FindUs />
       </main>
       <Footer />
