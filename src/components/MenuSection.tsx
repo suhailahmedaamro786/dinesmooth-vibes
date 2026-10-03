@@ -135,7 +135,7 @@ function SimpleGrid({ items, summaries, openDetail }: { items: SimpleItem[]; sum
   const addLine = useCartStore((s) => s.addLine);
   const openCart = useCartStore((s) => s.openCart);
   const handleAdd = (it: SimpleItem) => {
-    addLine({ key: it.id, itemId: it.id, name: it.name, unitPrice: it.price });
+    addLine({ key: it.id, itemId: it.id, name: it.name, unitPrice: it.price, image: it.image });
     toast.success("Added to cart!", {
       description: `${it.name} has been added to your cart.`,
       duration: 3000,
@@ -228,7 +228,7 @@ function PizzaCard({ pizza, summary, openDetail }: { pizza: PizzaItem; summary?:
   const price = pizza.prices[size];
   const sizes = useMemo(() => Object.keys(pizza.prices) as PizzaSize[], [pizza.prices]);
   const handleAdd = () => {
-    addLine({ key: `${pizza.id}-${size}`, itemId: pizza.id, name: pizza.name, variant: sizeLabel(size), unitPrice: price });
+    addLine({ key: `${pizza.id}-${size}`, itemId: pizza.id, name: pizza.name, variant: sizeLabel(size), unitPrice: price, image: pizza.image });
     toast.success("Added to cart!", {
       description: `${pizza.name} (${sizeLabel(size)}) has been added to your cart.`,
       duration: 3000,
