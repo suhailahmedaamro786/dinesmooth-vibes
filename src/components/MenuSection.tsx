@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from "motion/react";
 import { useState, useMemo } from "react";
 import { Plus } from "lucide-react";
+import { toast } from "sonner";
 import { burgers, rolls, broast, pizzas, deals, bbq, platters, pastaItems, sandwiches, type PizzaSize, type PizzaItem, type SimpleItem, type DealItem, type Category } from "@/data/menu";
 import { useCartStore } from "@/store/useCartStore";
 import { formatRs } from "@/lib/format";
@@ -123,6 +124,15 @@ export function MenuSection() {
 
 function SimpleGrid({ items, summaries, openDetail }: { items: SimpleItem[]; summaries: Map<string, ReviewSummary>; openDetail: OpenDetail }) {
   const addLine = useCartStore((s) => s.addLine);
+  const openCart = useCartStore((s) => s.openCart);
+  const handleAdd = (it: SimpleItem) => {
+    addLine({ key: it.id, itemId: it.id, name: it.name, unitPrice: it.price });
+    toast.success("Added to cart!", {
+      description: `${it.name} has been added to your cart.`,
+      duration: 3000,
+      action: { label: "View Cart", onClick: openCart },
+    });
+  };
   return (
     <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
       {items.map((it, idx) => (
@@ -172,9 +182,7 @@ function SimpleGrid({ items, summaries, openDetail }: { items: SimpleItem[]; sum
             <motion.button
               whileTap={{ scale: 0.95 }}
               whileHover={{ scale: 1.02 }}
-              onClick={() =>
-                addLine({ key: it.id, itemId: it.id, name: it.name, unitPrice: it.price })
-              }
+              onClick={() => handleAdd(it)}
               className="mt-4 inline-flex items-center justify-center gap-1.5 self-start rounded-full bg-amber-brand px-4 py-2 text-xs font-bold text-primary-foreground"
             >
               <Plus className="h-3.5 w-3.5" strokeWidth={3} /> Add to cart
@@ -207,8 +215,17 @@ function PizzaGrid({ items, summaries, openDetail }: { items: PizzaItem[]; summa
 function PizzaCard({ pizza, summary, openDetail }: { pizza: PizzaItem; summary?: ReviewSummary; openDetail: OpenDetail }) {
   const [size, setSize] = useState<PizzaSize>("M");
   const addLine = useCartStore((s) => s.addLine);
+  const openCart = useCartStore((s) => s.openCart);
   const price = pizza.prices[size];
   const sizes = useMemo(() => Object.keys(pizza.prices) as PizzaSize[], [pizza.prices]);
+  const handleAdd = () => {
+    addLine({ key: `${pizza.id}-${size}`, itemId: pizza.id, name: pizza.name, variant: sizeLabel(size), unitPrice: price });
+    toast.success("Added to cart!", {
+      description: `${pizza.name} (${sizeLabel(size)}) has been added to your cart.`,
+      duration: 3000,
+      action: { label: "View Cart", onClick: openCart },
+    });
+  };
 
   return (
     <motion.article
@@ -285,15 +302,7 @@ function PizzaCard({ pizza, summary, openDetail }: { pizza: PizzaItem; summary?:
             <motion.button
               whileTap={{ scale: 0.95 }}
               whileHover={{ scale: 1.03 }}
-              onClick={() =>
-                addLine({
-                  key: `${pizza.id}-${size}`,
-                  itemId: pizza.id,
-                  name: pizza.name,
-                  variant: sizeLabel(size),
-                  unitPrice: price,
-                })
-              }
+              onClick={handleAdd}
               className="ml-auto inline-flex items-center gap-1.5 rounded-full bg-amber-brand px-4 py-2 text-xs font-bold text-primary-foreground"
             >
               <Plus className="h-3.5 w-3.5" strokeWidth={3} /> Add
@@ -330,6 +339,7 @@ function AnimatedPrice({ value }: { value: number }) {
 
 function DealsGrid({ items, summaries, openDetail }: { items: DealItem[]; summaries: Map<string, ReviewSummary>; openDetail: OpenDetail }) {
   const addLine = useCartStore((s) => s.addLine);
+  const openCart = useCartStore((s) => s.openCart);
   return (
     <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
       {items.map((d, idx) => (
@@ -388,14 +398,14 @@ function DealsGrid({ items, summaries, openDetail }: { items: DealItem[]; summar
             <motion.button
               whileTap={{ scale: 0.95 }}
               whileHover={{ scale: 1.02 }}
-              onClick={() =>
-                addLine({
-                  key: d.id,
-                  itemId: d.id,
-                  name: `${d.name} (Deal)`,
-                  unitPrice: d.price,
-                })
-              }
+              onClick={() => {
+                addLine({ key: d.id, itemId: d.id, name: `${d.name} (Deal)`, unitPrice: d.price });
+                toast.success("Added to cart!", {
+                  description: `${d.name} has been added to your cart.`,
+                  duration: 3000,
+                  action: { label: "View Cart", onClick: openCart },
+                });
+              }}
               className="mt-5 inline-flex items-center gap-1.5 rounded-full bg-amber-brand px-5 py-2.5 text-sm font-bold text-primary-foreground"
             >
               <Plus className="h-4 w-4" strokeWidth={3} /> Add deal
