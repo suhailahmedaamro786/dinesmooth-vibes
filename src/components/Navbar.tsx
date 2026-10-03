@@ -1,19 +1,16 @@
 import { motion } from "motion/react";
-import { Link, useNavigate } from "@tanstack/react-router";
-import { ShoppingBag, Flame, User, LogOut, Package } from "lucide-react";
+import { Link } from "@tanstack/react-router";
+import { ShoppingBag, Flame } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useCartStore } from "@/store/useCartStore";
 import { useAuth } from "@/hooks/useAuth";
 import { ThemeToggle } from "@/components/ThemeToggle";
-import { toast } from "sonner";
 
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
   const qty = useCartStore((s) => s.totalQty());
   const openCart = useCartStore((s) => s.openCart);
-  const { user, isAdmin, signOut } = useAuth();
-  const navigate = useNavigate();
+  const { isAdmin } = useAuth();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12);
@@ -21,13 +18,6 @@ export function Navbar() {
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
-
-  const handleSignOut = async () => {
-    await signOut();
-    setMenuOpen(false);
-    toast.success("Signed out");
-    navigate({ to: "/auth" });
-  };
 
   return (
     <motion.header
@@ -56,9 +46,6 @@ export function Navbar() {
         <nav className="hidden items-center gap-7 md:flex">
           <a href="#menu" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Menu</a>
           <a href="#deals" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Deals</a>
-          {user && (
-            <Link to="/dashboard" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Dashboard</Link>
-          )}
           {isAdmin && (
             <Link to="/admin" className="text-sm text-amber-brand hover:opacity-80 transition-colors">Admin</Link>
           )}
@@ -66,55 +53,6 @@ export function Navbar() {
 
         <div className="flex items-center gap-2">
           <ThemeToggle />
-
-          {user ? (
-            <div className="relative">
-              <button
-                onClick={() => setMenuOpen((o) => !o)}
-                className="grid h-9 w-9 place-items-center rounded-full border border-border text-muted-foreground hover:text-foreground hover:border-amber-brand/60"
-                aria-label="Account menu"
-              >
-                <User className="h-4 w-4" />
-              </button>
-              {menuOpen && (
-                <motion.div
-                  initial={{ opacity: 0, y: -8, scale: 0.96 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  className="absolute right-0 mt-2 w-52 overflow-hidden rounded-2xl border border-border bg-card shadow-2xl"
-                >
-                  <div className="border-b border-border px-4 py-3">
-                    <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Signed in</div>
-                    <div className="truncate text-sm font-semibold">{user.email}</div>
-                  </div>
-                  <button
-                    onClick={() => { setMenuOpen(false); navigate({ to: "/dashboard" }); }}
-                    className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm hover:bg-surface"
-                  >
-                    <Package className="h-4 w-4 text-amber-brand" /> My dashboard
-                  </button>
-                  <button
-                    onClick={() => { setMenuOpen(false); navigate({ to: "/profile" }); }}
-                    className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm hover:bg-surface"
-                  >
-                    <User className="h-4 w-4 text-amber-brand" /> Profile & orders
-                  </button>
-                  <button
-                    onClick={handleSignOut}
-                    className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm hover:bg-surface"
-                  >
-                    <LogOut className="h-4 w-4 text-destructive" /> Sign out
-                  </button>
-                </motion.div>
-              )}
-            </div>
-          ) : (
-            <Link
-              to="/auth"
-              className="hidden items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground hover:border-amber-brand/60 sm:inline-flex"
-            >
-              <User className="h-3.5 w-3.5" /> Sign in
-            </Link>
-          )}
 
           <motion.button
             whileHover={{ scale: 1.04 }}
