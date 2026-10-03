@@ -44,7 +44,7 @@ export function CartDrawer() {
         const variant = line.variant ? ` (${line.variant})` : "";
         return `• ${line.qty}× ${line.name}${variant} — ${formatRs(line.qty * line.unitPrice)}`;
       })
-      .join("\\n");
+      .join("\n");
 
     return [
       "*🍕 D-Pizza — NEW ORDER*",
@@ -61,7 +61,7 @@ export function CartDrawer() {
       `*Delivery address:* ${form.address.trim()}`,
       "",
       "Please confirm this order on WhatsApp. Thank you! 🙌",
-    ].join("\\n");
+    ].join("\n");
   };
 
   const sendOrder = () => {
