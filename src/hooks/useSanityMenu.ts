@@ -29,15 +29,15 @@ export function useSanityMenu(): SanityMenuState {
       const deal = docs.map(toDealItem).filter(Boolean) as DealItem[];
       const byCategory = (category: SimpleItem["category"]) => simple.filter((item) => item.category === category);
       setState({
-        burgers: mergeById(burgers, byCategory("Burgers")),
-        rolls: mergeById(rolls, byCategory("Rolls")),
-        broast: mergeById(broast, byCategory("Broast")),
-        bbq: mergeById(bbq, byCategory("BBQ")),
-        platters: mergeById(platters, byCategory("Platters")),
-        pastaItems: mergeById(pastaItems, byCategory("Pasta")),
-        sandwiches: mergeById(sandwiches, byCategory("Sandwiches")),
-        pizzas: mergeById(pizzas, pizza),
-        deals: mergeById(deals, deal),
+        burgers: byCategory("Burgers"),
+        rolls: byCategory("Rolls"),
+        broast: byCategory("Broast"),
+        bbq: byCategory("BBQ"),
+        platters: byCategory("Platters"),
+        pastaItems: byCategory("Pasta"),
+        sandwiches: byCategory("Sandwiches"),
+        pizzas: pizza,
+        deals: deal,
         loading: false, connected: true,
       });
     }).catch((error) => {
