@@ -4,17 +4,14 @@ import {
   Link,
   createRootRouteWithContext,
   useRouter,
-  useRouterState,
-  useNavigate,
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
 import type { ErrorComponentProps } from "@tanstack/react-router";
-import { useEffect } from "react";
 
 import appCss from "../styles.css?url";
 import { Toaster } from "@/components/ui/sonner";
-import { AuthProvider, useAuth } from "@/hooks/useAuth";
+import { AuthProvider } from "@/hooks/useAuth";
 import { ThemeProvider } from "@/hooks/useTheme";
 
 function NotFoundComponent() {
@@ -81,21 +78,15 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "D-PIZZA FOOD" },
       { name: "description", content: "D-Pizza Food is a fast-food restaurant web app in Dadu — zingers, broasts, pizzas, rolls and deals." },
-      { name: "author", content: "Lovable" },
+      { name: "author", content: "D-Pizza Food" },
       { property: "og:title", content: "D-PIZZA FOOD" },
       { property: "og:description", content: "D-Pizza Food is a fast-food restaurant web app in Dadu — zingers, broasts, pizzas, rolls and deals." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
-      { name: "twitter:site", content: "@Lovable" },
       { name: "twitter:title", content: "D-PIZZA FOOD" },
       { name: "twitter:description", content: "D-Pizza Food is a fast-food restaurant web app in Dadu — zingers, broasts, pizzas, rolls and deals." },
     ],
-    links: [
-      {
-        rel: "stylesheet",
-        href: appCss,
-      },
-    ],
+    links: [{ rel: "stylesheet", href: appCss }],
   }),
   shellComponent: RootShell,
   component: RootComponent,
@@ -117,30 +108,6 @@ function RootShell({ children }: { children: React.ReactNode }) {
   );
 }
 
-function AuthGate({ children }: { children: React.ReactNode }) {
-  const { user, loading } = useAuth();
-  const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const navigate = useNavigate();
-
-  const isPublic = pathname === "/auth";
-
-  useEffect(() => {
-    if (!loading && !user && !isPublic) {
-      navigate({ to: "/auth", replace: true });
-    }
-  }, [loading, user, isPublic, navigate]);
-
-  if (loading) {
-    return (
-      <div className="grid min-h-screen place-items-center bg-background text-sm text-muted-foreground">
-        Loading…
-      </div>
-    );
-  }
-  if (!user && !isPublic) return null;
-  return <>{children}</>;
-}
-
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
 
@@ -148,9 +115,7 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         <AuthProvider>
-          <AuthGate>
-            <Outlet />
-          </AuthGate>
+          <Outlet />
           <Toaster position="top-center" richColors />
         </AuthProvider>
       </ThemeProvider>
