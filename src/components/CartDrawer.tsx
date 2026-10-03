@@ -123,7 +123,7 @@ export function CartDrawer() {
                           className="flex items-start gap-3 px-5 py-4"
                         >
                           <div className="h-16 w-16 shrink-0 overflow-hidden rounded-xl border border-border bg-surface">
-                            {line.itemId ? <CartItemImage itemId={line.itemId} /> : null}
+                            {line.itemId ? <CartItemImage image={line.image} /> : null}
                           </div>
                           <div className="min-w-0 flex-1">
                             <div className="font-semibold leading-tight">{line.name}</div>
@@ -219,9 +219,8 @@ export function CartDrawer() {
   );
 }
 
-function CartItemImage({ itemId }: { itemId: string }) {
-  const src = useCartStore.getState().lines.find((line) => line.itemId === itemId)?.image;
-  if (!src) return null;
+function CartItemImage({ image }: { image?: string }) {
+  if (!image) return null;
   return (
     <img
       src={src}
