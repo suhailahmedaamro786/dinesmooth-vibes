@@ -70,6 +70,12 @@ const VERIFIED_PIZZA_PRICES: Record<string, { S: number; M: number; L: number; X
   "Lava Pizza": { S: 600, M: 1000, L: 1600, XL: 2000 },
 };
 
+const GITHUB_REGULAR_IMAGE_BY_NAME: Record<string, string> = {
+  "Zinger Burger": "/assets/menu-images/regular-items/Zinger%20Burger.jpg",
+  "Zinger Cheez Burger": "/assets/menu-images/regular-items/Zinger%20Cheez%20Burger.jpg",
+  "Zinger Tower": "/assets/menu-images/regular-items/Zinger%20Tower.jpg",
+};
+
 const LOCAL_IMAGE_BY_NAME: Record<string, string> = Object.fromEntries(
   [
     ...localBurgers,
@@ -85,7 +91,8 @@ const LOCAL_IMAGE_BY_NAME: Record<string, string> = Object.fromEntries(
 );
 
 function withImage<T extends object>(value: T, image?: string): T & { image?: string } {
-  const resolvedImage = image || LOCAL_IMAGE_BY_NAME[String((value as { name?: string }).name || "")];
+  const name = String((value as { name?: string }).name || "");
+  const resolvedImage = GITHUB_REGULAR_IMAGE_BY_NAME[name] || image || LOCAL_IMAGE_BY_NAME[name];
   return resolvedImage ? { ...value, image: resolvedImage } : value;
 }
 
