@@ -8,7 +8,7 @@ export function AboutDPizza() {
           <div className="overflow-hidden rounded-3xl border border-border bg-card shadow-sm">
             <div className="flex aspect-[4/5] items-center justify-center bg-muted">
               <img
-                src="/assets/owner/raja-shahnawaz-soomro.jpg"
+                src="/raja-shahnawaz-soomro.jpg"
                 alt="Raja Shahnawaz Soomro, Founder and Owner of D-Pizza"
                 className="h-full w-full object-cover"
                 loading="lazy"
