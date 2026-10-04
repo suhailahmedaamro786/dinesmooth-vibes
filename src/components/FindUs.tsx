@@ -40,7 +40,7 @@ export function FindUs() {
             <iframe
               title="D-Pizza Food location"
               src={MAP_EMBED}
-              className="h-[420px] w-full pointer-events-none"
+              className="h-[300px] w-full pointer-events-none sm:h-[420px]"
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
             />
