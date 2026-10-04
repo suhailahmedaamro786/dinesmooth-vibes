@@ -26,27 +26,27 @@ export function useSanityMenu(): SanityMenuState {
       if (cancelled) return;
       const simple = docs.map(toSimpleItem).filter(Boolean) as SimpleItem[];
       const pizza = docs.map(toPizzaItem).filter(Boolean) as PizzaItem[];
-      const deal = docs.map(toDealItem).filter(Boolean) as DealItem[];
+      const remoteDeals = docs.map(toDealItem).filter(Boolean) as DealItem[];
       const byCategory = (category: SimpleItem["category"]) => simple.filter((item) => item.category === category);
+
+      // Restore the original bundled/local artwork for core Deal 01–20.
+      const deal = remoteDeals.map((item, index) => {
+        if (index < deals.length) return { ...item, image: deals[index].image };
+        return item;
+      });
+
       setState({
         burgers: byCategory("Burgers"),
         rolls: byCategory("Rolls"),
         broast: byCategory("Broast"),
-        // Keep the real existing BBQ + Platters menu visible even if those
-        // categories are not yet populated in Sanity. Once added to Sanity,
-        // remote items automatically take over while preserving local images.
         bbq: mergeById(bbq, byCategory("BBQ")),
         platters: mergeById(platters, byCategory("Platters")),
         pastaItems: byCategory("Pasta"),
         sandwiches: byCategory("Sandwiches"),
         pizzas: pizza,
-        // Keep deal numbering clean and predictable for customers:
-        // first 20 are the core Deal 01–20; the next 21 are Special 01–21.
-        // Any remaining legacy/event offers are kept after those without
-        // changing their actual prices or cart IDs.
         deals: deal.map((item, index) => {
-          if (index < 20) return { ...item, name: `Deal ${String(index + 1).padStart(2, "0")}` };
-          if (index < 41) return { ...item, name: `Special ${String(index - 19).padStart(2, "0")}` };
+          if (index < 20) return { ...item, name: "Deal " + String(index + 1).padStart(2, "0") };
+          if (index < 41) return { ...item, name: "Special " + String(index - 19).padStart(2, "0") };
           return { ...item, name: item.name };
         }),
         loading: false, connected: true,
