@@ -65,9 +65,9 @@ function Index() {
       <Navbar />
       <main>
         <Hero />
-        <AboutDPizza />
         <MenuSection />
         <Reviews />
+        <AboutDPizza />
         <FindUs />
       </main>
       <Footer />
