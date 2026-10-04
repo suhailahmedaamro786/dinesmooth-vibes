@@ -38,7 +38,7 @@ export function WhatsAppButton() {
       aria-label="Order on WhatsApp"
       className="fixed bottom-5 right-5 z-[55] grid h-14 w-14 place-items-center rounded-full bg-[#25D366] text-white shadow-[0_10px_40px_-8px_rgba(37,211,102,0.6)] hover:shadow-[0_15px_50px_-8px_rgba(37,211,102,0.8)]"
     >
-      <span className="absolute inset-0 -z-10 animate-ping rounded-full bg-[#25D366]/40" />
+      <motion.span aria-hidden animate={{ scale: [1, 1.12, 1], opacity: [0.18, 0.28, 0.18] }} transition={{ duration: 2.8, repeat: Infinity, ease: "easeInOut" }} className="absolute inset-0 -z-10 rounded-full bg-[#25D366]" />
       <MessageCircle className="h-6 w-6" strokeWidth={2.5} fill="currentColor" fillOpacity={0.15} />
     </motion.a>
   );
