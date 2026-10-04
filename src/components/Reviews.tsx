@@ -57,7 +57,7 @@ export function Reviews() {
               initial={{ opacity: 0, y: 18 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.45, delay: index * 0.08 }}
+              transition={{ duration: 0.45, delay: index * 0.12 }}
               className="flex h-full flex-col rounded-3xl border border-border bg-card p-6 shadow-lg"
             >
               <div className="flex gap-0.5 text-amber-brand" aria-hidden="true">
