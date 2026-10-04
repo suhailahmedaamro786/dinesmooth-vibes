@@ -223,7 +223,7 @@ function CartItemImage({ image }: { image?: string }) {
   if (!image) return null;
   return (
     <img
-      src={src}
+      src={image}
       alt=""
       loading="lazy"
       className="h-full w-full object-cover"
