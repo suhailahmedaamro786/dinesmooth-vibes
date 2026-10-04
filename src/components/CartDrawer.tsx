@@ -21,6 +21,7 @@ export function CartDrawer() {
   const [showCheckout, setShowCheckout] = useState(false);
   const [sent, setSent] = useState(false);
   const [form, setForm] = useState({ name: "", phone: "", address: "" });
+  const [sending, setSending] = useState(false);
 
   const eta = useMemo(() => estimateDelivery(form.address), [form.address]);
 
@@ -61,17 +62,20 @@ export function CartDrawer() {
   };
 
   const sendOrder = () => {
+    if (sending) return;
     if (!form.name.trim() || !form.phone.trim() || !form.address.trim()) {
       toast.error("Please fill your full name, mobile number and delivery address.");
       return;
     }
 
+    setSending(true);
     const message = buildWhatsAppMessage();
     const url = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(message)}`;
     window.open(url, "_blank", "noopener,noreferrer");
     setSent(true);
     clear();
     toast.success("Order details are ready in WhatsApp.");
+    window.setTimeout(() => setSending(false), 800);
   };
 
   return (
@@ -202,12 +206,14 @@ export function CartDrawer() {
                   </motion.button>
                 ) : (
                   <motion.button
-                    type="submit"
+                    type="button"
+                    onClick={sendOrder}
+                    disabled={sending}
                     whileTap={{ scale: 0.97 }}
-                    className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#25D366] px-5 py-3 text-sm font-bold text-white"
+                    className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#25D366] px-5 py-3 text-sm font-bold text-white disabled:cursor-not-allowed disabled:opacity-70"
                   >
                     <MessageCircle className="h-5 w-5" />
-                    Order on WhatsApp
+                    {sending ? "Opening WhatsApp…" : "Order on WhatsApp"}
                   </motion.button>
                 )}
               </footer>
