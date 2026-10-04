@@ -167,7 +167,39 @@ function sizeLabel(s: PizzaSize) {
 function DealsGrid({ items, summaries, openDetail }: { items: DealItem[]; summaries: Map<string, ReviewSummary>; openDetail: OpenDetail }) {
   const addLine = useCartStore((s) => s.addLine);
   const openCart = useCartStore((s) => s.openCart);
-  return <div className="grid grid-cols-1 gap-5 md:grid-cols-2">{items.map((d, idx) => (
+  const [section, setSection] = useState<"deals" | "specials" | "events">("deals");
+
+  const mainDeals = items.slice(0, 20);
+  const specials = items.slice(20, 41);
+  const events = items.slice(41);
+  const visible = section === "deals" ? mainDeals : section === "specials" ? specials : events;
+
+  if (!items.length) {
+    return <div className="rounded-2xl border border-border bg-card p-6 text-center text-sm text-muted-foreground">No deals available right now.</div>;
+  }
+
+  return (
+    <div>
+      <div className="mb-6 rounded-2xl border border-border bg-surface/50 p-1.5">
+        <div className="grid grid-cols-3 gap-1">
+          {[
+            ["deals", "🔥 Deals 01–20"],
+            ["specials", "⭐ Specials 01–21"],
+            ["events", "🎉 Events"],
+          ].map(([value, label]) => (
+            <button
+              key={value}
+              type="button"
+              onClick={() => setSection(value as "deals" | "specials" | "events")}
+              className={`rounded-xl px-2 py-3 text-[11px] font-bold transition-colors sm:px-4 sm:text-sm ${section === value ? "bg-amber-brand text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 gap-5 md:grid-cols-2">{visible.map((d, idx) => (
     <motion.article key={d.id} layout initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-60px" }} animate={d.highlight ? { scale: [1, 1.012, 1] } : undefined} transition={d.highlight ? { duration: 2.8, repeat: Infinity, ease: "easeInOut" } : { duration: 0.5, delay: idx * 0.05 }} whileHover={{ scale: 1.015, y: -3 }} className={`group relative overflow-hidden rounded-2xl border-2 ${d.highlight ? "border-amber-brand glow-amber-strong" : "border-amber-brand/40 hover:border-amber-brand"}`}>
       <button type="button" onClick={() => openDetail({ kind: "deal", item: d })} className="relative aspect-[16/9] w-full overflow-hidden bg-surface text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-brand" aria-label={`View details for ${d.name}`}>
         <motion.img src={d.image} alt={d.name} loading="lazy" width={1024} height={768} className="h-full w-full object-cover" whileHover={{ scale: 1.06 }} transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }} />
