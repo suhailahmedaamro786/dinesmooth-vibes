@@ -21,7 +21,7 @@ export type SanityMenuDocument = {
   category: SanityCategory;
   description?: string;
   price?: number;
-  prices?: { S?: number; M?: number; L?: number; XL?: number };
+  prices?: { S?: number; M?: number; L?: number; XL?: number } | null;
   image?: string;
   highlight?: boolean;
   sortOrder?: number;
@@ -61,6 +61,14 @@ export async function fetchSanityMenu(): Promise<SanityMenuDocument[]> {
   return Array.isArray(payload.result) ? payload.result : [];
 }
 
+const VERIFIED_PIZZA_PRICES: Record<string, { S: number; M: number; L: number; XL: number }> = {
+  "D-Pizza Special": { S: 350, M: 700, L: 1000, XL: 1300 },
+  "Chicken Tikka Pizza": { S: 350, M: 700, L: 1000, XL: 1300 },
+  "Chicken Fajita Pizza": { S: 350, M: 700, L: 1000, XL: 1300 },
+  "Vegetable Pizza": { S: 350, M: 700, L: 1000, XL: 1300 },
+  "Lava Pizza": { S: 600, M: 1000, L: 1600, XL: 2000 },
+};
+
 function withImage<T extends object>(value: T, image?: string): T & { image?: string } {
   return image ? { ...value, image } : value;
 }
@@ -87,7 +95,14 @@ export function toSimpleItem(doc: SanityMenuDocument): SimpleItem | null {
 }
 
 export function toPizzaItem(doc: SanityMenuDocument): PizzaItem | null {
-  if (doc.category !== "Pizzas" || !doc.prices) return null;
+  if (doc.category !== "Pizzas") return null;
+
+  const verified = VERIFIED_PIZZA_PRICES[doc.name];
+  const raw = doc.prices;
+  const prices = verified ?? (raw ? {
+    S: Number(raw.S ?? 0), M: Number(raw.M ?? 0), L: Number(raw.L ?? 0), XL: Number(raw.XL ?? 0),
+  } : null);
+  if (!prices || Object.values(prices).some((value) => !Number.isFinite(value) || value <= 0)) return null;
 
   return withImage(
     {
@@ -95,10 +110,10 @@ export function toPizzaItem(doc: SanityMenuDocument): PizzaItem | null {
       name: doc.name,
       category: "Pizzas",
       prices: {
-        S: doc.prices.S ?? 0,
-        M: doc.prices.M ?? 0,
-        L: doc.prices.L ?? 0,
-        XL: doc.prices.XL ?? 0,
+        S: prices.S,
+        M: prices.M,
+        L: prices.L,
+        XL: prices.XL,
       },
       description: doc.description,
     },
