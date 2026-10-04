@@ -98,11 +98,30 @@
   * {
     border-color: var(--color-border);
   }
+  html {
+    overflow-x: clip;
+    scroll-behavior: smooth;
+  }
   body {
+    min-width: 320px;
+    overflow-x: hidden;
     background-color: var(--color-background);
     color: var(--color-foreground);
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
     -webkit-font-smoothing: antialiased;
+  }
+  button,
+  a {
+    touch-action: manipulation;
+  }
+  input,
+  textarea,
+  select {
+    font-size: 16px;
+  }
+  img,
+  iframe {
+    max-width: 100%;
   }
 }
 
@@ -135,4 +154,40 @@
   }
   .scrollbar-none::-webkit-scrollbar { display: none; }
   .scrollbar-none { scrollbar-width: none; }
+}
+
+
+@layer utilities {
+  .mobile-float {
+    animation: mobile-float 5s ease-in-out infinite;
+  }
+  .mobile-pulse {
+    animation: mobile-pulse 2.8s ease-in-out infinite;
+  }
+}
+
+@keyframes mobile-float {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(0, -7px, 0); }
+}
+
+@keyframes mobile-pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.025); opacity: 0.94; }
+}
+
+@media (max-width: 639px) {
+  .glow-amber {
+    box-shadow:
+      0 0 0 1px color-mix(in oklab, var(--amber-brand) 42%, transparent),
+      0 8px 24px -12px color-mix(in oklab, var(--amber-brand) 42%, transparent);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .mobile-float,
+  .mobile-pulse {
+    animation: none !important;
+  }
 }
