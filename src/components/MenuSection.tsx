@@ -104,9 +104,7 @@ function SimpleGrid({ items, summaries, openDetail }: { items: SimpleItem[]; sum
         <motion.button whileTap={{ scale: 0.95 }} whileHover={{ scale: 1.02 }} onClick={() => handleAdd(it)} className="mt-4 inline-flex items-center justify-center gap-1.5 self-start rounded-full bg-amber-brand px-4 py-2 text-xs font-bold text-primary-foreground"><Plus className="h-3.5 w-3.5" strokeWidth={3} /> Add to cart</motion.button>
       </div>
     </motion.article>
-  ))}</div>
-    </div>
-  );
+  ))}</div>;
 }
 
 function PizzaGrid({ items, summaries, openDetail }: { items: PizzaItem[]; summaries: Map<string, ReviewSummary>; openDetail: OpenDetail }) {
