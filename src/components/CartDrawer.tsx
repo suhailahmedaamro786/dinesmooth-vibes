@@ -202,8 +202,8 @@ export function CartDrawer() {
                   </motion.button>
                 ) : (
                   <motion.button
+                    type="submit"
                     whileTap={{ scale: 0.97 }}
-                    onClick={sendOrder}
                     className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#25D366] px-5 py-3 text-sm font-bold text-white"
                   >
                     <MessageCircle className="h-5 w-5" />
