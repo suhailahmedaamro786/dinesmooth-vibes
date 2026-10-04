@@ -1,3 +1,4 @@
+import { burgers as localBurgers, rolls as localRolls, pizzas as localPizzas, broast as localBroast, bbq as localBbq, platters as localPlatters, pastaItems as localPasta, sandwiches as localSandwiches, deals as localDeals } from "@/data/menu";
 import type { DealItem, PizzaItem, SimpleItem } from "@/data/menu";
 
 export const SANITY_CATEGORIES = [
@@ -37,7 +38,7 @@ export const sanityConfigured = Boolean(PROJECT_ID && DATASET);
 // No local/legacy image fallback is allowed, so old images can never
 // reappear on the customer website after the CMS cleanup.
 const QUERY =
-  '*[_type == "menuItem" && isAvailable != false] | order(category asc, sortOrder asc, name asc) { _id, name, "slug": slug.current, category, description, price, prices, "image": image.asset->url, highlight, sortOrder }';
+  '*[_type == "menuItem" && isAvailable != false && name != "Pizza Burger"] | order(category asc, sortOrder asc, name asc) { _id, name, "slug": slug.current, category, description, price, prices, "image": image.asset->url, highlight, sortOrder }';
 
 function endpoint() {
   return `https://${PROJECT_ID}.apicdn.sanity.io/v${API_VERSION}/data/query/${encodeURIComponent(DATASET)}?query=${encodeURIComponent(QUERY)}`;
@@ -69,12 +70,28 @@ const VERIFIED_PIZZA_PRICES: Record<string, { S: number; M: number; L: number; X
   "Lava Pizza": { S: 600, M: 1000, L: 1600, XL: 2000 },
 };
 
+const LOCAL_IMAGE_BY_NAME: Record<string, string> = Object.fromEntries(
+  [
+    ...localBurgers,
+    ...localRolls,
+    ...localPizzas,
+    ...localBroast,
+    ...localBbq,
+    ...localPlatters,
+    ...localPasta,
+    ...localSandwiches,
+    ...localDeals,
+  ].map((item) => [item.name, item.image]),
+);
+
 function withImage<T extends object>(value: T, image?: string): T & { image?: string } {
-  return image ? { ...value, image } : value;
+  const resolvedImage = image || LOCAL_IMAGE_BY_NAME[String((value as { name?: string }).name || "")];
+  return resolvedImage ? { ...value, image: resolvedImage } : value;
 }
 
 export function toSimpleItem(doc: SanityMenuDocument): SimpleItem | null {
   if (
+    doc.name === "Pizza Burger" ||
     doc.category === "Pizzas" ||
     doc.category === "Deals" ||
     typeof doc.price !== "number"
