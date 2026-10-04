@@ -19,6 +19,7 @@ export function Hero() {
       <div aria-hidden className="absolute inset-0 -z-10 bg-gradient-to-b from-background/60 via-background/85 to-background" />
       <div aria-hidden className="absolute inset-0 -z-10 bg-radial-amber opacity-80" />
       <div aria-hidden className="absolute inset-0 -z-10 bg-grid opacity-40" />
+      <motion.div aria-hidden animate={{ y: [0, -10, 0], x: [0, 5, 0] }} transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }} className="pointer-events-none absolute right-[8%] top-32 -z-10 h-32 w-32 rounded-full bg-amber-brand/10 blur-2xl sm:h-44 sm:w-44" />
       <motion.div
         aria-hidden
         initial={{ opacity: 0 }}
