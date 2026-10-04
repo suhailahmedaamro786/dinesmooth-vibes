@@ -15,6 +15,7 @@ import { AuthProvider } from "@/hooks/useAuth";
 import { ThemeProvider } from "@/hooks/useTheme";
 import { MotionConfig } from "motion/react";
 import { ScrollProgress } from "@/components/ScrollProgress";
+import { PageLoader } from "@/components/PageLoader";
 
 function NotFoundComponent() {
   return (
@@ -124,6 +125,7 @@ function RootComponent() {
       <ThemeProvider>
         <AuthProvider>
           <ScrollProgress />
+          <PageLoader />
           <Outlet />
           <Toaster position="top-center" richColors />
         </AuthProvider>
