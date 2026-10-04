@@ -5,21 +5,20 @@ export function AboutDPizza() {
     <section id="about" className="border-y border-border bg-muted/20">
       <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:py-20">
         <div className="grid gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:items-center">
-          <div className="overflow-hidden rounded-3xl border border-border bg-card shadow-sm">
-            <div className="flex aspect-[4/5] items-center justify-center bg-muted">
-              <img
-                src="/raja-shahnawaz-soomro.jpg"
-                alt="Raja Shahnawaz Soomro, Founder and Owner of D-Pizza"
-                className="h-full w-full object-cover"
-                loading="lazy"
-                onError={(event) => {
-                  event.currentTarget.style.display = "none";
-                }}
-              />
-              <div className="absolute hidden text-center text-sm text-muted-foreground">
-                Founder photo
+          <div className="relative mx-auto w-full max-w-md">
+            <div className="rounded-[2rem] border-2 border-amber-brand/40 bg-card p-2 shadow-xl shadow-amber-brand/10 animate-pulse">
+              <div className="overflow-hidden rounded-[1.65rem] border border-border bg-muted">
+                <div className="aspect-[4/5] w-full">
+                  <img
+                    src="/1791122318601.jpg"
+                    alt="Raja Shahnawaz Soomro, Founder and Owner of D-Pizza"
+                    className="h-full w-full object-cover object-center transition-transform duration-700 hover:scale-105"
+                    loading="lazy"
+                  />
+                </div>
               </div>
             </div>
+            <div className="pointer-events-none absolute inset-0 -z-10 rounded-[2rem] bg-amber-brand/10 blur-2xl" />
           </div>
 
           <div>
