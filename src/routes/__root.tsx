@@ -13,6 +13,8 @@ import appCss from "../styles.css?url";
 import { Toaster } from "@/components/ui/sonner";
 import { AuthProvider } from "@/hooks/useAuth";
 import { ThemeProvider } from "@/hooks/useTheme";
+import { MotionConfig } from "motion/react";
+import { ScrollProgress } from "@/components/ScrollProgress";
 
 function NotFoundComponent() {
   return (
@@ -118,12 +120,15 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
+      <MotionConfig reducedMotion="user">
       <ThemeProvider>
         <AuthProvider>
+          <ScrollProgress />
           <Outlet />
           <Toaster position="top-center" richColors />
         </AuthProvider>
       </ThemeProvider>
+      </MotionConfig>
     </QueryClientProvider>
   );
 }
