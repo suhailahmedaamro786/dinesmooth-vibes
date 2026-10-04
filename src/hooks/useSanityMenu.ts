@@ -32,8 +32,11 @@ export function useSanityMenu(): SanityMenuState {
         burgers: byCategory("Burgers"),
         rolls: byCategory("Rolls"),
         broast: byCategory("Broast"),
-        bbq: byCategory("BBQ"),
-        platters: byCategory("Platters"),
+        // Keep the real existing BBQ + Platters menu visible even if those
+        // categories are not yet populated in Sanity. Once added to Sanity,
+        // remote items automatically take over while preserving local images.
+        bbq: mergeById(bbq, byCategory("BBQ")),
+        platters: mergeById(platters, byCategory("Platters")),
         pastaItems: byCategory("Pasta"),
         sandwiches: byCategory("Sandwiches"),
         pizzas: pizza,
