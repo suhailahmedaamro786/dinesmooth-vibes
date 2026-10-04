@@ -1,6 +1,6 @@
 import { motion } from "motion/react";
 import { Link } from "@tanstack/react-router";
-import { ShoppingBag, Flame } from "lucide-react";
+import { Flame } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useCartStore } from "@/store/useCartStore";
 import { useAuth } from "@/hooks/useAuth";
@@ -61,7 +61,6 @@ export function Navbar() {
             className="relative inline-flex items-center gap-2 rounded-full bg-amber-brand px-4 py-2 text-sm font-semibold text-primary-foreground glow-amber"
             aria-label="Open cart"
           >
-            <ShoppingBag className="h-4 w-4" strokeWidth={2.5} />
             <span className="hidden sm:inline">Cart</span>
             {qty > 0 && (
               <motion.span
