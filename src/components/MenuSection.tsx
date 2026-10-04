@@ -177,7 +177,11 @@ function DealsGrid({ items, summaries, openDetail }: { items: DealItem[]; summar
   const visible = section === "deals" ? mainDeals : section === "specials" ? specials : events;
 
   if (!items.length) {
-    return <div className="rounded-2xl border border-border bg-card p-6 text-center text-sm text-muted-foreground">No deals available right now.</div>;
+    return (
+      <div className="rounded-2xl border border-border bg-card p-6 text-center text-sm text-muted-foreground">
+        No deals available right now.
+      </div>
+    );
   }
 
   return (
@@ -201,17 +205,97 @@ function DealsGrid({ items, summaries, openDetail }: { items: DealItem[]; summar
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-5 md:grid-cols-2">{visible.map((d, idx) => (
-    <motion.article key={d.id} layout initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-60px" }} animate={d.highlight ? { scale: [1, 1.012, 1] } : undefined} transition={d.highlight ? { duration: 2.8, repeat: Infinity, ease: "easeInOut" } : { duration: 0.5, delay: idx * 0.05 }} whileHover={{ scale: 1.015, y: -3 }} className={`group relative overflow-hidden rounded-2xl border-2 ${d.highlight ? "border-amber-brand glow-amber-strong" : "border-amber-brand/40 hover:border-amber-brand"}`}>
-      <button type="button" onClick={() => openDetail({ kind: "deal", item: d })} className="relative aspect-[16/9] w-full overflow-hidden bg-surface text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-brand" aria-label={`View details for ${d.name}`}>
-        <motion.img src={d.image} alt={d.name} loading="lazy" width={1024} height={768} className="h-full w-full object-cover" whileHover={{ scale: 1.06 }} transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }} />
-        <div aria-hidden className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
-        {d.highlight && <span className="absolute left-3 top-3 rounded-full bg-amber-brand px-3 py-1 text-[10px] font-black uppercase tracking-widest text-primary-foreground">Best value</span>}
-      </button>
-      <div className="flex flex-col gap-3 p-5">
-        <div className="flex items-start justify-between gap-3"><div><button type="button" onClick={() => openDetail({ kind: "deal", item: d })} className="text-left text-lg font-bold leading-tight hover:text-amber-brand">{d.name}</button><div className="mt-1"><RatingBadge summary={summaries.get(d.id)} /></div>{d.description && <p className="mt-1 text-sm text-muted-foreground line-clamp-2">{d.description}</p>}</div><div className="shrink-0 text-xl font-black text-amber-brand">{formatRs(d.price)}</div></div>
-        <motion.button whileTap={{ scale: 0.95 }} whileHover={{ scale: 1.02 }} onClick={() => { addLine({ key: d.id, itemId: d.id, name: d.name, unitPrice: d.price, image: d.image }); toast.success("Added to cart!", { description: `${d.name} has been added to your cart.`, duration: 3000, action: { label: "View Cart", onClick: openCart } }); }} className="inline-flex items-center justify-center gap-1.5 self-start rounded-full bg-amber-brand px-4 py-2 text-xs font-bold text-primary-foreground"><Plus className="h-3.5 w-3.5" strokeWidth={3} /> Add to cart</motion.button>
+      <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+        {visible.map((d, idx) => (
+          <motion.article
+            key={d.id}
+            layout
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-60px" }}
+            animate={d.highlight ? { scale: [1, 1.012, 1] } : undefined}
+            transition={
+              d.highlight
+                ? { duration: 2.8, repeat: Infinity, ease: "easeInOut" }
+                : { duration: 0.5, delay: idx * 0.05 }
+            }
+            whileHover={{ scale: 1.015, y: -3 }}
+            className={`group relative overflow-hidden rounded-2xl border-2 ${d.highlight ? "border-amber-brand glow-amber-strong" : "border-amber-brand/40 hover:border-amber-brand"}`}
+          >
+            <button
+              type="button"
+              onClick={() => openDetail({ kind: "deal", item: d })}
+              className="relative aspect-[16/9] w-full overflow-hidden bg-surface text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-brand"
+              aria-label={`View details for ${d.name}`}
+            >
+              <motion.img
+                src={d.image}
+                alt={d.name}
+                loading="lazy"
+                width={1024}
+                height={768}
+                className="h-full w-full object-cover"
+                whileHover={{ scale: 1.06 }}
+                transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+              />
+              <div aria-hidden className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
+              {d.highlight && (
+                <span className="absolute left-3 top-3 rounded-full bg-amber-brand px-3 py-1 text-[10px] font-black uppercase tracking-widest text-primary-foreground">
+                  Best value
+                </span>
+              )}
+            </button>
+
+            <div className="flex flex-col gap-3 p-5">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <button
+                    type="button"
+                    onClick={() => openDetail({ kind: "deal", item: d })}
+                    className="text-left text-lg font-bold leading-tight hover:text-amber-brand"
+                  >
+                    {d.name}
+                  </button>
+                  <div className="mt-1">
+                    <RatingBadge summary={summaries.get(d.id)} />
+                  </div>
+                  {d.description && (
+                    <p className="mt-1 text-sm text-muted-foreground line-clamp-2">
+                      {d.description}
+                    </p>
+                  )}
+                </div>
+                <div className="shrink-0 text-xl font-black text-amber-brand">
+                  {formatRs(d.price)}
+                </div>
+              </div>
+
+              <motion.button
+                whileTap={{ scale: 0.95 }}
+                whileHover={{ scale: 1.02 }}
+                onClick={() => {
+                  addLine({
+                    key: d.id,
+                    itemId: d.id,
+                    name: d.name,
+                    unitPrice: d.price,
+                    image: d.image,
+                  });
+                  toast.success("Added to cart!", {
+                    description: `${d.name} has been added to your cart.`,
+                    duration: 3000,
+                    action: { label: "View Cart", onClick: openCart },
+                  });
+                }}
+                className="inline-flex items-center justify-center gap-1.5 self-start rounded-full bg-amber-brand px-4 py-2 text-xs font-bold text-primary-foreground"
+              >
+                <Plus className="h-3.5 w-3.5" strokeWidth={3} />
+                Add to cart
+              </motion.button>
+            </div>
+          </motion.article>
+        ))}
       </div>
-    </motion.article>
-  ))}</div>;
+    </div>
+  );
 }
