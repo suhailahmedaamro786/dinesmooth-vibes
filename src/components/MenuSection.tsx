@@ -51,7 +51,7 @@ export function MenuSection() {
 
       {menu.connected && <div className="mb-3 flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.18em] text-emerald-500"><span className="h-1.5 w-1.5 rounded-full bg-emerald-500" /> Live menu from Sanity</div>}
 
-      <div id="deals" aria-label="Menu categories" className="mt-10 rounded-2xl border border-border bg-surface/60 p-1.5 backdrop-blur">
+      <div id="deals" aria-label="Menu categories" className="mt-8 rounded-2xl border border-border bg-surface/60 p-1.5 backdrop-blur sm:mt-10">
         <div className="grid grid-cols-3 gap-1 sm:flex sm:gap-1 sm:overflow-x-auto sm:scrollbar-none">
           {TABS.map((t) => {
             const active = tab === t;
@@ -91,7 +91,7 @@ function SimpleGrid({ items, summaries, openDetail }: { items: SimpleItem[]; sum
     toast.success("Added to cart!", { description: `${it.name} has been added to your cart.`, duration: 3000, action: { label: "View Cart", onClick: openCart } });
   };
   return <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">{items.map((it, idx) => (
-    <motion.article key={it.id} initial={{ opacity: 0, y: 18 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-60px" }} transition={{ duration: 0.45, delay: idx * 0.04 }} whileHover={{ scale: 1.02, y: -2 }} className="group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-card transition-colors hover:border-amber-brand/50">
+    <motion.article key={it.id} layout initial={{ opacity: 0, y: 18 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-60px" }} transition={{ duration: 0.45, delay: idx * 0.04 }} whileHover={{ scale: 1.02, y: -2 }} className="group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-card transition-colors hover:border-amber-brand/50">
       <button type="button" onClick={() => openDetail({ kind: "simple", item: it })} className="relative aspect-[5/4] w-full overflow-hidden bg-surface text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-brand" aria-label={`View details for ${it.name}`}>
         <motion.img src={it.image} alt={it.name} loading="lazy" width={768} height={768} className="h-full w-full object-cover" whileHover={{ scale: 1.06 }} transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }} />
         <div aria-hidden className="pointer-events-none absolute inset-0 bg-gradient-to-t from-card via-card/20 to-transparent" />
@@ -122,20 +122,20 @@ function PizzaCard({ pizza, summary, openDetail }: { pizza: PizzaItem; summary?:
     toast.success("Added to cart!", { description: `${pizza.name} (${sizeLabel(size)}) has been added to your cart.`, duration: 3000, action: { label: "View Cart", onClick: openCart } });
   };
 
-  return <motion.article whileHover={{ scale: 1.015, y: -2 }} transition={{ type: "spring", stiffness: 280, damping: 24 }} className="relative overflow-hidden rounded-2xl border border-border bg-card transition-colors hover:border-amber-brand/50">
+  return <motion.article layout whileHover={{ scale: 1.015, y: -2 }} transition={{ type: "spring", stiffness: 280, damping: 24 }} className="relative overflow-hidden rounded-2xl border border-border bg-card transition-colors hover:border-amber-brand/50">
     <div className="flex flex-col sm:flex-row">
       <button type="button" onClick={() => openDetail({ kind: "pizza", item: pizza })} className="relative aspect-square w-full shrink-0 overflow-hidden sm:w-44 md:w-52 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-brand" aria-label={`View details for ${pizza.name}`}>
         <motion.img src={pizza.image} alt={pizza.name} loading="lazy" width={768} height={768} className="h-full w-full object-cover" whileHover={{ scale: 1.08, rotate: 1 }} transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }} />
         <div aria-hidden className="pointer-events-none absolute inset-0 bg-gradient-to-t from-card/80 via-transparent to-transparent sm:bg-gradient-to-r" />
       </button>
       <div className="flex flex-1 flex-col p-5">
-        <div className="flex items-start justify-between gap-3">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <button type="button" onClick={() => openDetail({ kind: "pizza", item: pizza })} className="text-left text-lg font-bold leading-tight hover:text-amber-brand">{pizza.name}</button>
             <div className="mt-1"><RatingBadge summary={summary} /></div>
             {pizza.description && <p className="mt-1 text-sm text-muted-foreground line-clamp-2">{pizza.description}</p>}
           </div>
-          <div className="min-w-[150px] text-right">
+          <div className="w-full min-w-0 text-left sm:w-auto sm:min-w-[150px] sm:text-right">
             <div className="mb-1 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">{sizeLabel(size)} price</div>
             <div className="text-xl font-black leading-none text-amber-brand">{formatRs(price)}</div>
           </div>
@@ -153,7 +153,7 @@ function PizzaCard({ pizza, summary, openDetail }: { pizza: PizzaItem; summary?:
         </div>
 
         <div className="mt-4 flex items-center gap-2">
-          <motion.button whileTap={{ scale: 0.95 }} whileHover={{ scale: 1.03 }} onClick={handleAdd} className="ml-auto inline-flex items-center gap-1.5 rounded-full bg-amber-brand px-4 py-2 text-xs font-bold text-primary-foreground"><Plus className="h-3.5 w-3.5" strokeWidth={3} /> Add</motion.button>
+          <motion.button whileTap={{ scale: 0.95 }} whileHover={{ scale: 1.03 }} onClick={handleAdd} className="inline-flex min-h-10 items-center gap-1.5 rounded-full bg-amber-brand px-4 py-2 text-xs font-bold text-primary-foreground sm:ml-auto"><Plus className="h-3.5 w-3.5" strokeWidth={3} /> Add</motion.button>
         </div>
       </div>
     </div>
@@ -168,7 +168,7 @@ function DealsGrid({ items, summaries, openDetail }: { items: DealItem[]; summar
   const addLine = useCartStore((s) => s.addLine);
   const openCart = useCartStore((s) => s.openCart);
   return <div className="grid grid-cols-1 gap-5 md:grid-cols-2">{items.map((d, idx) => (
-    <motion.article key={d.id} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-60px" }} animate={d.highlight ? { scale: [1, 1.012, 1] } : undefined} transition={d.highlight ? { duration: 2.8, repeat: Infinity, ease: "easeInOut" } : { duration: 0.5, delay: idx * 0.05 }} whileHover={{ scale: 1.015, y: -3 }} className={`group relative overflow-hidden rounded-2xl border-2 ${d.highlight ? "border-amber-brand glow-amber-strong" : "border-amber-brand/40 hover:border-amber-brand"}`}>
+    <motion.article key={d.id} layout initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-60px" }} animate={d.highlight ? { scale: [1, 1.012, 1] } : undefined} transition={d.highlight ? { duration: 2.8, repeat: Infinity, ease: "easeInOut" } : { duration: 0.5, delay: idx * 0.05 }} whileHover={{ scale: 1.015, y: -3 }} className={`group relative overflow-hidden rounded-2xl border-2 ${d.highlight ? "border-amber-brand glow-amber-strong" : "border-amber-brand/40 hover:border-amber-brand"}`}>
       <button type="button" onClick={() => openDetail({ kind: "deal", item: d })} className="relative aspect-[16/9] w-full overflow-hidden bg-surface text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-brand" aria-label={`View details for ${d.name}`}>
         <motion.img src={d.image} alt={d.name} loading="lazy" width={1024} height={768} className="h-full w-full object-cover" whileHover={{ scale: 1.06 }} transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }} />
         <div aria-hidden className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
