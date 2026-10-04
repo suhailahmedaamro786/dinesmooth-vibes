@@ -27,7 +27,6 @@ import dealFamily from "@/assets/menu/deal-family.jpg";
 import dealFriends from "@/assets/menu/deal-friends.jpg";
 import dealYaari from "@/assets/menu/deal-yaari.jpg";
 import dealBread from "@/assets/menu/deal-bread.jpg";
-import doubleChicken from "@/assets/menu/double-chicken.jpg";
 import pizzaSupreme from "@/assets/menu/pizza-supreme.jpg";
 
 export type Category =
@@ -75,7 +74,6 @@ export const burgers: SimpleItem[] = [
   { id: "b1", name: "Zinger Burger", price: 250, category: "Burgers", image: zingerBurger, description: "Crispy zinger fillet, fresh lettuce, signature mayo." },
   { id: "b2", name: "Zinger Cheez Burger", price: 350, category: "Burgers", image: zingerCheese, description: "Zinger with a melted cheese layer." },
   { id: "b3", name: "Zinger Tower", price: 400, category: "Burgers", image: zingerTower, description: "Tall stack with hash brown & cheese." },
-  { id: "b4", name: "Pizza Burger", price: 450, category: "Burgers", image: doubleChicken, description: "Burger meets pizza — saucy, cheesy, crispy." },
 ];
 
 export const rolls: SimpleItem[] = [
