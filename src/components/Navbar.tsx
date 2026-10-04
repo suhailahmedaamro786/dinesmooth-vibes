@@ -61,9 +61,7 @@ export function Navbar() {
             className="relative inline-flex items-center gap-2 rounded-full bg-amber-brand px-4 py-2 text-sm font-semibold text-primary-foreground glow-amber"
             aria-label="Open cart"
           >
-            <motion.span key={qty} initial={qty > 0 ? { y: -4, scale: 0.82 } : false} animate={{ y: 0, scale: 1 }} transition={{ type: "spring", stiffness: 520, damping: 20 }} className="inline-flex">
-              <ShoppingBag className="h-4 w-4" strokeWidth={2.5} />
-            </motion.span>
+            <ShoppingBag className="h-4 w-4" strokeWidth={2.5} />
             <span className="hidden sm:inline">Cart</span>
             {qty > 0 && (
               <motion.span
