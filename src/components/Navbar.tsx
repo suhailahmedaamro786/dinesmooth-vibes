@@ -30,14 +30,14 @@ export function Navbar() {
           : "bg-transparent"
       }`}
     >
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6">
-        <Link to="/" className="group flex items-center gap-2.5">
+      <div className="mx-auto flex min-w-0 max-w-7xl items-center justify-between gap-2 px-3 py-3 sm:px-6">
+        <Link to="/" className="group flex min-w-0 items-center gap-2 sm:gap-2.5">
           <span className="grid h-9 w-9 place-items-center rounded-xl bg-amber-brand text-primary-foreground font-black tracking-tight glow-amber">
             <Flame className="h-5 w-5" strokeWidth={2.5} />
           </span>
           <div className="leading-none">
-            <div className="text-sm font-black tracking-[0.18em] text-amber-brand">D-Pizza</div>
-            <div className="text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
+            <div className="truncate text-xs font-black tracking-[0.14em] text-amber-brand sm:text-sm sm:tracking-[0.18em]">D-Pizza</div>
+            <div className="hidden text-[10px] uppercase tracking-[0.22em] text-muted-foreground sm:block">
               D-Pizza Food
             </div>
           </div>
@@ -51,17 +51,17 @@ export function Navbar() {
           )}
         </nav>
 
-        <div className="flex items-center gap-2">
+        <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
           <ThemeToggle />
 
           <motion.button
             whileHover={{ scale: 1.04 }}
             whileTap={{ scale: 0.94 }}
             onClick={openCart}
-            className="relative inline-flex items-center gap-2 rounded-full bg-amber-brand px-4 py-2 text-sm font-semibold text-primary-foreground glow-amber"
+            className="relative inline-flex min-h-10 items-center justify-center gap-1.5 rounded-full bg-amber-brand px-3 py-2 text-xs font-bold text-primary-foreground glow-amber sm:gap-2 sm:px-4 sm:text-sm"
             aria-label="Open cart"
           >
-            <span className="hidden sm:inline">Cart</span>
+            <span>Cart</span>
             {qty > 0 && (
               <motion.span
                 key={qty}
