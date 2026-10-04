@@ -76,6 +76,24 @@ const GITHUB_REGULAR_IMAGE_BY_NAME: Record<string, string> = {
   "Zinger Tower": "/assets/menu-images/regular-items/Zinger%20Tower.jpg",
 };
 
+const GITHUB_MENU_IMAGE_BY_NAME: Record<string, string> = {
+  "Zinger Burger": "/assets/menu-images/regular-items/Zinger%20Burger.jpg",
+  "Zinger Cheez Burger": "/assets/menu-images/regular-items/Zinger%20Cheez%20Burger.jpg",
+  "Zinger Tower": "/assets/menu-images/regular-items/Zinger%20Tower.jpg",
+  "Mayo Roll": "/assets/menu-images/Rolls/Mayo%20Roll.jpg",
+  "Chatni Roll": "/assets/menu-images/Rolls/Chatni%20Roll.jpg",
+  "Sharma Roll": "/assets/menu-images/Rolls/Sharma%20Roll.jpg",
+  "Cheese Roll": "/assets/menu-images/Rolls/Cheese%20Roll.jpg",
+  "Zinger Jambo Roll": "/assets/menu-images/Rolls/Zinger%20Jambo%20Roll.jpg",
+  "Jambo Roll": "/assets/menu-images/Rolls/Jambo%20Roll.jpg",
+  "Afghani Roll": "/assets/menu-images/Rolls/Afghani%20Roll.jpg",
+  "D-Pizza Special": "/assets/menu-images/Pizzas/D-Pizza%20Special.jpg",
+  "Chicken Tikka Pizza": "/assets/menu-images/Pizzas/Chicken%20Tikka%20Pizza.jpg",
+  "Chicken Fajita Pizza": "/assets/menu-images/Pizzas/Chicken%20Fajita%20Pizza.jpg",
+  "Vegetable Pizza": "/assets/menu-images/Pizzas/Vegetable%20Pizza.jpg",
+  "Lava Pizza": "/assets/menu-images/Pizzas/Lava%20Pizza.jpg",
+};
+
 const LOCAL_IMAGE_BY_NAME: Record<string, string> = Object.fromEntries(
   [
     ...localBurgers,
@@ -92,12 +110,9 @@ const LOCAL_IMAGE_BY_NAME: Record<string, string> = Object.fromEntries(
 
 function withImage<T extends object>(value: T, image?: string): T & { image?: string } {
   const name = String((value as { name?: string }).name || "");
+  const githubImage = GITHUB_MENU_IMAGE_BY_NAME[name];
   const localImage = LOCAL_IMAGE_BY_NAME[name];
-  const useLocalMenuImage = ["Rolls", "Pizzas"].includes(String((value as { category?: string }).category || ""));
-  const resolvedImage =
-    GITHUB_REGULAR_IMAGE_BY_NAME[name] ||
-    (useLocalMenuImage ? localImage : image || localImage);
-  return resolvedImage ? { ...value, image: resolvedImage } : value;
+  return githubImage ? { ...value, image: githubImage } : image ? { ...value, image } : localImage ? { ...value, image: localImage } : value;
 }
 
 export function toSimpleItem(doc: SanityMenuDocument): SimpleItem | null {
