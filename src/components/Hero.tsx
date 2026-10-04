@@ -66,7 +66,7 @@ export function Hero() {
           transition={{ delay: 0.4, duration: 0.6 }}
           whileHover={{ scale: 1.015 }}
           whileTap={{ scale: 0.99 }}
-          className="mx-auto mt-12 flex max-w-3xl items-center gap-4 rounded-2xl border border-amber-brand/60 bg-gradient-to-r from-amber-brand/15 via-amber-brand/5 to-transparent p-4 backdrop-blur sm:p-5 glow-amber"
+          className="mx-auto mt-10 flex max-w-3xl flex-col items-start gap-3 rounded-2xl border border-amber-brand/60 bg-gradient-to-r from-amber-brand/15 via-amber-brand/5 to-transparent p-4 backdrop-blur sm:mt-12 sm:flex-row sm:items-center sm:gap-4 sm:p-5 glow-amber mobile-float"
         >
           <span className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-amber-brand text-primary-foreground">
             <Train className="h-6 w-6" strokeWidth={2.5} />
@@ -75,14 +75,14 @@ export function Hero() {
             <div className="text-[11px] font-bold uppercase tracking-[0.22em] text-amber-brand">
               Limited Service Special
             </div>
-            <div className="text-base font-semibold sm:text-lg">
+            <div className="text-sm font-semibold sm:text-lg">
               Special Train Pizza{" "}
               <span className="text-muted-foreground font-normal">(For Service)</span>
             </div>
           </div>
-          <div className="text-right">
+          <div className="w-full text-left sm:w-auto sm:text-right">
             <div className="text-[10px] uppercase tracking-widest text-muted-foreground">Only</div>
-            <div className="text-2xl font-black text-amber-brand">
+            <div className="text-xl font-black text-amber-brand sm:text-2xl">
               {formatRs(SPECIAL_TRAIN_PIZZA_PRICE)}
             </div>
           </div>
