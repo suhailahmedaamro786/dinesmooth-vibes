@@ -92,7 +92,11 @@ const LOCAL_IMAGE_BY_NAME: Record<string, string> = Object.fromEntries(
 
 function withImage<T extends object>(value: T, image?: string): T & { image?: string } {
   const name = String((value as { name?: string }).name || "");
-  const resolvedImage = GITHUB_REGULAR_IMAGE_BY_NAME[name] || image || LOCAL_IMAGE_BY_NAME[name];
+  const localImage = LOCAL_IMAGE_BY_NAME[name];
+  const useLocalMenuImage = ["Rolls", "Pizzas"].includes(String((value as { category?: string }).category || ""));
+  const resolvedImage =
+    GITHUB_REGULAR_IMAGE_BY_NAME[name] ||
+    (useLocalMenuImage ? localImage : image || localImage);
   return resolvedImage ? { ...value, image: resolvedImage } : value;
 }
 
