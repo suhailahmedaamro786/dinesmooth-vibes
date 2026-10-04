@@ -40,7 +40,15 @@ export function useSanityMenu(): SanityMenuState {
         pastaItems: byCategory("Pasta"),
         sandwiches: byCategory("Sandwiches"),
         pizzas: pizza,
-        deals: deal,
+        // Keep deal numbering clean and predictable for customers:
+        // first 20 are the core Deal 01–20; the next 21 are Special 01–21.
+        // Any remaining legacy/event offers are kept after those without
+        // changing their actual prices or cart IDs.
+        deals: deal.map((item, index) => {
+          if (index < 20) return { ...item, name: `Deal ${String(index + 1).padStart(2, "0")}` };
+          if (index < 41) return { ...item, name: `Special ${String(index - 19).padStart(2, "0")}` };
+          return { ...item, name: item.name };
+        }),
         loading: false, connected: true,
       });
     }).catch((error) => {
