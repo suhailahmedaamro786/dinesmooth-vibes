@@ -7,6 +7,7 @@ import { Footer } from "@/components/Footer";
 import { WhatsAppButton } from "@/components/WhatsAppButton";
 import { FindUs } from "@/components/FindUs";
 import { Reviews } from "@/components/Reviews";
+import { AboutDPizza } from "@/components/AboutDPizza";
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -64,6 +65,7 @@ function Index() {
       <Navbar />
       <main>
         <Hero />
+        <AboutDPizza />
         <MenuSection />
         <Reviews />
         <FindUs />
