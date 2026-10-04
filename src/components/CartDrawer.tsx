@@ -22,6 +22,7 @@ export function CartDrawer() {
   const [sent, setSent] = useState(false);
   const [form, setForm] = useState({ name: "", phone: "", address: "" });
   const [sending, setSending] = useState(false);
+  const [sending, setSending] = useState(false);
 
   const eta = useMemo(() => estimateDelivery(form.address), [form.address]);
 
@@ -68,6 +69,7 @@ export function CartDrawer() {
       return;
     }
 
+    setSending(true);
     setSending(true);
     const message = buildWhatsAppMessage();
     const url = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(message)}`;
