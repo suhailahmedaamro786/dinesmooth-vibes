@@ -1,4 +1,4 @@
-import { Flame, Instagram, Phone, MapPin } from "lucide-react";
+import { Flame, Instagram, Phone, MapPin, Facebook } from "lucide-react";
 
 export function Footer() {
   return (
@@ -32,6 +32,7 @@ export function Footer() {
             <li className="flex items-center gap-2"><MapPin className="h-4 w-4 text-amber-brand" /> Shahani Paro, Dādu</li>
             <li className="flex items-center gap-2"><Phone className="h-4 w-4 text-amber-brand" /> Order: +92 313 1342361</li>
             <li className="flex items-center gap-2"><Instagram className="h-4 w-4 text-amber-brand" /> @dpizzafood</li>
+            <li><a href="https://www.facebook.com/dpizzafood/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 transition hover:text-amber-brand"><Facebook className="h-4 w-4 text-amber-brand" /> Facebook: D-Pizza Food</a></li>
           </ul>
         </div>
       </div>
