@@ -17,12 +17,12 @@ export const Route = createFileRoute("/")({
       { name: "description", content: "D-Pizza Food — order zingers, broasts, hand-tossed pizzas, rolls and bundle deals online with live order tracking." },
       { property: "og:title", content: "D-Pizza Food — Dadu" },
       { property: "og:description", content: "Zingers, broasts, pizzas & exclusive bundle deals." },
-      { property: "og:url", content: "https://d-pizza-dadu.lovable.app/" },
+      { property: "og:url", content: "https://d-pizza.vercel.app/" },
       { property: "og:locale", content: "en_PK" },
     ],
     links: [
-      { rel: "canonical", href: "https://d-pizza-dadu.lovable.app/" },
-      { rel: "alternate", hrefLang: "en-PK", href: "https://d-pizza-dadu.lovable.app/" },
+      { rel: "canonical", href: "https://d-pizza.vercel.app/" },
+      { rel: "alternate", hrefLang: "en-PK", href: "https://d-pizza.vercel.app/" },
     ],
     scripts: [
       {
@@ -30,9 +30,9 @@ export const Route = createFileRoute("/")({
         children: JSON.stringify({
           "@context": "https://schema.org",
           "@type": "Restaurant",
-          "@id": "https://d-pizza-dadu.lovable.app/#restaurant",
+          "@id": "https://d-pizza.vercel.app/#restaurant",
           name: "D-Pizza Food",
-          url: "https://d-pizza-dadu.lovable.app/",
+          url: "https://d-pizza.vercel.app/",
           telephone: "+923131342361",
           servesCuisine: ["Pizza", "Fast Food", "BBQ", "Burgers", "Pakistani"],
           priceRange: "Rs",
@@ -51,7 +51,7 @@ export const Route = createFileRoute("/")({
             opens: "18:00",
             closes: "01:00"
           }],
-          menu: "https://d-pizza-dadu.lovable.app/#menu",
+          menu: "https://d-pizza.vercel.app/#menu",
           hasMap: "https://www.google.com/maps/search/?api=1&query=PQGH%2B54Q+D-Pizza+Food+Shahani+Paro+Rd+Dadu+Pakistan"
         }),
       },
