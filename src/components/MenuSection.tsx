@@ -12,7 +12,7 @@ import type { ReviewSummary } from "@/lib/reviews";
 import { ItemDetailDialog, type DetailItem } from "@/components/ItemDetailDialog";
 
 type Tab = Category;
-const TABS: Tab[] = ["Burgers", "Rolls", "Pizzas", "BBQ", "Broast", "Platters", "Pasta", "Sandwiches", "Deals"];
+const TABS: Tab[] = ["Burgers", "Rolls", "Pizzas", "BBQ", "Broast", "Pasta", "Sandwiches", "Deals"];
 
 type OpenDetail = (d: DetailItem) => void;
 
@@ -35,7 +35,7 @@ export function MenuSection() {
   const [tab, setTab] = useState<Tab>("Burgers");
   const { map: summaries } = useReviewSummaries();
   const menu = useSanityMenu();
-  const { burgers, rolls, broast, pizzas, deals, bbq, platters, pastaItems, sandwiches } = menu;
+  const { burgers, rolls, broast, pizzas, deals, bbq, pastaItems, sandwiches } = menu;
   const [detail, setDetail] = useState<DetailItem | null>(null);
   const openDetail: OpenDetail = (d) => setDetail(d);
 
@@ -70,7 +70,6 @@ export function MenuSection() {
           {tab === "Rolls" && <SimpleGrid items={rolls} summaries={summaries} openDetail={openDetail} />}
           {tab === "Broast" && <SimpleGrid items={broast} summaries={summaries} openDetail={openDetail} />}
           {tab === "BBQ" && <SimpleGrid items={bbq} summaries={summaries} openDetail={openDetail} />}
-          {tab === "Platters" && <SimpleGrid items={platters} summaries={summaries} openDetail={openDetail} />}
           {tab === "Pasta" && <SimpleGrid items={pastaItems} summaries={summaries} openDetail={openDetail} />}
           {tab === "Sandwiches" && <SimpleGrid items={sandwiches} summaries={summaries} openDetail={openDetail} />}
           {tab === "Pizzas" && <PizzaGrid items={pizzas} summaries={summaries} openDetail={openDetail} />}
