@@ -48,17 +48,7 @@ export function ItemDetailDialog({
             )}
           </div>
 
-          {summary && summary.review_count > 0 ? (
-            <div className="flex items-center gap-2">
-              <StarRating value={summary.avg_rating} size={14} />
-              <span className="text-sm font-bold tabular-nums">{summary.avg_rating.toFixed(1)}</span>
-              <span className="text-xs text-muted-foreground">({summary.review_count} reviews)</span>
-            </div>
-          ) : (
-            <div className="text-xs text-muted-foreground">No reviews yet — be the first after your order.</div>
-          )}
-
-          <DialogDescription className="text-sm leading-relaxed text-muted-foreground">
+          {summary && summary.review_count > 0 && (\n            <div className="flex items-center gap-2">\n              <StarRating value={summary.avg_rating} size={14} />\n              <span className="text-sm font-bold tabular-nums">{summary.avg_rating.toFixed(1)}</span>\n              <span className="text-xs text-muted-foreground">({summary.review_count} reviews)</span>\n            </div>\n          )}\n\n          <DialogDescription className="text-sm leading-relaxed text-muted-foreground">
             {description}
           </DialogDescription>
 
