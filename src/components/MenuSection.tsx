@@ -169,9 +169,9 @@ function DealsGrid({ items, summaries, openDetail }: { items: DealItem[]; summar
   const openCart = useCartStore((s) => s.openCart);
   const [section, setSection] = useState<"deals" | "specials" | "events">("deals");
 
-  const mainDeals = items.slice(0, 20);
-  const specials = items.slice(20, 41);
-  const events = items.slice(41);
+  const mainDeals = items.slice(0, 19);
+  const specials = items.slice(19, 40);
+  const events = items.slice(40);
   const visible = section === "deals" ? mainDeals : section === "specials" ? specials : events;
 
   if (!items.length) {
@@ -187,7 +187,7 @@ function DealsGrid({ items, summaries, openDetail }: { items: DealItem[]; summar
       <div className="mb-6 rounded-2xl border border-border bg-surface/50 p-1.5">
         <div className="grid grid-cols-3 gap-1">
           {[
-            ["deals", "🔥 Deals 01–20"],
+            ["deals", "🔥 Deals 01–19"],
             ["specials", "⭐ Specials 01–21"],
             ["events", "🎉 Events"],
           ].map(([value, label]) => (
