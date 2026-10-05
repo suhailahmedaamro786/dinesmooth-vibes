@@ -80,7 +80,7 @@ export function FindUs() {
               </div>
             </a>
             <InfoCard icon={<Clock className="h-5 w-5" />} title="Opening hours">
-              Mon — Sun · 11:00 AM — 1:00 AM
+              Mon — Sun · 6:00 PM — 1:00 AM
             </InfoCard>
           </motion.div>
         </div>
