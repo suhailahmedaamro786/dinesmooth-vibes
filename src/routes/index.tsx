@@ -48,7 +48,7 @@ export const Route = createFileRoute("/")({
           openingHoursSpecification: [{
             "@type": "OpeningHoursSpecification",
             dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
-            opens: "11:00",
+            opens: "18:00",
             closes: "01:00"
           }],
           menu: "https://d-pizza-dadu.lovable.app/#menu",
