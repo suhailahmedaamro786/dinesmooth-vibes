@@ -15,7 +15,7 @@ function mergeById<T extends { id: string }>(local: T[], remote: T[]) {
 
 export function useSanityMenu(): SanityMenuState {
   const [state, setState] = useState<SanityMenuState>({
-    burgers, rolls, broast, bbq, platters, pastaItems, sandwiches, pizzas, deals: deals.slice(0, 19),
+    burgers: [], rolls: [], broast: [], bbq: [], platters: [], pastaItems: [], sandwiches: [], pizzas: [], deals: [],
     loading: sanityConfigured, connected: false,
   });
 
@@ -33,14 +33,18 @@ export function useSanityMenu(): SanityMenuState {
       // Specials 01–21 and event deals remain hidden until intentionally re-enabled.
       // Deal 19 was removed as a duplicate, so exclude it explicitly.
       const deal = remoteDeals
-        .filter((item) => !/^Deal\s*0*19$/i.test(item.name))
-        .slice(0, 19)
+        .filter((item) => {
+          const number = Number(item.name.match(/Deal\\s*0*(\\d+)/i)?.[1] || 0);
+          return number >= 1 && number <= 18 && number !== 19;
+        })
+        .sort((a, b) => {
+          const an = Number(a.name.match(/Deal\\s*0*(\\d+)/i)?.[1] || 0);
+          const bn = Number(b.name.match(/Deal\\s*0*(\\d+)/i)?.[1] || 0);
+          return an - bn;
+        })
         .map((item) => {
-          const number = Number(item.name.match(/Deal\s*0*(\d+)/i)?.[1] || 0);
-          return {
-            ...item,
-            name: number > 0 ? `Deal ${String(number).padStart(2, "0")}` : item.name,
-          };
+          const number = Number(item.name.match(/Deal\\s*0*(\\d+)/i)?.[1] || 0);
+          return { ...item, name: `Deal ${String(number).padStart(2, "0")}` };
         });
 
       setState({
@@ -52,14 +56,7 @@ export function useSanityMenu(): SanityMenuState {
         pastaItems: byCategory("Pasta"),
         sandwiches: byCategory("Sandwiches"),
         pizzas: pizza,
-        deals: deal.filter((item) => /^Deal\s*0*(?:[1-9]|1[0-8])$/i.test(item.name)).sort((a, b) => {
-          const an = Number(a.name.match(/Deal\s*0*(\d+)/i)?.[1] || 0);
-          const bn = Number(b.name.match(/Deal\s*0*(\d+)/i)?.[1] || 0);
-          return an - bn;
-        }).map((item) => ({
-          ...item,
-          name: `Deal ${String(Number(item.name.match(/Deal\s*0*(\d+)/i)?.[1] || 0)).padStart(2, "0")}`,
-        })),
+        deals: deal,
         loading: false, connected: true,
       });
     }).catch((error) => {
