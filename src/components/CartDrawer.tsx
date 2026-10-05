@@ -7,6 +7,8 @@ import { toast } from "sonner";
 import { estimateDelivery, formatEstimate } from "@/lib/deliveryEstimate";
 
 const WA_NUMBER = "923131342361";
+const EASYPAISA_NUMBER = "0313 1342361";
+const EASYPAISA_TITLE = "Shahnawaz Shahnawaz";
 
 export function CartDrawer() {
   const isOpen = useCartStore((s) => s.isOpen);
@@ -22,6 +24,7 @@ export function CartDrawer() {
   const [sent, setSent] = useState(false);
   const [form, setForm] = useState({ name: "", phone: "", address: "" });
   const [sending, setSending] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState<"cod" | "easypaisa">("cod");
 
   const eta = useMemo(() => estimateDelivery(form.address), [form.address]);
 
@@ -31,6 +34,7 @@ export function CartDrawer() {
       setShowCheckout(false);
       setSent(false);
       setForm({ name: "", phone: "", address: "" });
+      setPaymentMethod("cod");
     }, 200);
   };
 
@@ -56,6 +60,12 @@ export function CartDrawer() {
       `*Full name:* ${form.name.trim()}`,
       `*Mobile:* ${form.phone.trim()}`,
       `*Delivery address:* ${form.address.trim()}`,
+      `*Payment method:* ${paymentMethod === "easypaisa" ? "Easypaisa (manual transfer)" : "Cash on Delivery"}`,
+      ...(paymentMethod === "easypaisa" ? [
+        `*Easypaisa number:* ${EASYPAISA_NUMBER}`,
+        `*Account title:* ${EASYPAISA_TITLE}`,
+        "*Payment status:* Customer will send payment and share transaction screenshot/ID on WhatsApp.",
+      ] : []),
       "",
       "Please confirm this order on WhatsApp. Thank you! 🙌",
     ].join("\n");
@@ -171,6 +181,36 @@ export function CartDrawer() {
                       <Field label="Full name" value={form.name} onChange={(v) => setForm({ ...form, name: v })} required placeholder="Your full name" />
                       <Field label="Mobile number" type="tel" inputMode="tel" value={form.phone} onChange={(v) => setForm({ ...form, phone: v })} required placeholder="03XX XXXXXXX" />
                       <Field label="Delivery address" value={form.address} onChange={(v) => setForm({ ...form, address: v })} required textarea placeholder="House #, street, area, Dadu" />
+
+                      <div className="space-y-2">
+                        <div className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Payment method</div>
+                        <div className="grid grid-cols-2 gap-2">
+                          <button
+                            type="button"
+                            onClick={() => setPaymentMethod("cod")}
+                            className={`rounded-xl border px-3 py-3 text-left text-sm font-semibold transition ${paymentMethod === "cod" ? "border-amber-brand bg-amber-brand/10 text-foreground" : "border-border bg-surface/60 text-muted-foreground"}`}
+                          >
+                            <div>Cash on Delivery</div>
+                            <div className="mt-0.5 text-[10px] font-normal opacity-80">Pay when delivered</div>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setPaymentMethod("easypaisa")}
+                            className={`rounded-xl border px-3 py-3 text-left text-sm font-semibold transition ${paymentMethod === "easypaisa" ? "border-amber-brand bg-amber-brand/10 text-foreground" : "border-border bg-surface/60 text-muted-foreground"}`}
+                          >
+                            <div>Easypaisa</div>
+                            <div className="mt-0.5 text-[10px] font-normal opacity-80">Online transfer</div>
+                          </button>
+                        </div>
+                        {paymentMethod === "easypaisa" && (
+                          <div className="rounded-xl border border-amber-brand/30 bg-amber-brand/5 p-3 text-xs leading-relaxed">
+                            <div className="font-bold text-amber-brand">Easypaisa payment</div>
+                            <div className="mt-1">Send <b>{formatRs(subtotal)}</b> to <b>{EASYPAISA_NUMBER}</b></div>
+                            <div>Account title: <b>{EASYPAISA_TITLE}</b></div>
+                            <div className="mt-1 text-muted-foreground">After payment, send the transaction screenshot/ID in WhatsApp with your order.</div>
+                          </div>
+                        )}
+                      </div>
 
                       {eta && form.address.trim().length >= 3 && (
                         <div className="flex items-center gap-3 rounded-xl border border-amber-brand/30 bg-amber-brand/5 px-3 py-2.5 text-xs">
