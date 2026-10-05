@@ -10,12 +10,13 @@ const reviews = [
     summary: "Praised the pizza for being fresh, delicious and served warm, and rated the overall experience positively.",
   },
   {
-    name: "Dr Murk Soomro",
-    summary: "Highlighted friendly service, a comfortable setup, fresh hot pizza and flavorful reshmi kebab.",
+    name: "Suhail Ahmed Aamro",
+    summary:
+      "Had a great experience with D-Pizza! 🍕 The food was delicious, fresh, and well-prepared. The service was also good and the overall experience was really satisfying. Highly recommended for anyone looking for tasty pizza and good quality food! ❤️🍕",
   },
   {
-    name: "Asma Aadil",
-    summary: "Described the food quality and service positively and mentioned the calm atmosphere.",
+    name: "Dr Murk Soomro",
+    summary: "Highlighted friendly service, a comfortable setup, fresh hot pizza and flavorful reshmi kebab.",
   },
 ];
 
@@ -37,16 +38,17 @@ export function Reviews() {
             What Dadu foodies are saying
           </h2>
           <div className="mt-4 flex items-center justify-center gap-2">
-            <span className="text-2xl font-black">4.4</span>
-            <span className="flex gap-0.5 text-amber-brand" aria-label="4.4 out of 5 stars">
+            <span className="text-2xl font-black">13</span>
+            <span className="text-sm font-semibold text-foreground">positive reviews</span>
+            <span className="flex gap-0.5 text-amber-brand" aria-label="5 out of 5 stars">
               {Array.from({ length: 5 }).map((_, i) => (
                 <Star key={i} className="h-4 w-4 fill-current" />
               ))}
             </span>
-            <span className="text-sm text-muted-foreground">Google · 7 reviews</span>
+            <span className="text-sm text-muted-foreground">Google</span>
           </div>
           <p className="mt-3 text-xs text-muted-foreground">
-            Review summary based on publicly listed Google feedback. Read the latest reviews before ordering.
+            Review highlights based on publicly listed Google feedback.
           </p>
         </motion.div>
 
