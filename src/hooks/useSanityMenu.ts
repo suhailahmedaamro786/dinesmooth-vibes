@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { fetchSanityMenu, sanityConfigured, toDealItem, toPizzaItem, toSimpleItem, type SanityMenuDocument } from "@/lib/sanityMenu";
-import { burgers, rolls, broast, pizzas, deals, bbq, platters, pastaItems, sandwiches, type DealItem, type PizzaItem, type SimpleItem } from "@/data/menu";
+import type { DealItem, PizzaItem, SimpleItem } from "@/data/menu";
 
 export type SanityMenuState = {
   burgers: SimpleItem[]; rolls: SimpleItem[]; broast: SimpleItem[]; bbq: SimpleItem[];
@@ -34,7 +34,7 @@ export function useSanityMenu(): SanityMenuState {
       // Deal 19 was removed as a duplicate, so exclude it explicitly.
       const deal = remoteDeals
         .filter((item) => {
-          const number = Number(item.name.match(/Deal\\s*0*(\\d+)/i)?.[1] || 0);
+          const number = Number(item.name.match(/Deal\s*0*(\d+)/i)?.[1] || 0);
           return number >= 1 && number <= 18 && number !== 19;
         })
         .sort((a, b) => {
@@ -51,7 +51,7 @@ export function useSanityMenu(): SanityMenuState {
         burgers: byCategory("Burgers"),
         rolls: byCategory("Rolls"),
         broast: byCategory("Broast"),
-        bbq: mergeById(bbq, byCategory("BBQ")),
+        bbq: byCategory("BBQ"),
         platters: [],
         pastaItems: byCategory("Pasta"),
         sandwiches: byCategory("Sandwiches"),
@@ -60,7 +60,7 @@ export function useSanityMenu(): SanityMenuState {
         loading: false, connected: true,
       });
     }).catch((error) => {
-      console.error("[Sanity] Falling back to local menu:", error);
+      console.error("[Sanity] Menu request failed:", error);
       if (!cancelled) setState((current) => ({ ...current, loading: false, connected: false }));
     });
     return () => { cancelled = true; };
