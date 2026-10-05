@@ -33,10 +33,10 @@ export function useSanityMenu(): SanityMenuState {
       // Specials 01–21 and event deals remain hidden until intentionally re-enabled.
       // Deal 19 was removed as a duplicate, so exclude it explicitly.
       const deal = remoteDeals
-        .filter((item) => !/^Deal\\s*0*19$/i.test(item.name))
+        .filter((item) => !/^Deal\s*0*19$/i.test(item.name))
         .slice(0, 19)
         .map((item) => {
-          const number = Number(item.name.match(/Deal\\s*0*(\\d+)/i)?.[1] || 0);
+          const number = Number(item.name.match(/Deal\s*0*(\d+)/i)?.[1] || 0);
           return {
             ...item,
             name: number > 0 ? `Deal ${String(number).padStart(2, "0")}` : item.name,
@@ -48,15 +48,18 @@ export function useSanityMenu(): SanityMenuState {
         rolls: byCategory("Rolls"),
         broast: byCategory("Broast"),
         bbq: mergeById(bbq, byCategory("BBQ")),
-        platters: mergeById(platters, byCategory("Platters")),
+        platters: [],
         pastaItems: byCategory("Pasta"),
         sandwiches: byCategory("Sandwiches"),
         pizzas: pizza,
-        deals: deal.map((item, index) => {
-          if (index < 19) return { ...item, name: "Deal " + String(index + 1).padStart(2, "0") };
-          if (index < 40) return { ...item, name: "Special " + String(index - 18).padStart(2, "0") };
-          return { ...item, name: item.name };
-        }),
+        deals: deal.filter((item) => /^Deal\s*0*(?:[1-9]|1[0-8])$/i.test(item.name)).sort((a, b) => {
+          const an = Number(a.name.match(/Deal\s*0*(\d+)/i)?.[1] || 0);
+          const bn = Number(b.name.match(/Deal\s*0*(\d+)/i)?.[1] || 0);
+          return an - bn;
+        }).map((item) => ({
+          ...item,
+          name: `Deal ${String(Number(item.name.match(/Deal\s*0*(\d+)/i)?.[1] || 0)).padStart(2, "0")}`,
+        })),
         loading: false, connected: true,
       });
     }).catch((error) => {
