@@ -35,15 +35,15 @@ export function useSanityMenu(): SanityMenuState {
       const deal = remoteDeals
         .filter((item) => {
           const number = Number(item.name.match(/Deal\s*0*(\d+)/i)?.[1] || 0);
-          return number >= 1 && number <= 18 && number !== 19;
+          return number >= 1 && number <= 19;
         })
         .sort((a, b) => {
-          const an = Number(a.name.match(/Deal\\s*0*(\\d+)/i)?.[1] || 0);
-          const bn = Number(b.name.match(/Deal\\s*0*(\\d+)/i)?.[1] || 0);
+          const an = Number(a.name.match(/Deal\s*0*(\d+)/i)?.[1] || 0);
+          const bn = Number(b.name.match(/Deal\s*0*(\d+)/i)?.[1] || 0);
           return an - bn;
         })
         .map((item) => {
-          const number = Number(item.name.match(/Deal\\s*0*(\\d+)/i)?.[1] || 0);
+          const number = Number(item.name.match(/Deal\s*0*(\d+)/i)?.[1] || 0);
           return { ...item, name: `Deal ${String(number).padStart(2, "0")}` };
         });
 
