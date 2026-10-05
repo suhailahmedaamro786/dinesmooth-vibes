@@ -29,9 +29,13 @@ export function useSanityMenu(): SanityMenuState {
       const remoteDeals = docs.map(toDealItem).filter(Boolean) as DealItem[];
       const byCategory = (category: SimpleItem["category"]) => simple.filter((item) => item.category === category);
 
-      // Restore the original bundled/local artwork for core Deal 01–20.
+      // Deal 19 was a duplicate and has been removed.
+      // Keep the original core-deal artwork, but shift old Deal 20 into Deal 19.
       const deal = remoteDeals.map((item, index) => {
-        if (index < deals.length) return { ...item, image: deals[index].image };
+        if (index < 19) {
+          const localIndex = index === 18 ? 19 : index;
+          return { ...item, image: deals[localIndex]?.image };
+        }
         return item;
       });
 
@@ -45,8 +49,8 @@ export function useSanityMenu(): SanityMenuState {
         sandwiches: byCategory("Sandwiches"),
         pizzas: pizza,
         deals: deal.map((item, index) => {
-          if (index < 20) return { ...item, name: "Deal " + String(index + 1).padStart(2, "0") };
-          if (index < 41) return { ...item, name: "Special " + String(index - 19).padStart(2, "0") };
+          if (index < 19) return { ...item, name: "Deal " + String(index + 1).padStart(2, "0") };
+          if (index < 40) return { ...item, name: "Special " + String(index - 18).padStart(2, "0") };
           return { ...item, name: item.name };
         }),
         loading: false, connected: true,
