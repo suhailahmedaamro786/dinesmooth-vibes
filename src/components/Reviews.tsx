@@ -37,16 +37,16 @@ export function Reviews() {
             What Dadu foodies are saying
           </h2>
           <div className="mt-4 flex items-center justify-center gap-2">
-            <span className="text-2xl font-black">4.4</span>
-            <span className="flex gap-0.5 text-amber-brand" aria-label="4.4 out of 5 stars">
+            <span className="text-2xl font-black">Google</span>
+            <span className="flex gap-0.5 text-amber-brand" aria-hidden="true">
               {Array.from({ length: 5 }).map((_, i) => (
                 <Star key={i} className="h-4 w-4 fill-current" />
               ))}
             </span>
-            <span className="text-sm text-muted-foreground">Google · 7 reviews</span>
+            <span className="text-sm text-muted-foreground">See the latest reviews</span>
           </div>
           <p className="mt-3 text-xs text-muted-foreground">
-            Review summary based on publicly listed Google feedback. Read the latest reviews before ordering.
+            Review highlights from customer feedback. See Google for the current rating and latest reviews.
           </p>
         </motion.div>
 
