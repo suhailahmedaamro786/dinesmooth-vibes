@@ -15,7 +15,7 @@ function mergeById<T extends { id: string }>(local: T[], remote: T[]) {
 
 export function useSanityMenu(): SanityMenuState {
   const [state, setState] = useState<SanityMenuState>({
-    burgers, rolls, broast, bbq, platters, pastaItems, sandwiches, pizzas, deals,
+    burgers, rolls, broast, bbq, platters, pastaItems, sandwiches, pizzas, deals: deals.slice(0, 19),
     loading: sanityConfigured, connected: false,
   });
 
@@ -29,14 +29,15 @@ export function useSanityMenu(): SanityMenuState {
       const remoteDeals = docs.map(toDealItem).filter(Boolean) as DealItem[];
       const byCategory = (category: SimpleItem["category"]) => simple.filter((item) => item.category === category);
 
-      // Deal 19 was a duplicate and has been removed.
-      // Keep the original core-deal artwork, but shift old Deal 20 into Deal 19.
-      const deal = remoteDeals.map((item, index) => {
-        if (index < 19) {
-          const localIndex = index === 18 ? 19 : index;
-          return { ...item, image: deals[localIndex]?.image };
-        }
-        return item;
+      // Customer website currently shows only the core Deals.
+      // Specials 01–21 and event deals remain hidden until intentionally re-enabled.
+      const coreDeals = remoteDeals.slice(0, 19);
+
+      // Deal 19 was a duplicate and has been removed from Sanity.
+      // Keep the original bundled artwork for the core deals for now.
+      const deal = coreDeals.map((item, index) => {
+        const localIndex = index === 18 ? 19 : index;
+        return { ...item, image: deals[localIndex]?.image };
       });
 
       setState({
