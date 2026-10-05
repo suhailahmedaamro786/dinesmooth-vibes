@@ -175,6 +175,12 @@ export function toPizzaItem(doc: SanityMenuDocument): PizzaItem | null {
 export function toDealItem(doc: SanityMenuDocument): DealItem | null {
   if (doc.category !== "Deals" || typeof doc.price !== "number") return null;
 
+  const dealNumber = Number(doc.name.match(/Deal\\s*0*(\\d+)/i)?.[1] || 0);
+  const githubDealImage =
+    dealNumber >= 1 && dealNumber <= GITHUB_DEAL_IMAGES.length && dealNumber !== 19
+      ? GITHUB_DEAL_IMAGES[dealNumber - 1]
+      : undefined;
+
   return withImage(
     {
       id: doc.slug || doc._id,
@@ -184,6 +190,6 @@ export function toDealItem(doc: SanityMenuDocument): DealItem | null {
       description: doc.description || "",
       highlight: doc.highlight,
     },
-    doc.image,
+    githubDealImage || doc.image,
   );
 }
