@@ -70,16 +70,11 @@ const VERIFIED_PIZZA_PRICES: Record<string, { S: number; M: number; L: number; X
   "Lava Pizza": { S: 600, M: 1000, L: 1600, XL: 2000 },
 };
 
-const GITHUB_REGULAR_IMAGE_BY_NAME: Record<string, string> = {
-  "Zinger Burger": "/assets/menu-images/regular-items/Zinger%20Burger.jpg",
-  "Zinger Cheez Burger": "/assets/menu-images/regular-items/Zinger%20Cheez%20Burger.jpg",
-  "Zinger Tower": "/assets/menu-images/regular-items/Zinger%20Tower.jpg",
-};
-
 const GITHUB_MENU_IMAGE_BY_NAME: Record<string, string> = {
   "Zinger Burger": "/assets/menu-images/regular-items/Zinger%20Burger.jpg",
   "Zinger Cheez Burger": "/assets/menu-images/regular-items/Zinger%20Cheez%20Burger.jpg",
   "Zinger Tower": "/assets/menu-images/regular-items/Zinger%20Tower.jpg",
+
   "Mayo Roll": "/assets/menu-images/Rolls/Mayo%20Roll.jpg",
   "Chatni Roll": "/assets/menu-images/Rolls/Chatni%20Roll.jpg",
   "Sharma Roll": "/assets/menu-images/Rolls/Sharma%20Roll.jpg",
@@ -87,25 +82,38 @@ const GITHUB_MENU_IMAGE_BY_NAME: Record<string, string> = {
   "Zinger Jambo Roll": "/assets/menu-images/Rolls/Zinger%20Jambo%20Roll.jpg",
   "Jambo Roll": "/assets/menu-images/Rolls/Jambo%20Roll.jpg",
   "Afghani Roll": "/assets/menu-images/Rolls/Afghani%20Roll.jpg",
+
   "D-Pizza Special": "/assets/menu-images/Pizzas/D-Pizza%20Special.jpg",
   "Chicken Tikka Pizza": "/assets/menu-images/Pizzas/Chicken%20Tikka%20Pizza.jpg",
   "Chicken Fajita Pizza": "/assets/menu-images/Pizzas/Chicken%20Fajita%20Pizza.jpg",
   "Vegetable Pizza": "/assets/menu-images/Pizzas/Vegetable%20Pizza.jpg",
   "Lava Pizza": "/assets/menu-images/Pizzas/Lava%20Pizza.jpg",
+
+  "Chicken Tikka": "/assets/menu-images/BBQ/Chicken%20Tikka.jpg",
+  "Chicken Malai Tikka": "/assets/menu-images/BBQ/Chicken%20Malai%20Tikka.jpg",
+  "Chicken Leg Tikka": "/assets/menu-images/BBQ/Chicken%20Leg%20Tikka.jpg",
+  "Chicken Leg Malai Tikka": "/assets/menu-images/BBQ/Chicken%20Leg%20Malai%20Tikka.jpg",
+  "Chicken Malai Boti": "/assets/menu-images/BBQ/Chicken%20Malai%20Boti.jpg",
+  "Chicken Red Boti": "/assets/menu-images/BBQ/Chicken%20Red%20Boti.jpg",
+  "Reshmi Kabab": "/assets/menu-images/BBQ/Reshmi%20Kabab.jpg",
+  "Chicken Hot Wings": "/assets/menu-images/BBQ/Chicken%20Hot%20Wings.jpg",
+
+  "Cheese Broast": "/assets/menu-images/Broast/Cheese%20Broast.jpg",
+  "Chicken Broast": "/assets/menu-images/Broast/Chicken%20Broast.jpg",
+  "Fries": "/assets/menu-images/Broast/Fries.jpg",
+  "Strem Broast": "/assets/menu-images/Broast/Strem%20Broast.jpg",
+
+  "Pasta — Half": "/assets/menu-images/Pasta/Pasta%20Half.jpg",
+  "Pasta — Full": "/assets/menu-images/Pasta/Pasta%20Full.jpg",
+  "Pasta Half": "/assets/menu-images/Pasta/Pasta%20Half.jpg",
+  "Pasta Full": "/assets/menu-images/Pasta/Pasta%20Full.jpg",
+
+  "Sandwich": "/assets/menu-images/Sandwiches/Sandwich.jpg",
+  "Club Sandwich": "/assets/menu-images/Sandwiches/Club%20Sandwich.jpg",
 };
 
-const LOCAL_IMAGE_BY_NAME: Record<string, string> = Object.fromEntries(
-  [
-    ...localBurgers,
-    ...localRolls,
-    ...localPizzas,
-    ...localBroast,
-    ...localBbq,
-    ...localPlatters,
-    ...localPasta,
-    ...localSandwiches,
-    ...localDeals,
-  ].map((item) => [item.name, item.image]),
+const GITHUB_DEAL_IMAGES = Array.from({ length: 19 }, (_, index) =>
+  `/assets/menu-images/deals/main-deals/Deal%20${String(index + 1).padStart(2, "0")}.jpg`,
 );
 
 function withImage<T extends object>(value: T, image?: string): T & { image?: string } {
