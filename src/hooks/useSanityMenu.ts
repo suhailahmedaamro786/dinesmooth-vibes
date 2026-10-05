@@ -31,14 +31,17 @@ export function useSanityMenu(): SanityMenuState {
 
       // Customer website currently shows only the core Deals.
       // Specials 01–21 and event deals remain hidden until intentionally re-enabled.
-      const coreDeals = remoteDeals.slice(0, 19);
-
-      // Deal 19 was a duplicate and has been removed from Sanity.
-      // Keep the original bundled artwork for the core deals for now.
-      const deal = coreDeals.map((item, index) => {
-        const localIndex = index === 18 ? 19 : index;
-        return { ...item, image: deals[localIndex]?.image };
-      });
+      // Deal 19 was removed as a duplicate, so exclude it explicitly.
+      const deal = remoteDeals
+        .filter((item) => !/^Deal\\s*0*19$/i.test(item.name))
+        .slice(0, 19)
+        .map((item) => {
+          const number = Number(item.name.match(/Deal\\s*0*(\\d+)/i)?.[1] || 0);
+          return {
+            ...item,
+            name: number > 0 ? `Deal ${String(number).padStart(2, "0")}` : item.name,
+          };
+        });
 
       setState({
         burgers: byCategory("Burgers"),
