@@ -9,7 +9,6 @@ import zingerRoll from "@/assets/menu/zinger-roll.jpg";
 
 import broastQtr from "@/assets/menu/broast-qtr.jpg";
 import broastHalf from "@/assets/menu/broast-half.jpg";
-import hotWings6 from "@/assets/menu/hot-wings-6.jpg";
 
 import pizzaDfc from "@/assets/menu/pizza-dfc.jpg";
 import pizzaTikka from "@/assets/menu/pizza-tikka.jpg";
@@ -20,6 +19,19 @@ import lavaPizza from "@/assets/menu/lava-pizza.jpg";
 import bbqTikka from "@/assets/menu/bbq-tikka.jpg";
 import bbqPlatter from "@/assets/menu/bbq-platter.jpg";
 import malaiBoti from "@/assets/menu/malai-boti.jpg";
+
+const bbqImage = (file: string) => `/assets/menu-images/BBQ/${file}`;
+
+export const BBQ_IMAGE_BY_NAME: Record<string, string> = {
+  "Chicken Tikka": bbqImage("Chicken Tikka.jpg"),
+  "Chicken Malai Tikka": bbqImage("Chicken Malai Tikka.jpg"),
+  "Chicken Leg Tikka": bbqImage("Chicken Leg Tikka.jpg"),
+  "Chicken Leg Malai Tikka": bbqImage("Chicken Leg Malai Tikka.jpg"),
+  "Chicken Malai Boti": bbqImage("Chicken Malai Boti.jpg"),
+  "Chicken Red Boti": bbqImage("Chicken Red Boti.jpg"),
+  "Reshmi Kabab": bbqImage("Reshmi Kabab.jpg"),
+  "Chicken Hot Wings": bbqImage("Chicken Hot Wings.jpg"),
+};
 import pasta from "@/assets/menu/pasta.jpg";
 import fries from "@/assets/menu/fries.jpg";
 
@@ -87,14 +99,14 @@ export const rolls: SimpleItem[] = [
 ];
 
 export const bbq: SimpleItem[] = [
-  { id: "q1", name: "Chicken Tikka", price: 400, category: "BBQ", image: bbqTikka, description: "Smoky char-grilled tikka, lemon & onion." },
-  { id: "q2", name: "Chicken Malai Tikka", price: 400, category: "BBQ", image: malaiBoti, description: "Creamy malai marinade, melt-in-mouth." },
-  { id: "q3", name: "Chicken Leg Tikka", price: 350, category: "BBQ", image: bbqTikka, description: "Juicy leg piece, fire-grilled." },
-  { id: "q4", name: "Chicken Leg Malai Tikka", price: 350, category: "BBQ", image: malaiBoti, description: "Malai-marinated leg, smoky finish." },
-  { id: "q5", name: "Chicken Malai Boti", price: 250, category: "BBQ", image: malaiBoti, description: "Soft creamy boti cubes." },
-  { id: "q6", name: "Chicken Red Boti", price: 250, category: "BBQ", image: bbqTikka, description: "Spicy red masala boti." },
-  { id: "q7", name: "Reshmi Kabab", price: 200, category: "BBQ", image: bbqPlatter, description: "Silky minced-chicken kabab skewers." },
-  { id: "q8", name: "Chicken Hot Wings", price: 200, category: "BBQ", image: hotWings6, description: "Fiery grilled hot wings." },
+  { id: "q1", name: "Chicken Tikka", price: 400, category: "BBQ", image: BBQ_IMAGE_BY_NAME["Chicken Tikka"], description: "Smoky char-grilled tikka, lemon & onion." },
+  { id: "q2", name: "Chicken Malai Tikka", price: 400, category: "BBQ", image: BBQ_IMAGE_BY_NAME["Chicken Malai Tikka"], description: "Creamy malai marinade, melt-in-mouth." },
+  { id: "q3", name: "Chicken Leg Tikka", price: 350, category: "BBQ", image: BBQ_IMAGE_BY_NAME["Chicken Leg Tikka"], description: "Juicy leg piece, fire-grilled." },
+  { id: "q4", name: "Chicken Leg Malai Tikka", price: 350, category: "BBQ", image: BBQ_IMAGE_BY_NAME["Chicken Leg Malai Tikka"], description: "Malai-marinated leg, smoky finish." },
+  { id: "q5", name: "Chicken Malai Boti", price: 250, category: "BBQ", image: BBQ_IMAGE_BY_NAME["Chicken Malai Boti"], description: "Soft creamy boti cubes." },
+  { id: "q6", name: "Chicken Red Boti", price: 250, category: "BBQ", image: BBQ_IMAGE_BY_NAME["Chicken Red Boti"], description: "Spicy red masala boti." },
+  { id: "q7", name: "Reshmi Kabab", price: 200, category: "BBQ", image: BBQ_IMAGE_BY_NAME["Reshmi Kabab"], description: "Silky minced-chicken kabab skewers." },
+  { id: "q8", name: "Chicken Hot Wings", price: 200, category: "BBQ", image: BBQ_IMAGE_BY_NAME["Chicken Hot Wings"], description: "Fiery grilled hot wings." },
 ];
 
 export const platters: SimpleItem[] = [
