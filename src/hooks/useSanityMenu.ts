@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { fetchSanityMenu, sanityConfigured, toDealItem, toPizzaItem, toSimpleItem, type SanityMenuDocument } from "@/lib/sanityMenu";
 import type { DealItem, PizzaItem, SimpleItem } from "@/data/menu";
+import { bbq as localBBQ, BBQ_IMAGE_BY_NAME } from "@/data/menu";
 
 export type SanityMenuState = {
   burgers: SimpleItem[]; rolls: SimpleItem[]; broast: SimpleItem[]; bbq: SimpleItem[];
@@ -32,6 +33,11 @@ export function useSanityMenu(): SanityMenuState {
       // Customer website currently shows only the core Deals.
       // Specials 01–21 and event deals remain hidden until intentionally re-enabled.
       // Deal 19 was removed as a duplicate, so exclude it explicitly.
+      const remoteBbq = byCategory("BBQ").map((item) => ({
+        ...item,
+        image: BBQ_IMAGE_BY_NAME[item.name] ?? item.image,
+      }));
+
       const deal = remoteDeals
         .filter((item) => {
           const number = Number(item.name.match(/Deal\s*0*(\d+)/i)?.[1] || 0);
@@ -51,7 +57,7 @@ export function useSanityMenu(): SanityMenuState {
         burgers: byCategory("Burgers"),
         rolls: byCategory("Rolls"),
         broast: byCategory("Broast"),
-        bbq: byCategory("BBQ"),
+        bbq: mergeById(localBBQ, remoteBbq),
         platters: [],
         pastaItems: byCategory("Pasta"),
         sandwiches: byCategory("Sandwiches"),
