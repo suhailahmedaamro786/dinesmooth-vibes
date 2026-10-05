@@ -17,9 +17,7 @@ const TABS: Tab[] = ["Burgers", "Rolls", "Pizzas", "BBQ", "Broast", "Pasta", "Sa
 type OpenDetail = (d: DetailItem) => void;
 
 function RatingBadge({ summary }: { summary?: ReviewSummary }) {
-  if (!summary || summary.review_count === 0) {
-    return <span className="text-[11px] text-muted-foreground">No reviews yet</span>;
-  }
+  if (!summary || summary.review_count === 0) return null;
   return (
     <div className="flex items-center gap-1.5">
       <StarRating value={summary.avg_rating} size={12} />
