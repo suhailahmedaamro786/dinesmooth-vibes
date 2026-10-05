@@ -55,7 +55,7 @@ export function ItemDetailDialog({
               <span className="text-xs text-muted-foreground">({summary.review_count} reviews)</span>
             </div>
           )}
-\n          <DialogDescription className="text-sm leading-relaxed text-muted-foreground">
+          <DialogDescription className="text-sm leading-relaxed text-muted-foreground">
             {description}
           </DialogDescription>
 
