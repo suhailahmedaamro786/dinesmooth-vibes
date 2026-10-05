@@ -71,9 +71,9 @@ const VERIFIED_PIZZA_PRICES: Record<string, { S: number; M: number; L: number; X
 };
 
 const GITHUB_MENU_IMAGE_BY_NAME: Record<string, string> = {
-  "Zinger Burger": "/assets/menu-images/regular-items/Zinger%20Burger.jpg",
-  "Zinger Cheez Burger": "/assets/menu-images/regular-items/Zinger%20Cheez%20Burger.jpg",
-  "Zinger Tower": "/assets/menu-images/regular-items/Zinger%20Tower.jpg",
+  "Zinger Burger": "/assets/menu-images/Burgers/Zinger%20Burger.jpg",
+  "Zinger Cheez Burger": "/assets/menu-images/Burgers/Zinger%20Cheez%20Burger.jpg",
+  "Zinger Tower": "/assets/menu-images/Burgers/Zinger%20Tower.jpg",
 
   "Mayo Roll": "/assets/menu-images/Rolls/Mayo%20Roll.jpg",
   "Chatni Roll": "/assets/menu-images/Rolls/Chatni%20Roll.jpg",
@@ -175,7 +175,7 @@ export function toPizzaItem(doc: SanityMenuDocument): PizzaItem | null {
 export function toDealItem(doc: SanityMenuDocument): DealItem | null {
   if (doc.category !== "Deals" || typeof doc.price !== "number") return null;
 
-  const dealNumber = Number(doc.name.match(/Deal\\s*0*(\\d+)/i)?.[1] || 0);
+  const dealNumber = Number(doc.name.match(/Deal\s*0*(\d+)/i)?.[1] || 0);
   const githubDealImage =
     dealNumber >= 1 && dealNumber <= GITHUB_DEAL_IMAGES.length && dealNumber !== 19
       ? GITHUB_DEAL_IMAGES[dealNumber - 1]
