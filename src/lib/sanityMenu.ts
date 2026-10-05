@@ -1,4 +1,3 @@
-import { burgers as localBurgers, rolls as localRolls, pizzas as localPizzas, broast as localBroast, bbq as localBbq, platters as localPlatters, pastaItems as localPasta, sandwiches as localSandwiches, deals as localDeals } from "@/data/menu";
 import type { DealItem, PizzaItem, SimpleItem } from "@/data/menu";
 
 export const SANITY_CATEGORIES = [
@@ -34,9 +33,7 @@ const API_VERSION = import.meta.env.VITE_SANITY_API_VERSION || "2026-09-03";
 
 export const sanityConfigured = Boolean(PROJECT_ID && DATASET);
 
-// Sanity is the only source of menu images.
-// No local/legacy image fallback is allowed, so old images can never
-// reappear on the customer website after the CMS cleanup.
+// GitHub is the source of truth for the customer-facing menu images.
 const QUERY =
   '*[_type == "menuItem" && isAvailable != false && name != "Pizza Burger"] | order(category asc, sortOrder asc, name asc) { _id, name, "slug": slug.current, category, description, price, prices, "image": image.asset->url, highlight, sortOrder }';
 
@@ -119,8 +116,7 @@ const GITHUB_DEAL_IMAGES = Array.from({ length: 19 }, (_, index) =>
 function withImage<T extends object>(value: T, image?: string): T & { image?: string } {
   const name = String((value as { name?: string }).name || "");
   const githubImage = GITHUB_MENU_IMAGE_BY_NAME[name];
-  const localImage = LOCAL_IMAGE_BY_NAME[name];
-  return githubImage ? { ...value, image: githubImage } : image ? { ...value, image } : localImage ? { ...value, image: localImage } : value;
+  return githubImage ? { ...value, image: githubImage } : image ? { ...value, image } : value;
 }
 
 export function toSimpleItem(doc: SanityMenuDocument): SimpleItem | null {
