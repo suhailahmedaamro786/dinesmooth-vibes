@@ -167,12 +167,7 @@ function sizeLabel(s: PizzaSize) {
 function DealsGrid({ items, summaries, openDetail }: { items: DealItem[]; summaries: Map<string, ReviewSummary>; openDetail: OpenDetail }) {
   const addLine = useCartStore((s) => s.addLine);
   const openCart = useCartStore((s) => s.openCart);
-  const [section, setSection] = useState<"deals" | "specials" | "events">("deals");
-
   const mainDeals = items.slice(0, 19);
-  const specials = items.slice(19, 40);
-  const events = items.slice(40);
-  const visible = section === "deals" ? mainDeals : section === "specials" ? specials : events;
 
   if (!items.length) {
     return (
@@ -184,27 +179,10 @@ function DealsGrid({ items, summaries, openDetail }: { items: DealItem[]; summar
 
   return (
     <div>
-      <div className="mb-6 rounded-2xl border border-border bg-surface/50 p-1.5">
-        <div className="grid grid-cols-3 gap-1">
-          {[
-            ["deals", "🔥 Deals 01–19"],
-            ["specials", "⭐ Specials 01–21"],
-            ["events", "🎉 Events"],
-          ].map(([value, label]) => (
-            <button
-              key={value}
-              type="button"
-              onClick={() => setSection(value as "deals" | "specials" | "events")}
-              className={`rounded-xl px-2 py-3 text-[11px] font-bold transition-colors sm:px-4 sm:text-sm ${section === value ? "bg-amber-brand text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
-      </div>
+      <div className="mb-6 text-sm font-semibold text-muted-foreground">🔥 Core Deals</div>
 
       <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
-        {visible.map((d, idx) => (
+        {mainDeals.map((d, idx) => (
           <motion.article
             key={d.id}
             layout
