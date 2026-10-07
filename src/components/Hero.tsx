@@ -10,7 +10,7 @@ export function Hero() {
   )}`;
 
   return (
-    <section className="relative isolate overflow-hidden pb-16 pt-32 sm:pb-24 sm:pt-40">
+    <section className="relative isolate overflow-hidden pb-16 pt-24 sm:pb-24 sm:pt-32">
       <motion.img
         src={heroSpread}
         alt=""
