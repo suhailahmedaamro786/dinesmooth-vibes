@@ -38,20 +38,15 @@ export function useSanityMenu(): SanityMenuState {
         image: BBQ_IMAGE_BY_NAME[item.name] ?? item.image,
       }));
 
-      const deal = remoteDeals
-        .filter((item) => {
-          const number = Number(item.name.match(/Deal\s*0*(\d+)/i)?.[1] || 0);
-          return number >= 1 && number <= 19;
-        })
-        .sort((a, b) => {
-          const an = Number(a.name.match(/Deal\s*0*(\d+)/i)?.[1] || 0);
-          const bn = Number(b.name.match(/Deal\s*0*(\d+)/i)?.[1] || 0);
-          return an - bn;
-        })
-        .map((item) => {
-          const number = Number(item.name.match(/Deal\s*0*(\d+)/i)?.[1] || 0);
-          return { ...item, name: `Deal ${String(number).padStart(2, "0")}` };
-        });
+      // Always render the verified customer-facing Deal 1–19 set.
+      // Sanity can update matching items, while local data guarantees all 19 remain visible.
+      const remoteById = new Map(remoteDeals.map((item) => [item.id, item]));
+      const deal = deals.slice(0, 19).map((local) => {
+        const remote = remoteById.get(local.id);
+        return remote
+          ? { ...local, ...remote, name: local.name }
+          : local;
+      });
 
       setState({
         burgers: byCategory("Burgers"),
