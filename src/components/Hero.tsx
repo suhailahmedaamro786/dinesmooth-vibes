@@ -10,7 +10,7 @@ export function Hero() {
   )}`;
 
   return (
-    <section className="relative isolate overflow-hidden pb-16 pt-24 sm:pb-24 sm:pt-32">
+    <section className="relative isolate overflow-hidden pb-12 pt-20 sm:pb-20 sm:pt-28 lg:pb-24 lg:pt-32">
       <motion.img
         src={heroSpread}
         alt=""
@@ -34,10 +34,10 @@ export function Hero() {
         initial={{ opacity: 0, scale: 0.92 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 1.5, ease: [0.22, 1, 0.36, 1] }}
-        className="absolute -top-32 left-1/2 -z-10 h-[480px] w-[820px] -translate-x-1/2 rounded-full bg-amber-brand/15 blur-3xl"
+        className="absolute -top-20 left-1/2 -z-10 h-[360px] w-[92vw] max-w-[820px] sm:-top-32 sm:h-[480px] sm:w-[820px] -translate-x-1/2 rounded-full bg-amber-brand/15 blur-3xl"
       />
 
-      <div className="mx-auto max-w-7xl px-4 sm:px-6">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ y: 24, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
@@ -58,7 +58,7 @@ export function Hero() {
             initial={{ opacity: 0, y: 18, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{ delay: 0.12, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-            className="mt-6 text-balance text-5xl font-black leading-[0.9] tracking-[-0.04em] sm:text-7xl md:text-8xl"
+            className="mt-5 text-balance text-[clamp(3rem,15vw,5rem)] font-black leading-[0.9] tracking-[-0.04em] sm:text-7xl md:text-8xl lg:text-8xl"
           >
             <motion.span
               className="block text-foreground"
