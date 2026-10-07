@@ -49,7 +49,8 @@ export function Hero() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{ delay: 0.05, duration: 0.55 }}
             whileHover={{ y: -1, scale: 1.02 }}
-            className="inline-flex items-center gap-2 rounded-full border border-border bg-surface/70 px-3 py-1.5 text-[10px] uppercase tracking-[0.2em] text-muted-foreground backdrop-blur sm:text-[11px]">
+            className="inline-flex items-center gap-2 rounded-full border border-border bg-surface/70 px-3 py-1.5 text-[10px] uppercase tracking-[0.2em] text-muted-foreground backdrop-blur sm:text-[11px]"
+          >
             <Sparkles className="h-3.5 w-3.5 text-amber-brand" />
             Freshly fired · Charcoal BBQ · Served hot
           </motion.span>
@@ -60,28 +61,13 @@ export function Hero() {
             transition={{ delay: 0.12, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
             className="mt-5 text-balance text-[clamp(3rem,15vw,5rem)] font-black leading-[0.9] tracking-[-0.04em] sm:text-7xl md:text-8xl lg:text-8xl"
           >
-            <motion.span
-              className="block text-foreground"
-              initial={{ opacity: 0, x: -18 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.2, duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
-            >
+            <motion.span className="block text-foreground" initial={{ opacity: 0, x: -18 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2, duration: 0.65, ease: [0.22, 1, 0.36, 1] }}>
               D-PIZZA
             </motion.span>
-            <motion.span
-              className="block text-amber-brand"
-              initial={{ opacity: 0, x: 18 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.3, duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
-            >
+            <motion.span className="block text-amber-brand" initial={{ opacity: 0, x: 18 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3, duration: 0.65, ease: [0.22, 1, 0.36, 1] }}>
               CORNER
             </motion.span>
-            <motion.span
-              className="mt-4 block text-xl font-semibold tracking-[0.45em] text-muted-foreground sm:text-2xl md:text-3xl"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.42, duration: 0.55 }}
-            >
+            <motion.span className="mt-4 block text-xl font-semibold tracking-[0.45em] text-muted-foreground sm:text-2xl md:text-3xl" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.42, duration: 0.55 }}>
               DADU
             </motion.span>
           </motion.h1>
@@ -110,14 +96,6 @@ export function Hero() {
             >
               Explore Menu
               <ArrowRight className="h-4 w-4" />
-            </motion.a>
-            <motion.a
-              href="#deals"
-              whileHover={{ y: -2, scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              className="inline-flex min-h-12 items-center justify-center rounded-full border border-border bg-background/50 px-6 py-3 text-sm font-bold text-foreground backdrop-blur transition-colors hover:border-amber-brand/50 hover:text-amber-brand"
-            >
-              View Deals
             </motion.a>
             <motion.a
               href={whatsappHref}
