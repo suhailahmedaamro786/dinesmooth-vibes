@@ -159,7 +159,7 @@ export const deals: DealItem[] = [
   { id: "d16", name: "Deal 16", price: 1000, category: "Deals", image: dealFriends, description: "5 Zinger Burgers." },
   { id: "d17", name: "Deal 17", price: 800, category: "Deals", image: dealBread, description: "2 Zinger Burgers + 1 Chicken Broast." },
   { id: "d18", name: "Deal 18", price: 1000, category: "Deals", image: bbqPlatter, description: "2 Tikka + 2 Reshmi Kabab + 3 Poori." },
-  { id: "d19", name: "Deal 19", price: 900, category: "Deals", image: dealFriends, description: "2 Zinger Burgers + 2 Chicken Rolls + 1 Fries." },
+  { id: "d19", name: "Deal 19", price: 900, category: "Deals", image: "/assets/menu-images/Deals/Deal 19.jpg", description: "2 Zinger Burgers + 2 Chicken Rolls + 1 Fries." },
 ];
 
 export const SPECIAL_TRAIN_PIZZA_PRICE = 3500;
