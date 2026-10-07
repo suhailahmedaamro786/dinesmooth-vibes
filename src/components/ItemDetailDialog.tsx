@@ -26,12 +26,12 @@ export function ItemDetailDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90dvh] w-[calc(100%-1rem)] max-w-lg overflow-y-auto overflow-x-hidden border-border bg-card p-0 sm:w-full">
+      <DialogContent className="max-h-[92dvh] w-[calc(100%-1rem)] max-w-lg sm:max-h-[90dvh] overflow-y-auto overflow-x-hidden border-border bg-card p-0 sm:w-full">
         <div className="relative aspect-[16/10] w-full overflow-hidden bg-surface">
           <img src={it.image} alt={it.name} className="h-full w-full object-cover" />
           <div aria-hidden className="pointer-events-none absolute inset-0 bg-gradient-to-t from-card via-card/30 to-transparent" />
         </div>
-        <div className="space-y-4 p-4 sm:p-6">
+        <div className="space-y-4 p-4 pb-5 sm:p-6">
           <div className="flex items-start justify-between gap-4">
             <div>
               <div className="text-[10px] font-bold uppercase tracking-[0.22em] text-amber-brand">
