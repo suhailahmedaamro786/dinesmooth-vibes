@@ -37,8 +37,8 @@ export function Navbar() {
           : "bg-transparent"
       }`}
     >
-      <div className="mx-auto max-w-7xl px-3 sm:px-6">
-        <div className="flex min-w-0 items-center justify-between gap-3 py-3">
+      <div className="mx-auto max-w-7xl px-3 sm:px-6 lg:px-8">
+        <div className="flex min-w-0 items-center justify-between gap-2 py-2.5 sm:gap-3 sm:py-3">
           <motion.div
             whileHover={{ y: -1 }}
             transition={{ duration: 0.18 }}
@@ -109,7 +109,7 @@ export function Navbar() {
         </div>
 
         <nav
-          className="flex items-center gap-1 overflow-x-auto pb-2 md:hidden"
+          className="flex items-center gap-1 overflow-x-auto pb-2 pt-0.5 md:hidden scrollbar-none"
           aria-label="Mobile navigation"
         >
           {navItems.map((item) => (
