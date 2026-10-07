@@ -49,13 +49,37 @@ export function Hero() {
             Freshly fired · Charcoal BBQ · Served hot
           </span>
 
-          <h1 className="mt-6 text-balance text-5xl font-black leading-[0.9] tracking-[-0.04em] sm:text-7xl md:text-8xl">
-            <span className="block text-foreground">D-PIZZA</span>
-            <span className="block text-amber-brand">CORNER</span>
-            <span className="mt-4 block text-xl font-semibold tracking-[0.45em] text-muted-foreground sm:text-2xl md:text-3xl">
+          <motion.h1
+            initial={{ opacity: 0, y: 18, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ delay: 0.12, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+            className="mt-6 text-balance text-5xl font-black leading-[0.9] tracking-[-0.04em] sm:text-7xl md:text-8xl"
+          >
+            <motion.span
+              className="block text-foreground"
+              initial={{ opacity: 0, x: -18 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.2, duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
+            >
+              D-PIZZA
+            </motion.span>
+            <motion.span
+              className="block text-amber-brand"
+              initial={{ opacity: 0, x: 18 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.3, duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
+            >
+              CORNER
+            </motion.span>
+            <motion.span
+              className="mt-4 block text-xl font-semibold tracking-[0.45em] text-muted-foreground sm:text-2xl md:text-3xl"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.42, duration: 0.55 }}
+            >
               DADU
-            </span>
-          </h1>
+            </motion.span>
+          </motion.h1>
 
           <motion.p
             initial={{ opacity: 0, y: 16 }}
@@ -73,27 +97,33 @@ export function Hero() {
             transition={{ delay: 0.4, duration: 0.6 }}
             className="mt-9 flex flex-col justify-center gap-3 sm:flex-row"
           >
-            <a
+            <motion.a
               href="#menu"
-              className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-amber-brand px-6 py-3 text-sm font-black text-primary-foreground shadow-xl shadow-amber-brand/20 transition-transform hover:scale-[1.02]"
+              whileHover={{ y: -2, scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-amber-brand px-6 py-3 text-sm font-black text-primary-foreground shadow-xl shadow-amber-brand/20 transition-shadow hover:shadow-2xl hover:shadow-amber-brand/25"
             >
               Explore Menu
               <ArrowRight className="h-4 w-4" />
-            </a>
-            <a
+            </motion.a>
+            <motion.a
               href="#deals"
+              whileHover={{ y: -2, scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
               className="inline-flex min-h-12 items-center justify-center rounded-full border border-border bg-background/50 px-6 py-3 text-sm font-bold text-foreground backdrop-blur transition-colors hover:border-amber-brand/50 hover:text-amber-brand"
             >
               View Deals
-            </a>
-            <a
+            </motion.a>
+            <motion.a
               href={whatsappHref}
               target="_blank"
               rel="noopener noreferrer"
+              whileHover={{ y: -2, scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
               className="hidden min-h-12 items-center justify-center rounded-full border border-border/70 px-6 py-3 text-sm font-bold text-muted-foreground transition-colors hover:border-amber-brand/50 hover:text-amber-brand sm:inline-flex"
             >
               Order on WhatsApp
-            </a>
+            </motion.a>
           </motion.div>
 
           <div className="mt-8 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground/80 sm:text-xs">
