@@ -41,7 +41,7 @@ export function AboutDPizza() {
               BBQ and special value deals.
             </p>
 
-            <div className="mt-7 grid gap-3 sm:grid-cols-2">
+            <div className="mt-6 grid gap-3 sm:mt-7 sm:grid-cols-2">
               <div className="rounded-2xl border border-border bg-card p-4">
                 <CalendarDays className="h-5 w-5 text-amber-brand" />
                 <div className="mt-2 text-sm font-bold">Founded</div>
@@ -71,7 +71,7 @@ export function AboutDPizza() {
               </div>
             </div>
 
-            <div className="mt-7 grid gap-6 sm:grid-cols-2">
+            <div className="mt-6 grid gap-6 sm:mt-7 sm:grid-cols-2">
               <div>
                 <h3 className="text-sm font-black uppercase tracking-wider">Our Mission</h3>
                 <p className="mt-2 text-sm leading-6 text-muted-foreground">
