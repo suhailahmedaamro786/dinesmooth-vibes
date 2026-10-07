@@ -8,8 +8,8 @@ const MAP_EMBED =
 
 export function FindUs() {
   return (
-    <section id="find-us" className="relative border-t border-border bg-background py-20">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6">
+    <section id="find-us" className="relative border-t border-border bg-background py-14 sm:py-20">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -40,7 +40,7 @@ export function FindUs() {
             <iframe
               title="D-Pizza Food location"
               src={MAP_EMBED}
-              className="h-[300px] w-full pointer-events-none sm:h-[420px]"
+              className="h-[260px] w-full pointer-events-none sm:h-[360px] lg:h-[420px]"
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
             />
