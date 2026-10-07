@@ -22,8 +22,8 @@ function Stars({ rating = 5 }: { rating?: number }) {
 
 export function Reviews() {
   return (
-    <section id="reviews" className="relative border-t border-border bg-surface/30 py-20">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6">
+    <section id="reviews" className="relative border-t border-border bg-surface/30 py-14 sm:py-20">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 18 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -51,7 +51,7 @@ export function Reviews() {
           </a>
         </motion.div>
 
-        <div className="grid gap-4 md:grid-cols-3">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {reviewHighlights.map((review, index) => (
             <motion.article
               key={review.name}
@@ -59,7 +59,7 @@ export function Reviews() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.45, delay: index * 0.08 }}
-              className="flex h-full flex-col rounded-3xl border border-border bg-card p-6 shadow-lg"
+              className="flex h-full min-w-0 flex-col rounded-3xl border border-border bg-card p-5 shadow-lg sm:p-6"
             >
               <Stars rating={review.rating} />
               <p className="mt-4 flex-1 text-sm leading-6 text-muted-foreground">
