@@ -34,6 +34,23 @@ export function MenuSection() {
   const [detail, setDetail] = useState<DetailItem | null>(null);
   const openDetail: OpenDetail = (d) => setDetail(d);
 
+  useEffect(() => {
+    const openDealsFromHash = () => {
+      if (window.location.hash !== "#deals") return;
+      setTab("Deals");
+      window.setTimeout(() => {
+        document.getElementById("deals-content")?.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }, 80);
+    };
+
+    openDealsFromHash();
+    window.addEventListener("hashchange", openDealsFromHash);
+    return () => window.removeEventListener("hashchange", openDealsFromHash);
+  }, []);
+
   return (
     <section id="menu" className="relative mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-24">
       <motion.div initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.5 }} transition={{ duration: 0.6, ease: "easeOut" }} className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-end">
@@ -44,17 +61,18 @@ export function MenuSection() {
         <p className="max-w-md text-sm text-muted-foreground">Tap any item to see details. Hit <span className="font-bold text-amber-brand">Add</span> to drop it in your cart.</p>
       </motion.div>
 
-      <div id="deals" aria-label="Menu categories" className="mt-8 rounded-2xl border border-border bg-surface/60 p-1.5 backdrop-blur sm:mt-10">
-        <div className="grid grid-cols-3 gap-1 sm:flex sm:gap-1 sm:overflow-x-auto sm:scrollbar-none">
+      <div aria-label="Menu categories" className="mt-8 rounded-2xl border border-border bg-surface/60 p-1.5 backdrop-blur sm:mt-10">
+        <div className="flex gap-1 overflow-x-auto scrollbar-none">
+
           {TABS.map((t) => {
             const active = tab === t;
-            return <button key={t} onClick={() => setTab(t)} className={`relative min-w-0 rounded-full px-2 py-3 text-xs font-semibold transition-colors sm:shrink-0 sm:px-5 sm:py-2.5 sm:text-sm ${active ? "text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}>
+            return <button key={t} onClick={() => setTab(t)} className={`relative shrink-0 rounded-full px-3 py-2.5 text-xs font-semibold transition-colors sm:px-5 sm:py-2.5 sm:text-sm ${active ? "text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}>
               {active && <motion.span layoutId="menu-tab-indicator" className="absolute inset-0 -z-10 rounded-full bg-amber-brand" transition={{ type: "spring", stiffness: 380, damping: 32 }} />}
               <span className="relative z-10">{t}</span>
             </button>;
           })}
         </div>
-        <div className="px-3 pb-1 pt-2 text-center text-[10px] font-medium uppercase tracking-[0.18em] text-muted-foreground sm:hidden">All menu categories</div>
+        <div className="px-3 pb-1 pt-2 text-center text-[10px] font-medium uppercase tracking-[0.18em] text-muted-foreground sm:hidden">Swipe categories</div>
       </div>
 
       <AnimatePresence mode="wait">
