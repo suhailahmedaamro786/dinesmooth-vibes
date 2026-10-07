@@ -39,7 +39,11 @@ export function Navbar() {
     >
       <div className="mx-auto max-w-7xl px-3 sm:px-6">
         <div className="flex min-w-0 items-center justify-between gap-3 py-3">
-          <Link to="/" className="group flex min-w-0 shrink-0 items-center gap-2.5">
+          <motion.div
+            whileHover={{ y: -1 }}
+            transition={{ duration: 0.18 }}
+          >
+            <Link to="/" className="group flex min-w-0 shrink-0 items-center gap-2.5">
             <span className="grid h-10 w-10 place-items-center rounded-xl bg-amber-brand text-primary-foreground shadow-lg shadow-amber-brand/20">
               <Flame className="h-5 w-5" strokeWidth={2.5} />
             </span>
@@ -51,25 +55,31 @@ export function Navbar() {
                 D-Pizza Food
               </div>
             </div>
-          </Link>
+            </Link>
+          </motion.div>
 
           <nav className="hidden items-center gap-6 md:flex" aria-label="Primary navigation">
             {navItems.map((item) => (
-              <a
+              <motion.a
                 key={item.href}
                 href={item.href}
+                whileHover={{ y: -1, scale: 1.02 }}
+                whileTap={{ scale: 0.97 }}
+                transition={{ duration: 0.16 }}
                 className="rounded-full px-2 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-amber-brand/10 hover:text-amber-brand"
               >
                 {item.label}
-              </a>
+              </motion.a>
             ))}
             {isAdmin && (
-              <Link
-                to="/admin"
-                className="rounded-full px-2 py-1.5 text-sm font-medium text-amber-brand transition-opacity hover:opacity-80"
-              >
-                Admin
-              </Link>
+              <motion.div whileHover={{ y: -1 }} whileTap={{ scale: 0.97 }} transition={{ duration: 0.16 }}>
+                <Link
+                  to="/admin"
+                  className="rounded-full px-2 py-1.5 text-sm font-medium text-amber-brand transition-opacity hover:opacity-80"
+                >
+                  Admin
+                </Link>
+              </motion.div>
             )}
           </nav>
 
@@ -103,13 +113,16 @@ export function Navbar() {
           aria-label="Mobile navigation"
         >
           {navItems.map((item) => (
-            <a
+            <motion.a
               key={item.href}
               href={item.href}
+              whileTap={{ scale: 0.96 }}
+              whileHover={{ y: -1 }}
+              transition={{ duration: 0.16 }}
               className="shrink-0 rounded-full border border-border/70 bg-background/40 px-3 py-1.5 text-xs font-medium text-muted-foreground backdrop-blur transition-colors hover:border-amber-brand/50 hover:text-amber-brand"
             >
               {item.label}
-            </a>
+            </motion.a>
           ))}
         </nav>
       </div>
