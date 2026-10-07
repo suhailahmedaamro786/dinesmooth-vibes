@@ -31,9 +31,9 @@ export function Hero() {
       />
       <motion.div
         aria-hidden
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1.5 }}
+        initial={{ opacity: 0, scale: 0.92 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 1.5, ease: [0.22, 1, 0.36, 1] }}
         className="absolute -top-32 left-1/2 -z-10 h-[480px] w-[820px] -translate-x-1/2 rounded-full bg-amber-brand/15 blur-3xl"
       />
 
@@ -44,10 +44,15 @@ export function Hero() {
           transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
           className="mx-auto max-w-4xl text-center"
         >
-          <span className="inline-flex items-center gap-2 rounded-full border border-border bg-surface/70 px-3 py-1.5 text-[10px] uppercase tracking-[0.2em] text-muted-foreground backdrop-blur sm:text-[11px]">
+          <motion.span
+            initial={{ opacity: 0, y: 10, scale: 0.96 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ delay: 0.05, duration: 0.55 }}
+            whileHover={{ y: -1, scale: 1.02 }}
+            className="inline-flex items-center gap-2 rounded-full border border-border bg-surface/70 px-3 py-1.5 text-[10px] uppercase tracking-[0.2em] text-muted-foreground backdrop-blur sm:text-[11px]">
             <Sparkles className="h-3.5 w-3.5 text-amber-brand" />
             Freshly fired · Charcoal BBQ · Served hot
-          </span>
+          </motion.span>
 
           <motion.h1
             initial={{ opacity: 0, y: 18, scale: 0.98 }}
@@ -126,13 +131,18 @@ export function Hero() {
             </motion.a>
           </motion.div>
 
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground/80 sm:text-xs">
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.58, duration: 0.6 }}
+            className="mt-8 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground/80 sm:text-xs"
+          >
             <span>Dadu</span>
             <span aria-hidden>•</span>
             <span>Freshly prepared</span>
             <span aria-hidden>•</span>
             <span>Easy ordering</span>
-          </div>
+          </motion.div>
         </motion.div>
       </div>
     </section>
