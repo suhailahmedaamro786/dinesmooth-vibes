@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "motion/react";
-import { useState, useMemo } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { Plus } from "lucide-react";
 import { toast } from "sonner";
 import { burgers, rolls, broast, pizzas, deals, bbq, pastaItems, sandwiches, type PizzaSize, type PizzaItem, type SimpleItem, type DealItem, type Category } from "@/data/menu";
@@ -58,7 +58,7 @@ export function MenuSection() {
       </div>
 
       <AnimatePresence mode="wait">
-        <motion.div key={tab} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }} className="mt-10">
+        <motion.div id={tab === "Deals" ? "deals-content" : undefined} key={tab} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }} className="mt-10">
           {tab === "Burgers" && <SimpleGrid items={burgers} summaries={summaries} openDetail={openDetail} />}
           {tab === "Rolls" && <SimpleGrid items={rolls} summaries={summaries} openDetail={openDetail} />}
           {tab === "Broast" && <SimpleGrid items={broast} summaries={summaries} openDetail={openDetail} />}
