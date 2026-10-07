@@ -6,13 +6,6 @@ import { useCartStore } from "@/store/useCartStore";
 import { useAuth } from "@/hooks/useAuth";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
-const navItems = [
-  { label: "Menu", href: "#menu" },
-  { label: "Deals", href: "#deals" },
-  { label: "Reviews", href: "#reviews" },
-  { label: "Location", href: "#find-us" },
-];
-
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const qty = useCartStore((s) => s.totalQty());
@@ -39,38 +32,23 @@ export function Navbar() {
     >
       <div className="mx-auto max-w-7xl px-3 sm:px-6 lg:px-8">
         <div className="flex min-w-0 items-center justify-between gap-2 py-2.5 sm:gap-3 sm:py-3">
-          <motion.div
-            whileHover={{ y: -1 }}
-            transition={{ duration: 0.18 }}
-          >
+          <motion.div whileHover={{ y: -1 }} transition={{ duration: 0.18 }}>
             <Link to="/" className="group flex min-w-0 shrink-0 items-center gap-2.5">
-            <span className="grid h-10 w-10 place-items-center rounded-xl bg-amber-brand text-primary-foreground shadow-lg shadow-amber-brand/20">
-              <Flame className="h-5 w-5" strokeWidth={2.5} />
-            </span>
-            <div className="leading-none">
-              <div className="truncate text-xs font-black tracking-[0.16em] text-amber-brand sm:text-sm sm:tracking-[0.18em]">
-                D-Pizza
+              <span className="grid h-10 w-10 place-items-center rounded-xl bg-amber-brand text-primary-foreground shadow-lg shadow-amber-brand/20">
+                <Flame className="h-5 w-5" strokeWidth={2.5} />
+              </span>
+              <div className="leading-none">
+                <div className="truncate text-xs font-black tracking-[0.16em] text-amber-brand sm:text-sm sm:tracking-[0.18em]">
+                  D-Pizza
+                </div>
+                <div className="hidden pt-1 text-[9px] uppercase tracking-[0.24em] text-muted-foreground sm:block">
+                  D-Pizza Food
+                </div>
               </div>
-              <div className="hidden pt-1 text-[9px] uppercase tracking-[0.24em] text-muted-foreground sm:block">
-                D-Pizza Food
-              </div>
-            </div>
             </Link>
           </motion.div>
 
           <nav className="hidden items-center gap-6 md:flex" aria-label="Primary navigation">
-            {navItems.map((item) => (
-              <motion.a
-                key={item.href}
-                href={item.href}
-                whileHover={{ y: -1, scale: 1.02 }}
-                whileTap={{ scale: 0.97 }}
-                transition={{ duration: 0.16 }}
-                className="rounded-full px-2 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-amber-brand/10 hover:text-amber-brand"
-              >
-                {item.label}
-              </motion.a>
-            ))}
             {isAdmin && (
               <motion.div whileHover={{ y: -1 }} whileTap={{ scale: 0.97 }} transition={{ duration: 0.16 }}>
                 <Link
@@ -107,24 +85,6 @@ export function Navbar() {
             </motion.button>
           </div>
         </div>
-
-        <nav
-          className="flex items-center gap-1 overflow-x-auto pb-2 pt-0.5 md:hidden scrollbar-none"
-          aria-label="Mobile navigation"
-        >
-          {navItems.map((item) => (
-            <motion.a
-              key={item.href}
-              href={item.href}
-              whileTap={{ scale: 0.96 }}
-              whileHover={{ y: -1 }}
-              transition={{ duration: 0.16 }}
-              className="shrink-0 rounded-full border border-border/70 bg-background/40 px-3 py-1.5 text-xs font-medium text-muted-foreground backdrop-blur transition-colors hover:border-amber-brand/50 hover:text-amber-brand"
-            >
-              {item.label}
-            </motion.a>
-          ))}
-        </nav>
       </div>
     </motion.header>
   );
