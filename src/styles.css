@@ -196,3 +196,26 @@
     animation: none !important;
   }
 }
+
+
+@media (width < 640px) {
+  html { scroll-padding-top: 116px; }
+  section[id] { scroll-margin-top: 116px; }
+
+  h1, h2, h3 { overflow-wrap: anywhere; }
+
+  button,
+  a {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .safe-bottom {
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  }
+}
+
+@media (width < 480px) {
+  .mobile-tight {
+    padding-inline: 0.875rem;
+  }
+}
