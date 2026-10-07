@@ -19,6 +19,11 @@ export const Route = createFileRoute("/")({
       { property: "og:description", content: "Zingers, broasts, pizzas & exclusive bundle deals." },
       { property: "og:url", content: "https://d-pizza.vercel.app/" },
       { property: "og:locale", content: "en_PK" },
+      { property: "og:type", content: "website" },
+      { property: "og:site_name", content: "D-Pizza Food" },
+      { property: "og:image", content: "https://d-pizza.vercel.app/1791122318601.jpg" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:image", content: "https://d-pizza.vercel.app/1791122318601.jpg" },
     ],
     links: [
       { rel: "canonical", href: "https://d-pizza.vercel.app/" },
