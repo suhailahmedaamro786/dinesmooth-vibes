@@ -2,8 +2,7 @@ import { motion, AnimatePresence } from "motion/react";
 import { useState, useMemo } from "react";
 import { Plus } from "lucide-react";
 import { toast } from "sonner";
-import { type PizzaSize, type PizzaItem, type SimpleItem, type DealItem, type Category } from "@/data/menu";
-import { useSanityMenu } from "@/hooks/useSanityMenu";
+import { burgers, rolls, broast, pizzas, deals, bbq, pastaItems, sandwiches, type PizzaSize, type PizzaItem, type SimpleItem, type DealItem, type Category } from "@/data/menu";
 import { useCartStore } from "@/store/useCartStore";
 import { formatRs } from "@/lib/format";
 import { StarRating } from "@/components/StarRating";
@@ -32,8 +31,6 @@ function RatingBadge({ summary }: { summary?: ReviewSummary }) {
 export function MenuSection() {
   const [tab, setTab] = useState<Tab>("Burgers");
   const { map: summaries } = useReviewSummaries();
-  const menu = useSanityMenu();
-  const { burgers, rolls, broast, pizzas, deals, bbq, pastaItems, sandwiches } = menu;
   const [detail, setDetail] = useState<DetailItem | null>(null);
   const openDetail: OpenDetail = (d) => setDetail(d);
 
@@ -46,8 +43,6 @@ export function MenuSection() {
         </div>
         <p className="max-w-md text-sm text-muted-foreground">Tap any item to see details. Hit <span className="font-bold text-amber-brand">Add</span> to drop it in your cart.</p>
       </motion.div>
-
-      {menu.connected && <div className="mb-3 flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.18em] text-emerald-500"><span className="h-1.5 w-1.5 rounded-full bg-emerald-500" /> Live menu from Sanity</div>}
 
       <div id="deals" aria-label="Menu categories" className="mt-8 rounded-2xl border border-border bg-surface/60 p-1.5 backdrop-blur sm:mt-10">
         <div className="grid grid-cols-3 gap-1 sm:flex sm:gap-1 sm:overflow-x-auto sm:scrollbar-none">
