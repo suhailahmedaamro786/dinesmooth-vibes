@@ -106,7 +106,7 @@ export function CartDrawer() {
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "spring", stiffness: 320, damping: 34 }}
-            className="fixed inset-y-0 right-0 z-[70] flex w-full max-w-md flex-col border-l border-border bg-background shadow-2xl"
+            className="fixed inset-y-0 right-0 z-[70] flex w-full max-w-md flex-col sm:w-[min(100%,28rem)] border-l border-border bg-background shadow-2xl"
           >
             <header className="flex items-center justify-between border-b border-border px-5 py-4">
               <div>
@@ -134,7 +134,7 @@ export function CartDrawer() {
                           initial={{ opacity: 0, x: 30 }}
                           animate={{ opacity: 1, x: 0 }}
                           exit={{ opacity: 0, x: 40, height: 0, paddingTop: 0, paddingBottom: 0 }}
-                          className="flex items-start gap-3 px-5 py-4"
+                          className="flex min-w-0 items-start gap-3 px-4 py-4 sm:px-5"
                         >
                           <div className="h-16 w-16 shrink-0 overflow-hidden rounded-xl border border-border bg-surface">
                             {line.itemId ? <CartItemImage image={line.image} /> : null}
@@ -158,7 +158,7 @@ export function CartDrawer() {
                               </button>
                             </div>
                           </div>
-                          <div className="text-right font-black text-amber-brand tabular-nums">{formatRs(line.qty * line.unitPrice)}</div>
+                          <div className="max-w-[5.5rem] shrink-0 text-right text-sm font-black text-amber-brand tabular-nums sm:max-w-none sm:text-base">{formatRs(line.qty * line.unitPrice)}</div>
                         </motion.li>
                       ))}
                     </AnimatePresence>
@@ -169,7 +169,7 @@ export function CartDrawer() {
                       onSubmit={(e) => { e.preventDefault(); sendOrder(); }}
                       initial={{ opacity: 0, y: 12 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className="space-y-4 border-t border-border px-5 py-5"
+                      className="space-y-4 border-t border-border px-4 py-5 sm:px-5"
                     >
                       <div className="rounded-2xl border border-amber-brand/30 bg-amber-brand/5 p-4">
                         <div className="text-sm font-bold">Almost done 🍕</div>
