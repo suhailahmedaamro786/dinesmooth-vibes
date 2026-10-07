@@ -1,12 +1,16 @@
 import { motion } from "motion/react";
-import { Train, Sparkles } from "lucide-react";
-import { SPECIAL_TRAIN_PIZZA_PRICE } from "@/data/menu";
-import { formatRs } from "@/lib/format";
+import { ArrowRight, Sparkles } from "lucide-react";
 import heroSpread from "@/assets/hero-spread.jpg";
 
+const WA_NUMBER = "923131342361";
+
 export function Hero() {
+  const whatsappHref = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(
+    "Hi! I'd like to order from D-Pizza Food.",
+  )}`;
+
   return (
-    <section className="relative isolate overflow-hidden pt-32 pb-20 sm:pt-40 sm:pb-28">
+    <section className="relative isolate overflow-hidden pb-16 pt-32 sm:pb-24 sm:pt-40">
       <motion.img
         src={heroSpread}
         alt=""
@@ -16,10 +20,15 @@ export function Hero() {
         transition={{ duration: 1.6, ease: [0.22, 1, 0.36, 1] }}
         className="absolute inset-0 -z-20 h-full w-full object-cover"
       />
-      <div aria-hidden className="absolute inset-0 -z-10 bg-gradient-to-b from-background/60 via-background/85 to-background" />
+      <div aria-hidden className="absolute inset-0 -z-10 bg-gradient-to-b from-background/55 via-background/85 to-background" />
       <div aria-hidden className="absolute inset-0 -z-10 bg-radial-amber opacity-80" />
-      <div aria-hidden className="absolute inset-0 -z-10 bg-grid opacity-40" />
-      <motion.div aria-hidden animate={{ y: [0, -10, 0], x: [0, 5, 0] }} transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }} className="pointer-events-none absolute right-[8%] top-32 -z-10 h-32 w-32 rounded-full bg-amber-brand/10 blur-2xl sm:h-44 sm:w-44" />
+      <div aria-hidden className="absolute inset-0 -z-10 bg-grid opacity-30" />
+      <motion.div
+        aria-hidden
+        animate={{ y: [0, -10, 0], x: [0, 5, 0] }}
+        transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
+        className="pointer-events-none absolute right-[8%] top-32 -z-10 h-32 w-32 rounded-full bg-amber-brand/10 blur-2xl sm:h-44 sm:w-44"
+      />
       <motion.div
         aria-hidden
         initial={{ opacity: 0 }}
@@ -33,19 +42,18 @@ export function Hero() {
           initial={{ y: 24, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-          className="mx-auto max-w-3xl text-center"
+          className="mx-auto max-w-4xl text-center"
         >
-          <span className="inline-flex items-center gap-2 rounded-full border border-border bg-surface/70 px-3 py-1.5 text-[11px] uppercase tracking-[0.22em] text-muted-foreground backdrop-blur">
+          <span className="inline-flex items-center gap-2 rounded-full border border-border bg-surface/70 px-3 py-1.5 text-[10px] uppercase tracking-[0.2em] text-muted-foreground backdrop-blur sm:text-[11px]">
             <Sparkles className="h-3.5 w-3.5 text-amber-brand" />
             Freshly fired · Charcoal BBQ · Served hot
           </span>
 
-          <h1 className="mt-6 text-balance text-5xl font-black leading-[0.95] tracking-tight sm:text-7xl md:text-8xl">
-            <span className="text-foreground">D-PIZZA</span>{" "}
-            <span className="text-amber-brand">CORNER</span>
-            <span className="block mt-3 text-2xl font-semibold tracking-[0.4em] text-muted-foreground sm:text-3xl">
-              — DADU —
-              <span className="sr-only"> Pizza &amp; Fast Food Delivery in Dadu</span>
+          <h1 className="mt-6 text-balance text-5xl font-black leading-[0.9] tracking-[-0.04em] sm:text-7xl md:text-8xl">
+            <span className="block text-foreground">D-PIZZA</span>
+            <span className="block text-amber-brand">CORNER</span>
+            <span className="mt-4 block text-xl font-semibold tracking-[0.45em] text-muted-foreground sm:text-2xl md:text-3xl">
+              DADU
             </span>
           </h1>
 
@@ -53,40 +61,49 @@ export function Hero() {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.25, duration: 0.6 }}
-            className="mx-auto mt-6 max-w-xl text-base text-muted-foreground sm:text-lg"
+            className="mx-auto mt-6 max-w-2xl text-base leading-7 text-muted-foreground sm:text-lg"
           >
-            Zingers, broasts, hand-stretched & lava pizzas, charcoal BBQ, platters, pasta and rolls — crafted with obsessive love for flavour.
+            Pizza, zingers, broast, charcoal BBQ, rolls, pasta and loaded deals —
+            made fresh and ready for Dadu.
           </motion.p>
-        </motion.div>
 
-        <motion.a
-          href="#menu"
-          initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4, duration: 0.6 }}
-          whileHover={{ scale: 1.015 }}
-          whileTap={{ scale: 0.99 }}
-          className="mx-auto mt-10 flex max-w-3xl flex-col items-start gap-3 rounded-2xl border border-amber-brand/60 bg-gradient-to-r from-amber-brand/15 via-amber-brand/5 to-transparent p-4 backdrop-blur sm:mt-12 sm:flex-row sm:items-center sm:gap-4 sm:p-5 glow-amber mobile-float"
-        >
-          <span className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-amber-brand text-primary-foreground">
-            <Train className="h-6 w-6" strokeWidth={2.5} />
-          </span>
-          <div className="flex-1 text-left">
-            <div className="text-[11px] font-bold uppercase tracking-[0.22em] text-amber-brand">
-              Limited Service Special
-            </div>
-            <div className="text-sm font-semibold sm:text-lg">
-              Special Train Pizza{" "}
-              <span className="text-muted-foreground font-normal">(For Service)</span>
-            </div>
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4, duration: 0.6 }}
+            className="mt-9 flex flex-col justify-center gap-3 sm:flex-row"
+          >
+            <a
+              href="#menu"
+              className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-amber-brand px-6 py-3 text-sm font-black text-primary-foreground shadow-xl shadow-amber-brand/20 transition-transform hover:scale-[1.02]"
+            >
+              Explore Menu
+              <ArrowRight className="h-4 w-4" />
+            </a>
+            <a
+              href="#deals"
+              className="inline-flex min-h-12 items-center justify-center rounded-full border border-border bg-background/50 px-6 py-3 text-sm font-bold text-foreground backdrop-blur transition-colors hover:border-amber-brand/50 hover:text-amber-brand"
+            >
+              View Deals
+            </a>
+            <a
+              href={whatsappHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hidden min-h-12 items-center justify-center rounded-full border border-border/70 px-6 py-3 text-sm font-bold text-muted-foreground transition-colors hover:border-amber-brand/50 hover:text-amber-brand sm:inline-flex"
+            >
+              Order on WhatsApp
+            </a>
+          </motion.div>
+
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground/80 sm:text-xs">
+            <span>Dadu</span>
+            <span aria-hidden>•</span>
+            <span>Freshly prepared</span>
+            <span aria-hidden>•</span>
+            <span>Easy ordering</span>
           </div>
-          <div className="w-full text-left sm:w-auto sm:text-right">
-            <div className="text-[10px] uppercase tracking-widest text-muted-foreground">Only</div>
-            <div className="text-xl font-black text-amber-brand sm:text-2xl">
-              {formatRs(SPECIAL_TRAIN_PIZZA_PRICE)}
-            </div>
-          </div>
-        </motion.a>
+        </motion.div>
       </div>
     </section>
   );
