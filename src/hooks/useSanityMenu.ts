@@ -23,7 +23,7 @@ export function useSanityMenu(): SanityMenuState {
   useEffect(() => {
     let cancelled = false;
     if (!sanityConfigured) return;
-    fetchSanityMenu().then((docs: SanityMenuDocument[]) => {
+    const timeout = new Promise<never>((_, reject) =>\n      setTimeout(() => reject(new Error("Sanity menu request timed out")), 6000),\n    );\n\n    Promise.race([fetchSanityMenu(), timeout]).then((docs: SanityMenuDocument[]) => {
       if (cancelled) return;
       const simple = docs.map(toSimpleItem).filter(Boolean) as SimpleItem[];
       const pizza = docs.map(toPizzaItem).filter(Boolean) as PizzaItem[];
