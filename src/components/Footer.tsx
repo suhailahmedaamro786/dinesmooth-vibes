@@ -3,7 +3,7 @@ import { Flame, Instagram, Phone, MapPin, Facebook } from "lucide-react";
 export function Footer() {
   return (
     <footer className="border-t border-border bg-background">
-      <div className="mx-auto grid max-w-7xl gap-10 px-4 py-14 sm:px-6 md:grid-cols-3">
+      <div className="mx-auto grid max-w-7xl gap-8 px-4 py-12 sm:gap-10 sm:px-6 sm:py-14 md:grid-cols-3 lg:px-8">
         <div>
           <div className="flex items-center gap-2.5">
             <span className="grid h-9 w-9 place-items-center rounded-xl bg-amber-brand text-primary-foreground">
@@ -20,7 +20,7 @@ export function Footer() {
             Crafted with obsessive love for flavour — served hot, served fast.
           </p>
         </div>
-        <div className="text-sm">
+        <div className="min-w-0 text-sm">
           <div className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">Hours</div>
           <ul className="mt-3 space-y-1.5">
             <li>Mon — Sun · 6:00 PM – 1:00 AM</li>
