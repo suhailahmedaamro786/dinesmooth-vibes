@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { fetchSanityMenu, sanityConfigured, toDealItem, toPizzaItem, toSimpleItem, type SanityMenuDocument } from "@/lib/sanityMenu";
 import type { DealItem, PizzaItem, SimpleItem } from "@/data/menu";
-import { bbq as localBBQ, BBQ_IMAGE_BY_NAME } from "@/data/menu";
+import { burgers as localBurgers, rolls as localRolls, broast as localBroast, bbq as localBBQ, platters as localPlatters, pastaItems as localPastaItems, sandwiches as localSandwiches, pizzas as localPizzas, deals as localDeals, BBQ_IMAGE_BY_NAME } from "@/data/menu";
 
 export type SanityMenuState = {
   burgers: SimpleItem[]; rolls: SimpleItem[]; broast: SimpleItem[]; bbq: SimpleItem[];
@@ -16,7 +16,7 @@ function mergeById<T extends { id: string }>(local: T[], remote: T[]) {
 
 export function useSanityMenu(): SanityMenuState {
   const [state, setState] = useState<SanityMenuState>({
-    burgers: [], rolls: [], broast: [], bbq: [], platters: [], pastaItems: [], sandwiches: [], pizzas: [], deals: [],
+    burgers: localBurgers, rolls: localRolls, broast: localBroast, bbq: localBBQ, platters: localPlatters, pastaItems: localPastaItems, sandwiches: localSandwiches, pizzas: localPizzas, deals: localDeals,
     loading: sanityConfigured, connected: false,
   });
 
@@ -41,7 +41,7 @@ export function useSanityMenu(): SanityMenuState {
       // Always render the verified customer-facing Deal 1–19 set.
       // Sanity can update matching items, while local data guarantees all 19 remain visible.
       const remoteById = new Map(remoteDeals.map((item) => [item.id, item]));
-      const deal = deals.slice(0, 19).map((local) => {
+      const deal = localDeals.slice(0, 19).map((local) => {
         const remote = remoteById.get(local.id);
         return remote
           ? { ...local, ...remote, name: local.name }
@@ -49,14 +49,14 @@ export function useSanityMenu(): SanityMenuState {
       });
 
       setState({
-        burgers: byCategory("Burgers"),
-        rolls: byCategory("Rolls"),
-        broast: byCategory("Broast"),
+        burgers: mergeById(localBurgers, byCategory("Burgers")),
+        rolls: mergeById(localRolls, byCategory("Rolls")),
+        broast: mergeById(localBroast, byCategory("Broast")),
         bbq: mergeById(localBBQ, remoteBbq),
-        platters: [],
-        pastaItems: byCategory("Pasta"),
-        sandwiches: byCategory("Sandwiches"),
-        pizzas: pizza,
+        platters: localPlatters,
+        pastaItems: mergeById(localPastaItems, byCategory("Pasta")),
+        sandwiches: mergeById(localSandwiches, byCategory("Sandwiches")),
+        pizzas: pizza.length ? pizza : localPizzas,
         deals: deal,
         loading: false, connected: true,
       });
