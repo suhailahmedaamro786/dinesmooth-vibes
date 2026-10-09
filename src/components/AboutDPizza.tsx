@@ -10,7 +10,7 @@ export function AboutDPizza() {
               <div className="overflow-hidden rounded-[1.65rem] border border-border bg-muted">
                 <div className="aspect-[4/5] w-full">
                   <img
-                    src="/IMG-20261009-WA0026.jpg"
+                    src="/Warm%20Father-Son%20Garden%20Portrait.png"
                     alt="Raja Shahnawaz Soomro, Founder and Owner of D-Pizza"
                     className="h-full w-full object-cover object-center transition-transform duration-700 hover:scale-105"
                     loading="lazy"
